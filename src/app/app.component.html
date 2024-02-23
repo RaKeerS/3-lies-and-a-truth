@@ -332,10 +332,24 @@
 <!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<main class="main">
-  <div class="content">
-    app.component works!!
-    <router-outlet />
+<div class="layout-wrapper layout-theme-light layout-static p-ripple-disabled">
+  <div class="layout-main-container">
+    <div class="layout-main">
+      <!-- <main class="main">
+        <div class="content"> -->
+          <div class="grid">
+            <div class="col-12 lg:col-6 xl:col-3">
+              <div class="card mb-0">
+                app.component works!!
+                <router-outlet />
+              </div>
+            </div>
+          </div>
+        <!-- </div>
+      </main> -->
+    </div>
   </div>
-</main>
+</div>
+
+
 

@@ -4,14 +4,15 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  // padding: 1rem;
   box-sizing: inherit;
   position: relative;
 }
 
 .content {
   display: flex;
-  justify-content: space-around;
+  // justify-content: space-around;
+  justify-content: center;
   width: 100%;
   max-width: 700px;
   margin-bottom: 3rem;
@@ -40,4 +41,49 @@ h1 {
 p {
   margin: 0;
   color: var(--gray-700);
+}
+
+.card {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.layout-main {
+  flex: 1 1 auto;
+}
+
+// display: flex;
+//     width: 100%;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+
+.layout-main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
+  padding: 2rem;
+  // padding-left: 4rem;
+  transition: margin-left .2s;
+}
+
+.layout-wrapper {
+  min-height: 100vh;
+}
+
+
+@media (max-width: 991px) {
+  .layout-wrapper .layout-main-container {
+    margin-left: 0;
+    padding-left: 2rem;
+  }
 }
