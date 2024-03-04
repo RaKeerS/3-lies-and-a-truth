@@ -19,23 +19,25 @@
   </ng-template> -->
   <div class="flex flex-auto flex-column">
     <div class="flex min-h-200p mb-5">
-      <p-card header="P1" class="inner">
+      <p-card header="P1" class="header-P1 inner">
         <!-- <p class="m-0">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
           quas!
         </p> -->
-        @for (item of [0, 1, 2, 3]; track $index) {
-          <p-card class="mx-6">
-            <p class="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-              quas!
-            </p>
-          </p-card>
-        }
+        <ng-template pTemplate="footer">
+          @for (item of [0, 1, 2, 3]; track $index) {
+            <p-card class="mx-5.5">
+              <p class="m-0">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                quas!
+              </p>
+            </p-card>
+          }
+        </ng-template>
       </p-card>
     </div>
     <div class="flex min-h-200p mb-5">
-      <p-card header="Mid-Zone" class="inner">
+      <p-card header="Mid-Zone" class="header-Mid-Zone inner">
         <p class="m-0">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
           quas!
@@ -43,19 +45,21 @@
       </p-card>
     </div>
     <div class="flex min-h-200p mb-5">
-      <p-card header="P2" class="inner">
+      <p-card header="P2" class="header-P2 inner">
         <!-- <p class="m-0">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
           quas!
         </p> -->
-        @for (item of [0, 1, 2, 3]; track $index) {
-          <p-card class="mx-6">
-            <p class="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-              quas!
-            </p>
-          </p-card>
-        }
+        <ng-template pTemplate="header">
+          @for (item of [0, 1, 2, 3]; track $index) {
+            <p-card class="mx-5.5">
+              <p class="m-0">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                quas!
+              </p>
+            </p-card>
+          }
+        </ng-template>
       </p-card>
     </div>
   </div>
