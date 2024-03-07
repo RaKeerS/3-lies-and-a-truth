@@ -1,6 +1,6 @@
 <p>playground works!</p>
     <!-- <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" /> -->
-<p-card header="Title" class="outer">
+<p-card header="Title" class="outer root-card">
   <!-- <ng-template pTemplate="header">
       <p class="m-0">
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
@@ -17,106 +17,124 @@
       quas!
   </p>
   </ng-template> -->
-  <div class="flex flex-auto flex-column">
-    <div class="flex min-h-200p mb-5">
-      <p-card header="P1" class="header-P1 inner">
-        <div class="flex flex-column">
-          <div class="flex card-body justify-content-between w-full">
-            <div class="flex inline-size-25rem">
-              <p-card header="Pick or Choose!">
-                <p class="m-0">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                  quas!
-                </p>
-              </p-card>
-            </div>
-            <div class="flex inline-size-25rem">
-              <p-card header="Bounty">
-                <p class="m-0">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                  quas!
-                </p>
-              </p-card>
-            </div>
-          </div>
-          <div class="flex">
-            <!-- <ng-template pTemplate="footer"> -->
-              @for (item of [0, 1, 2, 3]; track $index) {
-                <p-card class="p-2.5">
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                    quas!
-                  </p>
-                </p-card>
-              }
-            <!-- </ng-template> -->
-          </div>
-        </div>
-
+  <div class="flex root-div">
+    <div class="flex void-zone mb-5 pr-4">
+      <p-card header="Void Zone">
+        <p class="m-0">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+          quas!
+        </p>
       </p-card>
     </div>
-    <div class="flex min-h-200p mb-5">
-      <p-card header="Mid-Zone" class="header-Mid-Zone inner">
-        <!-- <p-card class="p-2.5">
-          <p class="m-0">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-            quas!
-          </p>
-        </p-card> -->
-        <div class="flex flex-column">
-          <div class="flex void-zone col-12 overflow-auto flex-wrap h-30rem">
-            @for (item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
-              <div class="flex container sm:col-3 md:col-3 lg:col-3 xl:col-3">
-                <p-card class="mb-4 mx-4">
+    <div class="flex flex-auto flex-column">
+      <div class="flex min-h-200p mb-5">
+        <p-card header="P1" class="header-P1 inner">
+          <div class="flex flex-column">
+            <div class="flex card-body justify-content-between w-full">
+              <div class="flex inline-size-25rem">
+                <p-card header="Pick or Choose!">
                   <p class="m-0">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
                     quas!
                   </p>
                 </p-card>
               </div>
-            }
-          </div>
-        </div>
-      </p-card>
-    </div>
-    <div class="flex min-h-200p mb-5">
-      <p-card header="P2" class="header-P2 inner">
-        <!-- <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-          quas!
-        </p> -->
-        <div class="flex flex-column">
-          <div class="flex">
-            <!-- <ng-template pTemplate="header"> -->
-              @for (item of [0, 1, 2, 3]; track $index) {
-                <p-card class="p-2.5">
+              <div class="flex inline-size-25rem">
+                <p-card header="Bounty">
                   <p class="m-0">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
                     quas!
                   </p>
                 </p-card>
+              </div>
+            </div>
+            <div class="flex">
+              <!-- <ng-template pTemplate="footer"> -->
+                @for (item of [0, 1, 2, 3]; track $index) {
+                  <p-card class="py-2.5 px-0.5">
+                    <p class="m-0">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                      quas!
+                    </p>
+                  </p-card>
+                }
+              <!-- </ng-template> -->
+            </div>
+          </div>
+
+        </p-card>
+      </div>
+      <div class="flex min-h-200p mb-5">
+        <p-card header="Mid-Zone" class="header-Mid-Zone inner">
+          <!-- <p-card class="p-2.5">
+            <p class="m-0">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+              quas!
+            </p>
+          </p-card> -->
+          <div class="flex flex-column">
+            <div class="flex mid-segment col-12 overflow-auto flex-wrap h-30rem">
+              @for (item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
+                <div class="flex container sm:col-3 md:col-3 lg:col-3 xl:col-3">
+                  <p-card class="mb-4">
+                    <p class="m-0">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                      quas!
+                    </p>
+                  </p-card>
+                </div>
               }
-            <!-- </ng-template> -->
-          </div>
-          <div class="flex card-body justify-content-between w-full">
-            <div class="flex inline-size-25rem">
-              <p-card header="Pick or Choose!">
-                <p class="m-0">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                  quas!
-                </p>
-              </p-card>
-            </div>
-            <div class="flex inline-size-25rem">
-              <p-card header="Bounty">
-                <p class="m-0">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                  quas!
-                </p>
-              </p-card>
             </div>
           </div>
-        </div>
+        </p-card>
+      </div>
+      <div class="flex min-h-200p mb-5">
+        <p-card header="P2" class="header-P2 inner">
+          <!-- <p class="m-0">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+            quas!
+          </p> -->
+          <div class="flex flex-column">
+            <div class="flex">
+              <!-- <ng-template pTemplate="header"> -->
+                @for (item of [0, 1, 2, 3]; track $index) {
+                  <p-card class="py-2.5 px-0.5">
+                    <p class="m-0">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                      quas!
+                    </p>
+                  </p-card>
+                }
+              <!-- </ng-template> -->
+            </div>
+            <div class="flex card-body justify-content-between w-full">
+              <div class="flex inline-size-25rem">
+                <p-card header="Pick or Choose!">
+                  <p class="m-0">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                    quas!
+                  </p>
+                </p-card>
+              </div>
+              <div class="flex inline-size-25rem">
+                <p-card header="Bounty">
+                  <p class="m-0">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                    quas!
+                  </p>
+                </p-card>
+              </div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+    <div class="flex deck mb-5 pl-4">
+      <p-card header="Deck">
+        <p class="m-0">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+          quas!
+        </p>
       </p-card>
     </div>
   </div>

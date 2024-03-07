@@ -9,8 +9,16 @@
 //   }
 // }
 
+::ng-deep {
+  .layout-main-container {
+    padding: 0% !important;
+  }
+}
+
+
 :host {
   &::ng-deep {
+
     .p-card-content {
       padding: 1rem;
     }
@@ -36,20 +44,49 @@
     }
 
     .p-card-body {
-      min-height: 24rem;
+      min-block-size: 24rem;
+    }
+
+    .void-zone, .deck {
+      .p-card-body {
+        block-size: 24rem;
+        overflow: auto;
+      }
+    }
+
+    .outer.root-card {
+      :first-child(.p-card-content) {
+        padding: 0%;
+      }
     }
   }
 
 }
 
-.min-h-200p {
-  // min-height: 20rem;
-}
+// .min-h-200p {
+//   min-height: 20rem;
+// }
 
 .p-2\.5 {
   padding: 2.5rem;
 }
 
+.py-2\.5 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.px-0\.5 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .inline-size-25rem {
   inline-size: 25rem;
+}
+
+.void-zone, .deck {
+  align-self: flex-start;
+  position: sticky;
+  top: 100px;
 }
