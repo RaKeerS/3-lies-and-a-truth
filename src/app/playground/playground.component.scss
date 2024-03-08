@@ -20,7 +20,7 @@
   &::ng-deep {
 
     .p-card-content {
-      padding: 1rem;
+      // padding: 1rem;
     }
 
     .p-card {
@@ -89,4 +89,5 @@
   align-self: flex-start;
   position: sticky;
   top: 100px;
+  min-inline-size: 17rem;
 }
