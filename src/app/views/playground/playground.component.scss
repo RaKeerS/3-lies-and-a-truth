@@ -9,6 +9,25 @@
 //   }
 // }
 
+// @use 'sass:math';
+
+// @function letMeFly($yupperlimit, $xupperlimit, $upperlimit) {
+//   $transformation: '';
+//   // @while(true) {
+//     $ydeg: math.floor(math.random() * $yupperlimit + 1);
+//     $xdeg: math.floor(math.random() * $xupperlimit + 1);
+//     $deg: math.floor(math.random() * $upperlimit + 1);
+//     $transformation: rotateY(#{$ydeg+'deg'}) rotate(#{$deg+'deg'}) rotateX(#{$xdeg+'deg'});
+//     @return $transformation;
+//   // }
+// }
+
+// @keyframes rotateMe {
+//   to {
+//     transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+//   }
+// }
+
 ::ng-deep {
   .layout-main-container {
     padding: 0% !important;
@@ -26,7 +45,7 @@
     .p-card {
       box-shadow: 0 1px 1px 2px rgba(0, 0, 0, 0.2), 0 1px 1px 2px rgba(0, 0, 0, 0.14), 0 1px 1px 2px rgba(0, 0, 0, 0.12);
       // [header='P1'], [header='P2'] {
-      .header-P1, .header-P2 {
+      .header-Opponent, .header-Player {
         .p-card-content {
           display: flex;
         }
@@ -57,6 +76,27 @@
         }
       }
     }
+
+    // .opponent-cards,.void-zone-cards, .player-cards {
+    .player-cards {
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+      &:hover {
+        transform: rotateY(180deg);
+      }
+    }
+    // }
+
+    // .player-cards {
+    //   transition: transform 0.8s;
+    //   transform-style: preserve-3d;
+    //   &:hover {
+    //     // @while (true) {
+    //       // transform: letMeFly(180, 45, 360);
+    //     // }
+    //     animation: 2s rotateMe infinite linear;
+    //   }
+    // }
 
     .void-zone, .deck {
       .p-card-body {
