@@ -70,6 +70,36 @@
         padding: 0%;
       }
     }
+
+    .p-2\.5 {
+      padding: 2.5rem;
+    }
+
+    .py-2\.5 {
+      padding-top: 2.5rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .px-0\.5 {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    .pt-2\.5 {
+      padding-top: 2.5rem;
+    }
+
+    .inline-size-25rem {
+      inline-size: 25rem;
+    }
+
+    .void-zone, .deck {
+      align-self: flex-start;
+      position: sticky;
+      top: 100px;
+      min-inline-size: 17rem;
+    }
+
   }
 
 }
@@ -78,31 +108,31 @@
 //   min-height: 20rem;
 // }
 
-.p-2\.5 {
-  padding: 2.5rem;
-}
+// .p-2\.5 {
+//   padding: 2.5rem;
+// }
 
-.py-2\.5 {
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
-}
+// .py-2\.5 {
+//   padding-top: 2.5rem;
+//   padding-bottom: 2.5rem;
+// }
 
-.px-0\.5 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
+// .px-0\.5 {
+//   padding-left: 0.5rem;
+//   padding-right: 0.5rem;
+// }
 
-.pt-2\.5 {
-  padding-top: 2.5rem;
-}
+// .pt-2\.5 {
+//   padding-top: 2.5rem;
+// }
 
-.inline-size-25rem {
-  inline-size: 25rem;
-}
+// .inline-size-25rem {
+//   inline-size: 25rem;
+// }
 
-.void-zone, .deck {
-  align-self: flex-start;
-  position: sticky;
-  top: 100px;
-  min-inline-size: 17rem;
-}
+// .void-zone, .deck {
+//   align-self: flex-start;
+//   position: sticky;
+//   top: 100px;
+//   min-inline-size: 17rem;
+// }
