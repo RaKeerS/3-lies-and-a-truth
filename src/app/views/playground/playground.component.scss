@@ -47,6 +47,17 @@
       min-block-size: 24rem;
     }
 
+    .header-Mid-Zone {
+      > .p-card {
+        > .p-card-body {
+          > .p-card-content {
+            block-size: 28rem;
+            overflow: auto;
+          }
+        }
+      }
+    }
+
     .void-zone, .deck {
       .p-card-body {
         block-size: 24rem;
