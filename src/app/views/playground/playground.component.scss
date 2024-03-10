@@ -43,6 +43,7 @@
     }
 
     .p-card {
+      // background: #304056;
       box-shadow: 0 1px 1px 2px rgba(0, 0, 0, 0.2), 0 1px 1px 2px rgba(0, 0, 0, 0.14), 0 1px 1px 2px rgba(0, 0, 0, 0.12);
       // [header='P1'], [header='P2'] {
       .header-Opponent, .header-Player {
@@ -102,6 +103,17 @@
       .p-card-body {
         block-size: 24rem;
         overflow: auto;
+        inline-size: 15rem;
+      }
+
+      .deck-container {
+        .p-card {
+          .p-card-body {
+            box-shadow: -5px 0px 0px 5px rgb(41 38 38 / 20%),
+                      -10px 10px 0px 0px rgba(0, 0, 0, 0.14),
+                      -10px 5px 5px 0px rgba(0, 0, 0, 0.12)
+          }
+        }
       }
     }
 
@@ -137,7 +149,7 @@
       align-self: flex-start;
       position: sticky;
       top: 100px;
-      min-inline-size: 17rem;
+      min-inline-size: 15rem;
     }
 
   }

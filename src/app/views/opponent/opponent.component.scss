@@ -1,0 +1,24 @@
+:host {
+  &::ng-deep {
+    .opponent-cards {
+      .p-card-body {
+        padding: 0%;
+        .p-card-content {
+          padding: 0%;
+        }
+      }
+    }
+  }
+}
+
+.inline-size-15rem {
+  inline-size: 15rem;
+}
+
+.block-size-24rem {
+  block-size: 24rem;
+}
+
+.border-radius-6px {
+  border-radius: 6px;
+}
