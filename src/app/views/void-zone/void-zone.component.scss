@@ -1,0 +1,32 @@
+:host {
+  &::ng-deep {
+    .void-container {
+      .p-card {
+        .p-card-body {
+          padding: 0%;
+          overflow: unset;
+            // box-shadow: -5px 0px 0px 5px rgb(41 38 38 / 20%),
+            //             -10px 10px 0px 0px rgba(0, 0, 0, 0.14),
+            //             -10px 5px 5px 0px rgba(0, 0, 0, 0.12);
+            box-shadow: 6px 12px 6px 4px black;
+            // box-shadow: -7px 10px 5px -3px black;
+          .p-card-content {
+            padding: 0%;
+          }
+        }
+      }
+    }
+  }
+}
+
+.inline-size-15rem {
+  inline-size: 15rem;
+}
+
+.block-size-24rem {
+  block-size: 24rem;
+}
+
+.border-radius-6px {
+  border-radius: 6px;
+}
