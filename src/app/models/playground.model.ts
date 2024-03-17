@@ -1,14 +1,28 @@
-import { combineLatest, concat, of } from 'rxjs';
+import { concat, of } from 'rxjs';
 
 export class PlaygroundModel {
 
   private playerOrder: Map<string, number> = new Map<string, number>();
 
-  public playerOneBetAmount: number = 0;
-  public playerTwoBetAmount: number = 0;
+  private _playerOneBetAmount: number = 0;
+  private _playerTwoBetAmount: number = 0;
 
 
   constructor() {
+  }
+
+  get playerOneBetAmount(): number { // Use for data-binding with HTML
+    return this._playerOneBetAmount;
+  }
+  set playerOneBetAmount(value: number) {
+    this._playerOneBetAmount = value;
+  }
+
+  get playerTwoBetAmount(): number { // Use for data-binding with HTML
+    return this.playerTwoBetAmount;
+  }
+  set playerTwoBetAmount(value: number) {
+    this.playerTwoBetAmount = value;
   }
 
   public commenceRound() {
@@ -27,15 +41,19 @@ export class PlaygroundModel {
   }
 
   public placeBets() {
-    return combineLatest([this.playerOneBet(), this.playerTwoBet()]);
+    // This method should return the graphic(Place Bets Modal or Image/Gif) to be shown on screen and not the bet amounts of players.
+
+    return of();
+    // return combineLatest([this.playerOneBet(), this.playerTwoBet()]);
   }
 
-  public playerOneBet() {
-    return of(this.playerOneBetAmount);
-  }
 
-  public playerTwoBet() {
-    return of(this.playerTwoBetAmount);
-  }
+  // public playerOneBet() {
+  //   return of(this.playerOneBetAmount);
+  // }
+
+  // public playerTwoBet() {
+  //   return of(this.playerTwoBetAmount);
+  // }
 
 }
