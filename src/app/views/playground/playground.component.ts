@@ -20,4 +20,11 @@ export class PlaygroundComponent {
   @HostBinding(APP_CONTAINER_FLEX_CLASS)
   protected readonly containerFlex = true;
 
+  // public webSocketModel: WebSocketsModel;
+
+  // constructor() {
+  //   this.webSocketModel = new WebSocketsModel();
+
+  // }
+
 }
