@@ -1,5 +1,6 @@
 import { Component, HostBinding } from '@angular/core';
 
+import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { APP_CONTAINER_FLEX_CLASS } from '../../types/app-types';
 import { DeckComponent } from '../deck/deck.component';
@@ -21,10 +22,10 @@ export class PlaygroundComponent {
   protected readonly containerFlex = true;
 
   // public webSocketModel: WebSocketsModel;
+  public playgroundModel: PlaygroundModel;
 
-  // constructor() {
-  //   this.webSocketModel = new WebSocketsModel();
-
-  // }
+  constructor() {
+    this.playgroundModel = new PlaygroundModel();
+  }
 
 }

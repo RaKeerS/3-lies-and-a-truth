@@ -2,13 +2,21 @@ import { concat, of } from 'rxjs';
 
 export class PlaygroundModel {
 
-  private playerOrder: Map<string, number> = new Map<string, number>();
+  private _gameToss: boolean = false;
+  private _playerOrder: Map<string, number> = new Map<string, number>();
 
   private _playerOneBetAmount: number = 0;
   private _playerTwoBetAmount: number = 0;
 
 
   constructor() {
+  }
+
+  get gameToss(): boolean {
+    return this._gameToss;
+  }
+  set gameToss(value: boolean) {
+    this._gameToss = value;
   }
 
   get playerOneBetAmount(): number { // Use for data-binding with HTML
@@ -19,10 +27,10 @@ export class PlaygroundModel {
   }
 
   get playerTwoBetAmount(): number { // Use for data-binding with HTML
-    return this.playerTwoBetAmount;
+    return this._playerTwoBetAmount;
   }
   set playerTwoBetAmount(value: number) {
-    this.playerTwoBetAmount = value;
+    this._playerTwoBetAmount = value;
   }
 
   public commenceRound() {
@@ -35,9 +43,9 @@ export class PlaygroundModel {
     // Toss between Player and Opponent automatically, just show their names as 'Player 1', 'Player 2' as buttons and highlight borders alternatively for like 5 secs and using randomizer just pick between the two Players.
     // Randomizer logic to get Players's order.
 
-    this.playerOrder.set('Player1', 1);
-    this.playerOrder.set('Player2', 2);
-    return of(this.playerOrder);
+    this._playerOrder.set('Player1', 1);
+    this._playerOrder.set('Player2', 2);
+    return of(this._playerOrder);
   }
 
   public placeBets() {

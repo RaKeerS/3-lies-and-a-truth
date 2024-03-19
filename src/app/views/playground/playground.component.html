@@ -1,133 +1,137 @@
 <p>playground works!</p>
-<p-card header="Title" class="outer root-card">
-  <div class="flex root-div">
-    <div class="flex void-zone mb-5 pr-6">
-      <!-- <p-card header="Void Zone">
-        <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-          quas!
-        </p>
-      </p-card> -->
-
-      <app-void-zone></app-void-zone>
-    </div>
-    <div class="flex flex-auto flex-column">
-      <!-- <div class="flex min-h-200p mb-5">
-        <p-card header="P1" class="header-P1 inner">
-          <div class="flex flex-column">
-            <div class="flex card-body justify-content-between w-full">
-              <div class="flex inline-size-25rem">
-                <p-card header="Pick or Choose!">
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                    quas!
-                  </p>
-                </p-card>
-              </div>
-              <div class="flex inline-size-25rem">
-                <p-card header="Bounty">
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                    quas!
-                  </p>
-                </p-card>
-              </div>
-            </div>
-            <div class="flex">
-                @for (item of [0, 1, 2, 3]; track $index) {
-                  <p-card class="pt-2.5 px-0.5">
-                    <p class="m-0">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                      quas!
-                    </p>
-                  </p-card>
-                }
-            </div>
-          </div>
-
+@if (playgroundModel.gameToss) {
+  <div class="backdrop mid-graphics">
+    <div class="backdrop-body flex justify-content-center">
+      <div class="toss top-50 fixed">
+        <p-card header="Toss!" class="h-10rem flex">
+          <!-- <p class="m-0">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+            quas!
+          </p> -->
+          <p-button label="Player 1" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning"></p-button>
+          <p-button label="Player 2" [outlined]="true" [rounded]="true" [disabled]="false" severity="warning"></p-button>
         </p-card>
-      </div> -->
-      <!-- <div class="flex min-h-200p mb-5">
-        <p-card header="Mid-Zone" class="header-Mid-Zone inner">
-          <div class="flex flex-column">
-            <div class="flex mid-segment col-12 flex-wrap h-30rem">
-              @for (item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
-                <div class="flex container sm:col-3 md:col-3 lg:col-3 xl:col-3">
-                  <p-card class="mb-4">
+      </div>
+    </div>
+  </div>
+
+} @else {
+  <p-card header="Title" class="outer root-card">
+    <div class="flex root-div">
+      <div class="flex void-zone mb-5 pr-6">
+        <!-- <p-card header="Void Zone">
+          <p class="m-0">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+            quas!
+          </p>
+        </p-card> -->
+
+        <app-void-zone></app-void-zone>
+      </div>
+      <div class="flex flex-auto flex-column">
+        <!-- <div class="flex min-h-200p mb-5">
+          <p-card header="P1" class="header-P1 inner">
+            <div class="flex flex-column">
+              <div class="flex card-body justify-content-between w-full">
+                <div class="flex inline-size-25rem">
+                  <p-card header="Pick or Choose!">
                     <p class="m-0">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
                       quas!
                     </p>
                   </p-card>
                 </div>
-              }
-            </div>
-          </div>
-        </p-card>
-      </div> -->
-      <!-- <div class="flex min-h-200p mb-5">
-        <p-card header="P2" class="header-P2 inner">
-          <div class="flex flex-column">
-            <div class="flex">
-                @for (item of [0, 1, 2, 3]; track $index) {
-                  <p-card class="py-2.5 px-0.5">
+                <div class="flex inline-size-25rem">
+                  <p-card header="Bounty">
                     <p class="m-0">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
                       quas!
                     </p>
                   </p-card>
+                </div>
+              </div>
+              <div class="flex">
+                  @for (item of [0, 1, 2, 3]; track $index) {
+                    <p-card class="pt-2.5 px-0.5">
+                      <p class="m-0">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                        quas!
+                      </p>
+                    </p-card>
+                  }
+              </div>
+            </div>
+
+          </p-card>
+        </div> -->
+        <!-- <div class="flex min-h-200p mb-5">
+          <p-card header="Mid-Zone" class="header-Mid-Zone inner">
+            <div class="flex flex-column">
+              <div class="flex mid-segment col-12 flex-wrap h-30rem">
+                @for (item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
+                  <div class="flex container sm:col-3 md:col-3 lg:col-3 xl:col-3">
+                    <p-card class="mb-4">
+                      <p class="m-0">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                        quas!
+                      </p>
+                    </p-card>
+                  </div>
                 }
-            </div>
-            <div class="flex card-body justify-content-between w-full">
-              <div class="flex inline-size-25rem">
-                <p-card header="Pick or Choose!">
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                    quas!
-                  </p>
-                </p-card>
-              </div>
-              <div class="flex inline-size-25rem">
-                <p-card header="Bounty">
-                  <p class="m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                    quas!
-                  </p>
-                </p-card>
               </div>
             </div>
-          </div>
-        </p-card>
-      </div> -->
+          </p-card>
+        </div> -->
+        <!-- <div class="flex min-h-200p mb-5">
+          <p-card header="P2" class="header-P2 inner">
+            <div class="flex flex-column">
+              <div class="flex">
+                  @for (item of [0, 1, 2, 3]; track $index) {
+                    <p-card class="py-2.5 px-0.5">
+                      <p class="m-0">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                        quas!
+                      </p>
+                    </p-card>
+                  }
+              </div>
+              <div class="flex card-body justify-content-between w-full">
+                <div class="flex inline-size-25rem">
+                  <p-card header="Pick or Choose!">
+                    <p class="m-0">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                      quas!
+                    </p>
+                  </p-card>
+                </div>
+                <div class="flex inline-size-25rem">
+                  <p-card header="Bounty">
+                    <p class="m-0">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+                      quas!
+                    </p>
+                  </p-card>
+                </div>
+              </div>
+            </div>
+          </p-card>
+        </div> -->
 
-      <app-opponent></app-opponent>
-      <app-mid-zone></app-mid-zone>
-      <app-player></app-player>
-    </div>
-    <div class="flex deck mb-5 pl-4">
-      <!-- <p-card header="Deck">
-        <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-          quas!
-        </p>
-      </p-card> -->
+        <app-opponent></app-opponent>
+        <app-mid-zone></app-mid-zone>
+        <app-player></app-player>
+      </div>
+      <div class="flex deck mb-5 pl-4">
+        <!-- <p-card header="Deck">
+          <p class="m-0">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+            quas!
+          </p>
+        </p-card> -->
 
-        <app-deck></app-deck>
+          <app-deck></app-deck>
+      </div>
     </div>
-  </div>
-</p-card>
+  </p-card>
+}
 
-<div class="backdrop mid-graphics">
-  <div class="backdrop-body flex justify-content-center">
-    <div class="toss top-30 fixed w-50%">
-      <p-card header="Toss!">
-        <!-- <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-          quas!
-        </p> -->
-        <p-button label="Player 1" [outlined]="true" [disabled]="true" severity="warning"></p-button>
-        <p-button label="Player 2" [outlined]="true" [disabled]="true" severity="warning"></p-button>
-      </p-card>
-    </div>
-  </div>
-</div>

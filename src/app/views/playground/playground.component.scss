@@ -147,6 +147,25 @@
       min-inline-size: 15rem;
     }
 
+    .backdrop {
+      .toss {
+        p-card {
+          .p-card-body {
+            inline-size: 30rem;
+
+            .p-card-content {
+              display: flex;
+              justify-content: space-around;
+            }
+          }
+
+          .p-button {
+            font-weight: 700;
+          }
+        }
+      }
+    }
+
   }
 
 }
