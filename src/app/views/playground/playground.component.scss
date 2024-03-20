@@ -178,12 +178,16 @@
   justify-content: center;
   top: 0px;
   opacity: 1;
-  z-index: auto;
+  z-index: 1001;
   background-color: #030303db;
 }
 
 .top-30 {
   top: 30%;
+}
+
+.top-40 {
+  top: 40%;
 }
 
 .w-50\% {

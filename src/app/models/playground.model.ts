@@ -1,8 +1,8 @@
-import { concat, of } from 'rxjs';
+import { concat, delay, map, of, tap } from 'rxjs';
 
 export class PlaygroundModel {
 
-  private _gameToss: boolean = false;
+  private _gameToss: boolean = true;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
   private _playerOneBetAmount: number = 0;
@@ -10,6 +10,7 @@ export class PlaygroundModel {
 
 
   constructor() {
+    this.commenceRound().subscribe();
   }
 
   get gameToss(): boolean {
@@ -45,7 +46,24 @@ export class PlaygroundModel {
 
     this._playerOrder.set('Player1', 1);
     this._playerOrder.set('Player2', 2);
-    return of(this._playerOrder);
+
+    this.gameToss = true;
+    return of(this.gameToss).pipe(
+    delay(5000),
+    tap(() => this.gameToss = false),
+    map(() => this._playerOrder));
+
+    // const abc = interval(1000);
+
+    // this.gameToss = true;
+    // return abc.pipe(
+    //   take(5),
+    //                 tap(() => this.counter++),
+    // delay(5000),
+    // tap(() => this.gameToss = false),
+    // map(() => this._playerOrder));
+
+    // return of(this._playerOrder);
   }
 
   public placeBets() {
