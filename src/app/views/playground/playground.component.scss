@@ -152,10 +152,16 @@
         p-card {
           .p-card-body {
             inline-size: 30rem;
+            min-block-size: 10rem;
 
             .p-card-content {
+              padding: 0%;
+            }
+
+            .toss-players {
               display: flex;
               justify-content: space-around;
+              padding: 1rem 0;
             }
           }
 
@@ -192,6 +198,14 @@
 
 .w-50\% {
   width: 50%;
+}
+
+.button-highlight {
+  background: rgba(255, 224, 130, 0.16);
+  color: #ffe082;
+  border-radius: 2rem;
+  border: 1px solid;
+  box-shadow: 0 0 0 1px #ffecb3;
 }
 
 // .min-h-200p {

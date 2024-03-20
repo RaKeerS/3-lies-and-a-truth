@@ -4,18 +4,31 @@
   <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center">
       <div class="toss top-40 fixed">
-        <p-card header="Toss!" class="h-10rem flex">
+        <p-card header="Toss!" class="h-15rem flex flex-column p-3">
           <!-- <p class="m-0">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
             quas!
           </p> -->
-          <p-button label="Player 1" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning"></p-button>
-          <p-button label="Player 2" [outlined]="true" [rounded]="true" [disabled]="false" severity="warning"></p-button>
+          <div class="toss-players">
+            <p-button label="Player 1" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': playgroundModel.switch}"></p-button>
+            <p-button label="Player 2" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !playgroundModel.switch}"></p-button>
+          </div>
+          @if (playgroundModel.playerOrder.size > 0) {
+            <!-- {{ playgroundModel.playerOrder.size }} -->
+            <div class="toss-result flex p-3 justify-content-center">
+              <h3>
+                @if (playgroundModel.playerOrder.get('Player1') === 1) {
+                  Player 1 Wins the Toss! Begins first!!
+                } @else {
+                  Player 2 Wins the Toss! Begins first!!
+                }
+              </h3>
+            </div>
+          }
         </p-card>
       </div>
     </div>
   </div>
-
 }
 <p-card header="Title" class="outer root-card">
   <div class="flex root-div">
