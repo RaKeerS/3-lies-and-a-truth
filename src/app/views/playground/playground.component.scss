@@ -147,28 +147,55 @@
       min-inline-size: 15rem;
     }
 
-    .backdrop {
-      .toss {
-        p-card {
-          .p-card-body {
-            inline-size: 30rem;
-            min-block-size: 10rem;
+    // .backdrop {
+    //   .toss {
+    //     p-card {
+    //       .p-card-body {
+    //         inline-size: 30rem;
+    //         min-block-size: 10rem;
 
-            .p-card-content {
-              padding: 0%;
-            }
+    //         .p-card-content {
+    //           padding: 0%;
+    //         }
 
-            .toss-players {
-              display: flex;
-              justify-content: space-around;
-              padding: 1rem 0;
-            }
-          }
+    //         .toss-players {
+    //           display: flex;
+    //           justify-content: space-around;
+    //           padding: 1rem 0;
+    //         }
+    //       }
 
-          .p-button {
-            font-weight: 700;
-          }
+    //       .p-button {
+    //         font-weight: 700;
+    //       }
+    //     }
+    //   }
+    // }
+
+    p-dialog.dialog-toss {
+      .p-dialog {
+        inline-size: 50rem !important;
+      }
+
+      .p-dialog-content {
+        block-size: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        .toss-players {
+          display: flex;
+          justify-content: space-around;
+          align-content: center;
+          flex-wrap: wrap;
+          height: 10rem;
         }
+      }
+    }
+
+    .player-buttons {
+      inline-size: 12rem;
+      .p-button {
+        inline-size: 12rem;
       }
     }
 

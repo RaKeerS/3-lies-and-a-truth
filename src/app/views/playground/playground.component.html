@@ -1,20 +1,46 @@
 <p>playground works!</p>
 {{ playgroundModel.gameToss }}
-@if (playgroundModel.gameToss) {
-  <div class="backdrop mid-graphics">
+<!-- @if (playgroundModel.gameToss) { -->
+
+  <div class="card flex justify-content-center">
+    <!-- <p-button (click)="showDialog()" icon="pi pi-external-link" label="Show"></p-button> -->
+    <p-dialog class="dialog-toss" header="Header" [visible]="playgroundModel.gameToss" [closable]="false" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+        <ng-template pTemplate="header">
+            <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
+                <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> -->
+                <span class="font-bold white-space-nowrap">Toss!</span>
+            </div>
+        </ng-template>
+        <div class="toss-players">
+          <p-button label="Player 1" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': playgroundModel.switch, 'player-buttons': true }"></p-button>
+          <p-button label="Player 2" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !playgroundModel.switch, 'player-buttons': true }"></p-button>
+        </div>
+        @if (playgroundModel.playerOrder.size > 0) {
+          <div class="toss-result flex p-3 justify-content-center">
+            <h3>
+              @if (playgroundModel.playerOrder.get('Player1') === 1) {
+                Player 1 Wins the Toss! Begins first!!
+              } @else {
+                Player 2 Wins the Toss! Begins first!!
+              }
+            </h3>
+          </div>
+        }
+        <!-- <ng-template pTemplate="footer">
+            <p-button icon="pi pi-check" (click)="playgroundModel.gameToss = false" label="Ok" pAutoFocus [autofocus]="true"></p-button>
+        </ng-template> -->
+    </p-dialog>
+    </div>
+
+  <!-- <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center">
       <div class="toss top-40 fixed">
         <p-card header="Toss!" class="h-15rem flex flex-column p-3">
-          <!-- <p class="m-0">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-            quas!
-          </p> -->
           <div class="toss-players">
             <p-button label="Player 1" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': playgroundModel.switch}"></p-button>
             <p-button label="Player 2" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !playgroundModel.switch}"></p-button>
           </div>
           @if (playgroundModel.playerOrder.size > 0) {
-            <!-- {{ playgroundModel.playerOrder.size }} -->
             <div class="toss-result flex p-3 justify-content-center">
               <h3>
                 @if (playgroundModel.playerOrder.get('Player1') === 1) {
@@ -28,8 +54,9 @@
         </p-card>
       </div>
     </div>
-  </div>
-}
+  </div> -->
+<!-- } -->
+
 <p-card header="Title" class="outer root-card">
   <div class="flex root-div">
     <div class="flex void-zone mb-5 pr-6">
@@ -142,7 +169,6 @@
           quas!
         </p>
       </p-card> -->
-
         <app-deck></app-deck>
     </div>
   </div>
