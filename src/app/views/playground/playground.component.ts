@@ -1,4 +1,5 @@
 import { Component, HostBinding } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
@@ -21,11 +22,14 @@ export class PlaygroundComponent {
   @HostBinding(APP_CONTAINER_FLEX_CLASS)
   protected readonly containerFlex = true;
 
+  private _playgroundMetadata: any;
+
   // public webSocketModel: WebSocketsModel;
   public playgroundModel: PlaygroundModel;
 
-  constructor() {
+  constructor(private router: Router) {
     this.playgroundModel = new PlaygroundModel();
+    this._playgroundMetadata = this.router.getCurrentNavigation()?.extras.state?.['playgroundMetadata'];
   }
 
 }

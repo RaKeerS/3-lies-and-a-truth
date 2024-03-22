@@ -341,6 +341,40 @@
             <div class="col-12">
               <div class="card mb-0">
                 app.component works!!
+
+                <div class="card flex justify-content-center">
+                  <p-button (click)="showDialog()" label="Show"></p-button>
+                  <p-dialog class="dialog-pick-playground" header="Header" [visible]="visible" [closable]="false" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+                      <ng-template pTemplate="header">
+                          <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
+                              <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> -->
+                              <span class="font-bold white-space-nowrap">Welcome Player!</span>
+                          </div>
+                      </ng-template>
+                      <div class="p-fluid p-grid">
+                        <div class="p-field p-col-12 p-3">
+                          <span class="p-float-label">
+                            <input type="text" id="inputtext" [required]="true" pInputText [(ngModel)]="playerName" />
+                            <label for="inputtext">Enter Your Name</label>
+                          </span>
+                        </div>
+                        <p-divider align="center" type="solid"><b> Create or Join a Playground </b></p-divider>
+                        <div class="p-field p-col-12 p-3 flex w-full">
+                          <span class="p-float-label w-full mr-3">
+                            <p-inputNumber inputId="integeronly" [(ngModel)]="playgroundId"></p-inputNumber>
+                            <label for="inputtext"> Enter Playground Id </label>
+                          </span>
+                          <span class="w-50">
+                            <p-button (click)="joinExistingPlayground()" severity="info" label="Join"></p-button>
+                          </span>
+                        </div>
+                        <div class="p-field p-col-12 p-3">
+                          <p-button (click)="createNewPlayground()" severity="info" label="Create New"></p-button>
+                        </div>
+                      </div>
+                  </p-dialog>
+                  </div>
+
                 <router-outlet />
               </div>
             </div>

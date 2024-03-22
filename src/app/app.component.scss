@@ -1,3 +1,13 @@
+:host {
+  &::ng-deep {
+    p-dialog.dialog-pick-playground {
+      .p-dialog {
+        inline-size: 25rem !important;
+      }
+    }
+  }
+}
+
 main {
   width: 100%;
   min-height: 100%;
