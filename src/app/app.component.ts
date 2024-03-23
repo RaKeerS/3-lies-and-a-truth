@@ -28,7 +28,9 @@ export class AppComponent {
   }
 
   joinExistingPlayground(): void {
-
+    if (this.playgroundId !== undefined) {
+      this._playgroundService.joinExistingPlayground(this.playgroundId, this.playerName);
+    }
   }
 
   createNewPlayground(): void {
