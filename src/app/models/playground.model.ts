@@ -1,5 +1,7 @@
 import { concat, delay, fromEvent, interval, of, take, takeUntil, tap } from 'rxjs';
 
+import { PlaygroundService } from '../services/playground.service';
+
 export class PlaygroundModel {
 
   private _gameToss: boolean = true;
@@ -10,7 +12,7 @@ export class PlaygroundModel {
   private _playerTwoBetAmount: number = 0;
 
 
-  constructor() {
+  constructor(private _playgroundService: PlaygroundService) {
     this.commenceRound().subscribe();
   }
 
@@ -86,6 +88,7 @@ export class PlaygroundModel {
     const timer$ = timer.pipe(
 take(10),
 tap(() => this._switch = !this._switch));
+// tap(() => this._playgroundService.sendWebRtcMessages('Ohayo! Sekai!! Good Morning World!!!')));
 
   const gameOrder$ = of(this.gameToss).pipe(
     tap(() => setPlayerOrder(getRandomOrder())),

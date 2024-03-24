@@ -26,13 +26,16 @@ export class WebRtcModel {
   // private peerConnection: any;
   private _isReady: boolean = false;
 
-  private _localConnection: any;
-  private _remoteConnection: any;
+  private _localConnection?: RTCPeerConnection;
+  private _remoteConnection?: RTCPeerConnection;
   private _chatChannel: any;
   private _sendChannel: any = null;
   private _receiveChannel: any;
 
   playerName: string = '';
+
+  cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
+  con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
 
   constructor() {
     // NOTE - This is where it begins!
@@ -97,9 +100,8 @@ export class WebRtcModel {
             this.hangup();
           }
           break;
-        case 'message':
-
-          break;
+        // case 'message':
+        //   break;
         default:
           console.log('unhandled', e);
           break;
@@ -126,11 +128,14 @@ export class WebRtcModel {
   };
 
   createPeerConnection() {
-    this.peerConnection = new RTCPeerConnection();
+    this._localConnection = new RTCPeerConnection(this.cfg);
+    this._remoteConnection = new RTCPeerConnection(this.cfg);
 
-    if (this.createPlayground) {
-      this._sendChannel = this.peerConnection.createDataChannel('sendDataChannel');
-    }
+    this.peerConnection.oniceconnectionstatechange = (e: any) => console.log(this.peerConnection.iceConnectionState);
+
+    // if (this.createPlayground) {
+    //   this._sendChannel = this.peerConnection.createDataChannel('sendDataChannel');
+    // }
 
     this.peerConnection.onicecandidate = (e: any) => {
       const message: any = {
@@ -148,8 +153,31 @@ export class WebRtcModel {
     // localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
   }
 
+  async createDataChannel() {
+    // if (!!this._createPlayground) {
+      this._chatChannel = this.peerConnection.createDataChannel('chatChannel');
+      this.handleMessagesOnChatChannel(this._chatChannel);
+    // }
+  }
+
+  async handleDataChannel() {
+    // if (!this._createPlayground) {
+    this.peerConnection.ondatachannel = (e: any) => {
+      if (e.channel.label === 'chatChannel') {
+        console.log('chatChannel Received: ', e);
+        this._chatChannel = e.channel;
+        this.handleMessagesOnChatChannel(this._chatChannel);
+        this.sendMessageOnChatChannel(e.channel);
+      }
+    }
+    // }
+  }
+
   async makeCall() {
     await this.createPeerConnection();
+    await this.createDataChannel();
+
+    await this.handleDataChannel();
 
     const offer = await this.peerConnection.createOffer();
     this._signaling.postMessage({type: 'offer', sdp: offer.sdp});
@@ -162,6 +190,7 @@ export class WebRtcModel {
       return;
     }
     await this.createPeerConnection();
+    await this.handleDataChannel();
     await this.peerConnection.setRemoteDescription(offer);
 
     const answer = await this.peerConnection.createAnswer();
@@ -183,32 +212,57 @@ export class WebRtcModel {
       return;
     }
     if (!candidate.candidate) {
-      await this.peerConnection.addIceCandidate(null);
+      // await this.peerConnection.addIceCandidate(null);
     } else {
       await this.peerConnection.addIceCandidate(candidate);
     }
   }
 
-  // async sendMessageOnChatChannel(e: any) {
-  //   this._chatChannel.onopen = e => {
-  //       console.log('chat channel is open', e);
-  //   }
-  //   this._chatChannel.onmessage = (e: any) => {
-  //       // chat.innerHTML = chat.innerHTML + "<pre>" + e.data + "</pre>"
-  //       console.log(``)
-  //   }
-  //   this._chatChannel.onclose = () => {
-  //       console.log('chat channel closed');
-  //   }
-  // }
+  async handleMessagesOnChatChannel(event: any) {
+    // this._chatChannel.onopen = this.onSendChannelStateChange;
+    this._chatChannel.onopen = (e: any) => {
+      const readyState = this._chatChannel.readyState;
+      console.log(`Receive channel state is: ${readyState}`);
+      console.log('Chat channel is now open!', e);
+    }
+    this._chatChannel.onmessage = (e: any) => {
+        // chat.innerHTML = chat.innerHTML + "<pre>" + e.data + "</pre>"
+        console.log(`${this.playerName} says: `, e.data)
+    }
+    this._chatChannel.onclose = () => {
+        console.log('Chat channel closed...!');
+    }
+  }
 
-  public initiateWebRtc(): void {
+  onSendChannelStateChange() {
+    const readyState = this._chatChannel.readyState;
+    console.log('Send channel state is: ' + readyState);
+    // if (readyState === 'open') {
+    //   dataChannelSend.disabled = false;
+    //   dataChannelSend.focus();
+    //   sendButton.disabled = false;
+    //   closeButton.disabled = false;
+    // } else {
+    //   dataChannelSend.disabled = true;
+    //   sendButton.disabled = true;
+    //   closeButton.disabled = true;
+    // }
+  }
+
+  public initiateWebRtc(playerName: string): void {
     this._isReady = true;
+    this._createPlayground = playerName === 'Player 1';
+    this.playerName = playerName;
+
     this._signaling.postMessage({type: 'ready'});
   }
 
   public terminateWebRtc(): void {
     this._signaling.postMessage({type: 'bye'});
+  }
+
+  public sendMessageOnChatChannel(message: string): void {
+    this._chatChannel.send(message);
   }
 
 }

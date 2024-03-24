@@ -28,7 +28,7 @@ export class AppComponent implements OnDestroy {
   }
 
   showDialog(): void {
-    this.visible = true;
+    this.visible = !this.visible;
   }
 
   joinExistingPlayground(): void {
@@ -40,6 +40,7 @@ export class AppComponent implements OnDestroy {
   createNewPlayground(): void {
     if (this.playerName.trim().length > 0) {
       this._playgroundService.createNewPlayground(this.playerName);
+      this.showDialog();
     } else {
       // NOTE - Show Toaster
     }

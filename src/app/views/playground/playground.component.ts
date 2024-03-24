@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostBinding, Injector, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -28,12 +28,17 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   private readonly _playgroundSubject: BehaviorSubject<PlayGroundMetadata>;
   private _subscription?: Subscription;
 
+  private _router: Router
+  private _playgroundService: PlaygroundService;
+
   // public webSocketModel: WebSocketsModel;
   public playgroundModel: PlaygroundModel;
 
-  constructor(private router: Router) {
-    this.playgroundModel = new PlaygroundModel();
-    this._playgroundId = this.router.getCurrentNavigation()?.extras.state?.['playgroundId'];
+  constructor(injector: Injector) {
+    this._router = injector.get(Router);
+    this._playgroundService = injector.get(PlaygroundService);
+    this.playgroundModel = new PlaygroundModel(this._playgroundService);
+    this._playgroundId = this._router.getCurrentNavigation()?.extras.state?.['playgroundId'];
     this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
   }
 
@@ -45,6 +50,10 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     this._subscription = this._playgroundSubject.subscribe(value => console.log('Playground Component: ', value));
   }
 
-
+  sendMessage(): void {
+    this._playgroundService.webRtcModel.playerName === 'Player 1' ?
+    this._playgroundService.webRtcModel.sendMessageOnChatChannel('Ohayo, Sekai!') :
+    this._playgroundService.webRtcModel.sendMessageOnChatChannel('Good Morning World!!');
+  }
 
 }

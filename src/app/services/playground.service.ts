@@ -36,6 +36,10 @@ export class PlaygroundService {
     return this._player.asObservable();
   }
 
+  get webRtcModel(): WebRtcModel {
+    return this._webRtc;
+  }
+
   public sendMessageToOpponent(message: any): void {
     this._opponent.next(message);
   }
@@ -76,14 +80,23 @@ export class PlaygroundService {
   }
 
   initiateWebRtcConnection(playerName: string): void {
-    this._webRtc.createPlayground = true;
-    this._webRtc.playerName = playerName;
-    this._webRtc.initiateWebRtc();
+    // this._webRtc.createPlayground = true;
+    // this._webRtc.playerName = playerName;
+    // this._webRtc.initiateWebRtc(playerName);
+
+    this.webRtcModel.initiateWebRtc(playerName);
   }
 
   terminateWebRtcConnection(): void {
-    this._webRtc.terminateWebRtc();
+    // this._webRtc.terminateWebRtc();
+    this.webRtcModel.terminateWebRtc();
   }
+
+  sendWebRtcMessages(message: string): void {
+    this.webRtcModel.sendMessageOnChatChannel(message);
+  }
+
+
 
   private createPlayground(playerName: string): void {
     do {
