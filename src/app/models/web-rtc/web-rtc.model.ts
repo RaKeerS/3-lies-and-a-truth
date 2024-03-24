@@ -1,26 +1,287 @@
+// export class WebRtcModel {
+// import * as wrtc from './../../../../node_modules/electron-webrtc/browser';
+// const wrtc = require('./../../../../node_modules/electron-webrtc/index')
+import SimplePeer from 'simple-peer';
+
+
+
+//   // // Set up an asynchronous communication channel that will be
+//   // // used during the peer connection setup
+//   // private _signalingChannel: any;
+//   // private readonly _configuration = { 'iceServers' : [{ 'urls': 'stun:stun.l.google.com:19302' }] };
+
+//   // // PC1
+//   // async makeCall()  {
+//   //   const peerConnection = new RTCPeerConnection(this._configuration);
+//   //   this._signalingChannel.addEventListener('message', async message => {
+//   //       if (message.answer) {
+//   //           const remoteDesc = new RTCSessionDescription(message.answer);
+//   //           await peerConnection.setRemoteDescription(remoteDesc);
+//   //       }
+//   //   });
+//   //   const offer = await peerConnection.createOffer();
+//   //   await peerConnection.setLocalDescription(offer);
+//   //   this._signalingChannel.send({'offer': offer});
+//   // }
+
+//   private _createPlayground?: boolean;
+
+//   private _signaling: BroadcastChannel;
+//   // private _receiver: BroadcastChannel;
+//   // private peerConnection: any;
+//   private _isReady: boolean = false;
+
+//   private _localConnection?: RTCPeerConnection;
+//   private _remoteConnection?: RTCPeerConnection;
+//   private _chatChannel: any;
+//   private _sendChannel: any = null;
+//   private _receiveChannel: any;
+
+//   playerName: string = '';
+
+//   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
+//   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
+
+//   constructor() {
+//     // NOTE - This is where it begins!
+//     this._signaling = new BroadcastChannel('webrtc');
+//     // this._receiver = new BroadcastChannel('webrtc');
+//     this.handleSignalingEvents();
+//   }
+
+//   get createPlayground(): boolean {
+//     return !!this._createPlayground;
+//   }
+//   set createPlayground(value: boolean) {
+//     this._createPlayground = value;
+//   }
+
+//   get peerConnection() {
+//     return this.createPlayground ? this._localConnection : this._remoteConnection;
+//   }
+//   set peerConnection(value: any) {
+//     // this.peerConnection = value;
+//     this.createPlayground ? this._localConnection = value : this._remoteConnection = value;
+//   }
+
+//   get isReady(): boolean {
+//     return this._isReady;
+//   }
+//   set isReady(value: boolean) {
+//     this._isReady = value;
+//   }
+
+//   // private peerConnection(peer: any) {
+//   //   return (peer === this._localConnection) ? this._localConnection : this._remoteConnection;
+//   // }
+
+//   private handleSignalingEvents(): void {
+//     this._signaling.onmessage = e => {
+//     // this._receiver.onmessage = e => {
+//       if (!this._isReady) {
+//         console.log('yeah not ready yet');
+//         return;
+//       }
+//       switch (e.data.type) {
+//         case 'offer':
+//           this.handleOffer(e.data);
+//           break;
+//         case 'answer':
+//           this.handleAnswer(e.data);
+//           break;
+//         case 'candidate':
+//           this.handleCandidate(e.data);
+//           break;
+//         case 'ready':
+//           // A second tab joined. This tab will initiate a call unless in a call already.
+//           if (this.peerConnection) {
+//             console.log('already in call, ignoring');
+//             return;
+//           }
+//           this.makeCall();
+//           break;
+//         case 'bye':
+//           if (this.peerConnection) {
+//             this.hangup();
+//           }
+//           break;
+//         // case 'message':
+//         //   break;
+//         default:
+//           console.log('unhandled', e);
+//           break;
+//       }
+//     };
+
+//     this._signaling.onmessageerror = err => {
+//       console.log('err: ', err);
+//     }
+//   }
+
+//   async hangup() {
+//     if (this.peerConnection) {
+//       this.peerConnection.close();
+//       this.peerConnection = null;
+//     }
+
+//     this._isReady = false;
+
+//     // this._localStream.getTracks().forEach((track: any) => track.stop());
+//     // this._localStream = null;
+//     // startButton.disabled = false;
+//     // hangupButton.disabled = true;
+//   };
+
+//   createPeerConnection() {
+//     this._localConnection = new RTCPeerConnection(this.cfg);
+//     this._remoteConnection = new RTCPeerConnection(this.cfg);
+
+//     this.peerConnection.oniceconnectionstatechange = (e: any) => console.log(this.peerConnection.iceConnectionState);
+
+//     // if (this.createPlayground) {
+//     //   this._sendChannel = this.peerConnection.createDataChannel('sendDataChannel');
+//     // }
+
+//     this.peerConnection.onicecandidate = (e: any) => {
+//       const message: any = {
+//         type: 'candidate',
+//         candidate: null,
+//       };
+//       if (e.candidate) {
+//         message.candidate = e.candidate.candidate;
+//         message.sdpMid = e.candidate.sdpMid;
+//         message.sdpMLineIndex = e.candidate.sdpMLineIndex;
+//       }
+//       this._signaling.postMessage(message);
+//     };
+//     // pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
+//     // localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+//   }
+
+//   async createDataChannel() {
+//     // if (!!this._createPlayground) {
+//       this._chatChannel = this.peerConnection.createDataChannel('chatChannel');
+//       this.handleMessagesOnChatChannel(this._chatChannel);
+//     // }
+//   }
+
+//   async handleDataChannel() {
+//     // if (!this._createPlayground) {
+//     this.peerConnection.ondatachannel = (e: any) => {
+//       if (e.channel.label === 'chatChannel') {
+//         console.log('chatChannel Received: ', e);
+//         this._chatChannel = e.channel;
+//         this.handleMessagesOnChatChannel(this._chatChannel);
+//         this.sendMessageOnChatChannel(e.channel);
+//       }
+//     }
+//     // }
+//   }
+
+//   async makeCall() {
+//     await this.createPeerConnection();
+//     await this.createDataChannel();
+
+//     await this.handleDataChannel();
+
+//     const offer = await this.peerConnection.createOffer();
+//     this._signaling.postMessage({type: 'offer', sdp: offer.sdp});
+//     await this.peerConnection.setLocalDescription(offer);
+//   }
+
+//   async handleOffer(offer: any) {
+//     if (this.peerConnection) {
+//       console.error('existing peer connection');
+//       return;
+//     }
+//     await this.createPeerConnection();
+//     await this.handleDataChannel();
+//     await this.peerConnection.setRemoteDescription(offer);
+
+//     const answer = await this.peerConnection.createAnswer();
+//     this._signaling.postMessage({type: 'answer', sdp: answer.sdp});
+//     await this.peerConnection.setLocalDescription(answer);
+//   }
+
+//   async handleAnswer(answer: any) {
+//     if (!this.peerConnection) {
+//       console.error('no peer connection');
+//       return;
+//     }
+//     await this.peerConnection.setRemoteDescription(answer);
+//   }
+
+//   async handleCandidate(candidate: any) {
+//     if (!this.peerConnection) {
+//       console.error('no peer connection');
+//       return;
+//     }
+//     if (!candidate.candidate) {
+//       // await this.peerConnection.addIceCandidate(null);
+//     } else {
+//       await this.peerConnection.addIceCandidate(candidate);
+//     }
+//   }
+
+//   async handleMessagesOnChatChannel(event: any) {
+//     // this._chatChannel.onopen = this.onSendChannelStateChange;
+//     this._chatChannel.onopen = (e: any) => {
+//       const readyState = this._chatChannel.readyState;
+//       console.log(`Receive channel state is: ${readyState}`);
+//       console.log('Chat channel is now open!', e);
+//     }
+//     this._chatChannel.onmessage = (e: any) => {
+//         // chat.innerHTML = chat.innerHTML + "<pre>" + e.data + "</pre>"
+//         console.log(`${this.playerName} says: `, e.data)
+//     }
+//     this._chatChannel.onclose = () => {
+//         console.log('Chat channel closed...!');
+//     }
+//   }
+
+//   onSendChannelStateChange() {
+//     const readyState = this._chatChannel.readyState;
+//     console.log('Send channel state is: ' + readyState);
+//     // if (readyState === 'open') {
+//     //   dataChannelSend.disabled = false;
+//     //   dataChannelSend.focus();
+//     //   sendButton.disabled = false;
+//     //   closeButton.disabled = false;
+//     // } else {
+//     //   dataChannelSend.disabled = true;
+//     //   sendButton.disabled = true;
+//     //   closeButton.disabled = true;
+//     // }
+//   }
+
+//   public initiateWebRtc(playerName: string): void {
+//     this._isReady = true;
+//     this._createPlayground = playerName === 'Player 1';
+//     this.playerName = playerName;
+
+//     this._signaling.postMessage({type: 'ready'});
+//   }
+
+//   public terminateWebRtc(): void {
+//     this._signaling.postMessage({type: 'bye'});
+//   }
+
+//   public sendMessageOnChatChannel(message: string): void {
+//     this._chatChannel.send(message);
+//   }
+
+// }
+
+// var SimplePeer = require('simple-peer')
+
+// const SimplePeer = require('../../../../node_modules/simple-peer/simplepeer.min.js');
+// const wrtc = require('../../../../node_modules/electron-webrtc/index.js')({ headless: true });
+
+// let Quassel = window['require']('electron-webrtc');
+
 export class WebRtcModel {
 
-  // // Set up an asynchronous communication channel that will be
-  // // used during the peer connection setup
-  // private _signalingChannel: any;
-  // private readonly _configuration = { 'iceServers' : [{ 'urls': 'stun:stun.l.google.com:19302' }] };
-
-  // // PC1
-  // async makeCall()  {
-  //   const peerConnection = new RTCPeerConnection(this._configuration);
-  //   this._signalingChannel.addEventListener('message', async message => {
-  //       if (message.answer) {
-  //           const remoteDesc = new RTCSessionDescription(message.answer);
-  //           await peerConnection.setRemoteDescription(remoteDesc);
-  //       }
-  //   });
-  //   const offer = await peerConnection.createOffer();
-  //   await peerConnection.setLocalDescription(offer);
-  //   this._signalingChannel.send({'offer': offer});
-  // }
-
   private _createPlayground?: boolean;
-
   private _signaling: BroadcastChannel;
   // private _receiver: BroadcastChannel;
   // private peerConnection: any;
@@ -41,7 +302,7 @@ export class WebRtcModel {
     // NOTE - This is where it begins!
     this._signaling = new BroadcastChannel('webrtc');
     // this._receiver = new BroadcastChannel('webrtc');
-    this.handleSignalingEvents();
+    // this.handleSignalingEvents();
   }
 
   get createPlayground(): boolean {
@@ -70,183 +331,34 @@ export class WebRtcModel {
   //   return (peer === this._localConnection) ? this._localConnection : this._remoteConnection;
   // }
 
-  private handleSignalingEvents(): void {
-    this._signaling.onmessage = e => {
-    // this._receiver.onmessage = e => {
-      if (!this._isReady) {
-        console.log('yeah not ready yet');
-        return;
-      }
-      switch (e.data.type) {
-        case 'offer':
-          this.handleOffer(e.data);
-          break;
-        case 'answer':
-          this.handleAnswer(e.data);
-          break;
-        case 'candidate':
-          this.handleCandidate(e.data);
-          break;
-        case 'ready':
-          // A second tab joined. This tab will initiate a call unless in a call already.
-          if (this.peerConnection) {
-            console.log('already in call, ignoring');
-            return;
-          }
-          this.makeCall();
-          break;
-        case 'bye':
-          if (this.peerConnection) {
-            this.hangup();
-          }
-          break;
-        // case 'message':
-        //   break;
-        default:
-          console.log('unhandled', e);
-          break;
-      }
-    };
+  public handleSignalingEvents(): void {
+    // this.peerConnection = new SimplePeer({
+    //   initiator: this.createPlayground,
+    //   // wrtc: wrtc,
+    //   trickle: false
+    // });
+    // console.log('Simple Peer: ', this.peerConnection);
 
-    this._signaling.onmessageerror = err => {
-      console.log('err: ', err);
-    }
-  }
+    this.peerConnection.on('signal', (data: any) => {
+      console.log('SIGNAL: ', JSON.stringify(data));
+    });
 
-  async hangup() {
-    if (this.peerConnection) {
-      this.peerConnection.close();
-      this.peerConnection = null;
-    }
+    this.peerConnection.on('error', (err: any) => {
+      console.error('ERROR: ', err);
+    });
 
-    this._isReady = false;
+    this.peerConnection.on('close', () => {
+      console.log('CLOSED!');
+    });
 
-    // this._localStream.getTracks().forEach((track: any) => track.stop());
-    // this._localStream = null;
-    // startButton.disabled = false;
-    // hangupButton.disabled = true;
-  };
+    this.peerConnection.on('connect', () => {
+      console.log('CONNECTED!');
+      this.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)}`);
+    });
 
-  createPeerConnection() {
-    this._localConnection = new RTCPeerConnection(this.cfg);
-    this._remoteConnection = new RTCPeerConnection(this.cfg);
-
-    this.peerConnection.oniceconnectionstatechange = (e: any) => console.log(this.peerConnection.iceConnectionState);
-
-    // if (this.createPlayground) {
-    //   this._sendChannel = this.peerConnection.createDataChannel('sendDataChannel');
-    // }
-
-    this.peerConnection.onicecandidate = (e: any) => {
-      const message: any = {
-        type: 'candidate',
-        candidate: null,
-      };
-      if (e.candidate) {
-        message.candidate = e.candidate.candidate;
-        message.sdpMid = e.candidate.sdpMid;
-        message.sdpMLineIndex = e.candidate.sdpMLineIndex;
-      }
-      this._signaling.postMessage(message);
-    };
-    // pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
-    // localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-  }
-
-  async createDataChannel() {
-    // if (!!this._createPlayground) {
-      this._chatChannel = this.peerConnection.createDataChannel('chatChannel');
-      this.handleMessagesOnChatChannel(this._chatChannel);
-    // }
-  }
-
-  async handleDataChannel() {
-    // if (!this._createPlayground) {
-    this.peerConnection.ondatachannel = (e: any) => {
-      if (e.channel.label === 'chatChannel') {
-        console.log('chatChannel Received: ', e);
-        this._chatChannel = e.channel;
-        this.handleMessagesOnChatChannel(this._chatChannel);
-        this.sendMessageOnChatChannel(e.channel);
-      }
-    }
-    // }
-  }
-
-  async makeCall() {
-    await this.createPeerConnection();
-    await this.createDataChannel();
-
-    await this.handleDataChannel();
-
-    const offer = await this.peerConnection.createOffer();
-    this._signaling.postMessage({type: 'offer', sdp: offer.sdp});
-    await this.peerConnection.setLocalDescription(offer);
-  }
-
-  async handleOffer(offer: any) {
-    if (this.peerConnection) {
-      console.error('existing peer connection');
-      return;
-    }
-    await this.createPeerConnection();
-    await this.handleDataChannel();
-    await this.peerConnection.setRemoteDescription(offer);
-
-    const answer = await this.peerConnection.createAnswer();
-    this._signaling.postMessage({type: 'answer', sdp: answer.sdp});
-    await this.peerConnection.setLocalDescription(answer);
-  }
-
-  async handleAnswer(answer: any) {
-    if (!this.peerConnection) {
-      console.error('no peer connection');
-      return;
-    }
-    await this.peerConnection.setRemoteDescription(answer);
-  }
-
-  async handleCandidate(candidate: any) {
-    if (!this.peerConnection) {
-      console.error('no peer connection');
-      return;
-    }
-    if (!candidate.candidate) {
-      // await this.peerConnection.addIceCandidate(null);
-    } else {
-      await this.peerConnection.addIceCandidate(candidate);
-    }
-  }
-
-  async handleMessagesOnChatChannel(event: any) {
-    // this._chatChannel.onopen = this.onSendChannelStateChange;
-    this._chatChannel.onopen = (e: any) => {
-      const readyState = this._chatChannel.readyState;
-      console.log(`Receive channel state is: ${readyState}`);
-      console.log('Chat channel is now open!', e);
-    }
-    this._chatChannel.onmessage = (e: any) => {
-        // chat.innerHTML = chat.innerHTML + "<pre>" + e.data + "</pre>"
-        console.log(`${this.playerName} says: `, e.data)
-    }
-    this._chatChannel.onclose = () => {
-        console.log('Chat channel closed...!');
-    }
-  }
-
-  onSendChannelStateChange() {
-    const readyState = this._chatChannel.readyState;
-    console.log('Send channel state is: ' + readyState);
-    // if (readyState === 'open') {
-    //   dataChannelSend.disabled = false;
-    //   dataChannelSend.focus();
-    //   sendButton.disabled = false;
-    //   closeButton.disabled = false;
-    // } else {
-    //   dataChannelSend.disabled = true;
-    //   sendButton.disabled = true;
-    //   closeButton.disabled = true;
-    // }
+    this.peerConnection.on('data', (data: any) => {
+      console.log('DATA: ', data);
+    });
   }
 
   public initiateWebRtc(playerName: string): void {
@@ -254,15 +366,22 @@ export class WebRtcModel {
     this._createPlayground = playerName === 'Player 1';
     this.playerName = playerName;
 
-    this._signaling.postMessage({type: 'ready'});
+    this.peerConnection = new SimplePeer({
+      initiator: this.createPlayground,
+      trickle: false
+    });
+    console.log('Simple Peer: ', this.peerConnection);
+
+    this.handleSignalingEvents();
+
+    // this._signaling.postMessage({type: 'ready'});
   }
 
   public terminateWebRtc(): void {
-    this._signaling.postMessage({type: 'bye'});
+    // this._signaling.postMessage({type: 'bye'});
   }
 
   public sendMessageOnChatChannel(message: string): void {
-    this._chatChannel.send(message);
+    // this._chatChannel.send(message);
   }
-
 }

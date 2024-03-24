@@ -66,7 +66,8 @@ export class PlaygroundService {
       console.log(`Playground with the id - ${playgroundId} does not exist!. Please create a new playground!`);
     }
 
-    this._webRtc.createPlayground = false;
+    // this._webRtc.createPlayground = false;
+    this.webRtcModel.initiateWebRtc(playerName);
   }
 
   createNewPlayground(playerName: string): void {
@@ -76,16 +77,17 @@ export class PlaygroundService {
     } else {
       this.addToPlaygroundMap(playerName);
     }
-    this.initiateWebRtcConnection(playerName);
-  }
-
-  initiateWebRtcConnection(playerName: string): void {
-    // this._webRtc.createPlayground = true;
-    // this._webRtc.playerName = playerName;
-    // this._webRtc.initiateWebRtc(playerName);
-
+    // this.initiateWebRtcConnection(playerName);
     this.webRtcModel.initiateWebRtc(playerName);
   }
+
+  // initiateWebRtcConnection(playerName: string): void {
+  //   // this._webRtc.createPlayground = true;
+  //   // this._webRtc.playerName = playerName;
+  //   // this._webRtc.initiateWebRtc(playerName);
+
+  //   this.webRtcModel.initiateWebRtc(playerName);
+  // }
 
   terminateWebRtcConnection(): void {
     // this._webRtc.terminateWebRtc();
