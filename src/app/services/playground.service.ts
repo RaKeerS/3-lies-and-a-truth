@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
+import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 import { GameMetadata, PlayGroundMetadata } from '../types/app-types';
 
 @Injectable({
@@ -13,11 +14,14 @@ export class PlaygroundService {
   private _playgroundCounter: number = 0;
   private _router: Router;
 
+  private _webRtc: WebRtcModel;
+
   private _opponent: Subject<any> = new Subject<any>();
   private _player: Subject<any> = new Subject<any>();
 
   constructor(private router: Router) {
     this._router = router;
+    this._webRtc = new WebRtcModel();
   }
 
   static get playgroundMap(): Map<number, GameMetadata> {
@@ -57,16 +61,28 @@ export class PlaygroundService {
     } else {
       console.log(`Playground with the id - ${playgroundId} does not exist!. Please create a new playground!`);
     }
+
+    this._webRtc.createPlayground = false;
   }
 
   createNewPlayground(playerName: string): void {
     this._playgroundCounter = 0;
     if (PlaygroundService._playgroundMap.size > 0) {
-      this.createPlayground(playerName);
+      this.createPlayground(playerName); // Incorrect Logic, If the Playground already exists, don't create new, if not create new.
     } else {
       this.addToPlaygroundMap(playerName);
     }
+    this.initiateWebRtcConnection(playerName);
+  }
 
+  initiateWebRtcConnection(playerName: string): void {
+    this._webRtc.createPlayground = true;
+    this._webRtc.playerName = playerName;
+    this._webRtc.initiateWebRtc();
+  }
+
+  terminateWebRtcConnection(): void {
+    this._webRtc.terminateWebRtc();
   }
 
   private createPlayground(playerName: string): void {

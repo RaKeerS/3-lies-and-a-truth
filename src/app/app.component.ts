@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { PrimeNgModule } from './prime-ng/prime-ng.module';
@@ -11,7 +11,7 @@ import { PlaygroundService } from './services/playground.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   title = '3-lies-and-a-truth';
   private _playgroundService: PlaygroundService;
 
@@ -21,6 +21,10 @@ export class AppComponent {
 
   constructor(playgroundService: PlaygroundService) {
     this._playgroundService = playgroundService;
+  }
+
+  ngOnDestroy(): void {
+    this._playgroundService.terminateWebRtcConnection();
   }
 
   showDialog(): void {
