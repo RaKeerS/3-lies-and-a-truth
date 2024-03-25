@@ -293,6 +293,10 @@ export class WebRtcModel {
   private _sendChannel: any = null;
   private _receiveChannel: any;
 
+  private _signalInvitationToken?: string;
+
+  signalInvitationTokenCreated: boolean = false;
+
   playerName: string = '';
 
   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
@@ -327,6 +331,10 @@ export class WebRtcModel {
     this._isReady = value;
   }
 
+  get signalInvitationToken(): string | undefined {
+    return this._signalInvitationToken;
+  }
+
   // private peerConnection(peer: any) {
   //   return (peer === this._localConnection) ? this._localConnection : this._remoteConnection;
   // }
@@ -340,6 +348,8 @@ export class WebRtcModel {
     // console.log('Simple Peer: ', this.peerConnection);
 
     this.peerConnection.on('signal', (data: any) => {
+      this._signalInvitationToken = JSON.stringify(data);
+      this.signalInvitationTokenCreated = true;
       console.log('SIGNAL: ', JSON.stringify(data));
     });
 
