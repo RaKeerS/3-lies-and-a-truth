@@ -52,8 +52,8 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
   sendMessage(): void {
     this._playgroundService.webRtcModel.playerName === 'Player 1' ?
-    this._playgroundService.webRtcModel.sendMessageOnChatChannel('Ohayo, Sekai!') :
-    this._playgroundService.webRtcModel.sendMessageOnChatChannel('Good Morning World!!');
+    this._playgroundService.webRtcModel.sendMessageWebRtc('Ohayo, Sekai!') :
+    this._playgroundService.webRtcModel.sendMessageWebRtc('Good Morning World!!');
   }
 
 }

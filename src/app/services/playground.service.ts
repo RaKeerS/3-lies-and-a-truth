@@ -99,7 +99,7 @@ export class PlaygroundService {
   }
 
   sendWebRtcMessages(message: string): void {
-    this.webRtcModel.sendMessageOnChatChannel(message);
+    this.webRtcModel.sendMessageWebRtc(message);
   }
 
 

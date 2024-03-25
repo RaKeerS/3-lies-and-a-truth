@@ -390,7 +390,8 @@ export class WebRtcModel {
     this.peerConnection.signal(token);
   }
 
-  public sendMessageOnChatChannel(message: string): void {
+  public sendMessageWebRtc(message: string): void {
     // this._chatChannel.send(message);
+    this.peerConnection.send(message);
   }
 }
