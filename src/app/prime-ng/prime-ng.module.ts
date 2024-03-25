@@ -5,12 +5,16 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { StepperModule } from 'primeng/stepper';
+
 
 @NgModule({
-  declarations: [],
   exports: [
     CommonModule,
     FormsModule,
@@ -18,9 +22,13 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     CardModule,
     DialogModule,
     DividerModule,
+    IconFieldModule,
+    InputIconModule,
     InputNumberModule,
+    InputTextModule,
     InputTextareaModule,
-    InputTextModule
+    SelectButtonModule,
+    StepperModule
   ]
 })
 export class PrimeNgModule { }

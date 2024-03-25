@@ -4,13 +4,14 @@ import { compress, decompress } from '@zalari/string-compression-utils';
 
 import { PrimeNgModule } from './prime-ng/prime-ng.module';
 import { PlaygroundService } from './services/playground.service';
+import { GameConnectorComponent } from './views/game-connector/game-connector.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, PrimeNgModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+    selector: 'app-root',
+    standalone: true,
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
+    imports: [RouterOutlet, PrimeNgModule, GameConnectorComponent]
 })
 export class AppComponent implements OnDestroy {
   title = '3-lies-and-a-truth';
@@ -88,8 +89,11 @@ export class AppComponent implements OnDestroy {
 
   toggleDialogState(): void {
     // this.visible = !this.visible;
-    this.showPlaygroundDialog = false;
-    this.showTokenDialog = true;
+
+    this.showPlaygroundDialog = true;
+
+    // this.showPlaygroundDialog = false;
+    // this.showTokenDialog = true;
   }
 
   joinExistingPlayground(): void {

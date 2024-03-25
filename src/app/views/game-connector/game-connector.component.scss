@@ -1,0 +1,12 @@
+// :host {
+//   &::ng-deep {
+//     p-dialog.dialog-pick-playground {
+//       .p-dialog {
+//         inline-size: 25rem !important;
+//       }
+//     }
+//   }
+// }
+.ui-dialog-titlebar-close {
+  display:none;
+}
