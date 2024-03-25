@@ -16,8 +16,11 @@ export class AppComponent implements OnDestroy {
   private _playgroundService: PlaygroundService;
 
   visible = false;
+  showPlaygroundDialog: boolean = false;
+  showTokenDialog: boolean = false;
   playerName: string = '';
   playgroundId?: number;
+  token: string = '';
 
   constructor(playgroundService: PlaygroundService) {
     this._playgroundService = playgroundService;
@@ -32,15 +35,28 @@ export class AppComponent implements OnDestroy {
   }
 
   joinExistingPlayground(): void {
-    if (this.playgroundId !== undefined) {
-      this._playgroundService.joinExistingPlayground(this.playgroundId, this.playerName);
+    if (this.playerName.trim().length > 0) {
+      this._playgroundService.joinExistingPlayground(this.playerName);
+      this.showPlaygroundDialog = false;
+      this.showTokenDialog = true;
     }
   }
 
   createNewPlayground(): void {
     if (this.playerName.trim().length > 0) {
       this._playgroundService.createNewPlayground(this.playerName);
-      this.showDialog();
+      // this.showDialog();
+      this.showPlaygroundDialog = false;
+      this.showTokenDialog = true;
+    } else {
+      // NOTE - Show Toaster
+    }
+  }
+
+  sendTokenForPlayground(): void {
+    if (this.token.trim().length > 0) {
+      this._playgroundService.sendTokenForPlayground(this.token);
+      this.showTokenDialog = false;
     } else {
       // NOTE - Show Toaster
     }

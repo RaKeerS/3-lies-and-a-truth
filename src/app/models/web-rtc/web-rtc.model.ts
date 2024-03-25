@@ -353,11 +353,12 @@ export class WebRtcModel {
 
     this.peerConnection.on('connect', () => {
       console.log('CONNECTED!');
-      this.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)}`);
+      this.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)} - ${this.playerName}`);
     });
 
     this.peerConnection.on('data', (data: any) => {
-      console.log('DATA: ', data);
+      let message = new TextDecoder("utf-8").decode(data);
+      console.log('DATA: ', message);
     });
   }
 
@@ -374,11 +375,19 @@ export class WebRtcModel {
 
     this.handleSignalingEvents();
 
+    // if(this._createPlayground) {
+    //   this.peerConnection.signal(token);
+    // }
+
     // this._signaling.postMessage({type: 'ready'});
   }
 
   public terminateWebRtc(): void {
     // this._signaling.postMessage({type: 'bye'});
+  }
+
+  public sendSignalWebRtc(token: string) {
+    this.peerConnection.signal(token);
   }
 
   public sendMessageOnChatChannel(message: string): void {

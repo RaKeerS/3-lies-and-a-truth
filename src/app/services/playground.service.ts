@@ -48,37 +48,41 @@ export class PlaygroundService {
     this._player.next(message);
   }
 
-  joinExistingPlayground(playgroundId: number, playerName: string): void {
-    if (PlaygroundService._playgroundMap.has(playgroundId)) {
-      const gameMetadata: GameMetadata = PlaygroundService._playgroundMap.get(playgroundId)!;
-      if (!gameMetadata.playgroundMetadata.player2Exists) {
-        gameMetadata.playgroundMetadata.player2Name = playerName;
-        gameMetadata.playgroundMetadata.player2Exists = true;
+  joinExistingPlayground(playerName: string): void {
+    // if (PlaygroundService._playgroundMap.has(playgroundId)) {
+    //   const gameMetadata: GameMetadata = PlaygroundService._playgroundMap.get(playgroundId)!;
+    //   if (!gameMetadata.playgroundMetadata.player2Exists) {
+    //     gameMetadata.playgroundMetadata.player2Name = playerName;
+    //     gameMetadata.playgroundMetadata.player2Exists = true;
 
-        // Notify Player 2 (and existing Player 1) with the updated PlaygroundMetadata on subscription in the 'playground' component.
-        gameMetadata.playgroundSubject.next(gameMetadata.playgroundMetadata);
+    //     // Notify Player 2 (and existing Player 1) with the updated PlaygroundMetadata on subscription in the 'playground' component.
+    //     gameMetadata.playgroundSubject.next(gameMetadata.playgroundMetadata);
 
-        this.router.navigate(['playground'], { state: { playgroundId: playgroundId } });
-      } else {
-        console.log('This game is already ongoing! Joined by someone else already!');
-      }
-    } else {
-      console.log(`Playground with the id - ${playgroundId} does not exist!. Please create a new playground!`);
-    }
+    //     this.router.navigate(['playground'], { state: { playgroundId: playgroundId } });
+    //   } else {
+    //     console.log('This game is already ongoing! Joined by someone else already!');
+    //   }
+    // } else {
+    //   console.log(`Playground with the id - ${playgroundId} does not exist!. Please create a new playground!`);
+    // }
 
     // this._webRtc.createPlayground = false;
     this.webRtcModel.initiateWebRtc(playerName);
   }
 
   createNewPlayground(playerName: string): void {
-    this._playgroundCounter = 0;
-    if (PlaygroundService._playgroundMap.size > 0) {
-      this.createPlayground(playerName); // Incorrect Logic, If the Playground already exists, don't create new, if not create new.
-    } else {
-      this.addToPlaygroundMap(playerName);
-    }
+    // this._playgroundCounter = 0;
+    // if (PlaygroundService._playgroundMap.size > 0) {
+    //   this.createPlayground(playerName); // Incorrect Logic, If the Playground already exists, don't create new, if not create new.
+    // } else {
+    //   this.addToPlaygroundMap(playerName);
+    // }
     // this.initiateWebRtcConnection(playerName);
     this.webRtcModel.initiateWebRtc(playerName);
+  }
+
+  sendTokenForPlayground(token: string): void {
+    this.webRtcModel.sendSignalWebRtc(token);
   }
 
   // initiateWebRtcConnection(playerName: string): void {
