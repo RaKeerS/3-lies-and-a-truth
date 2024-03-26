@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { of } from 'rxjs';
 
 import { WebRtcModel } from '../../models/web-rtc/web-rtc.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
@@ -19,6 +20,8 @@ export class GameConnectorComponent {
   private _tokenHeaderMessageToDisplay1: string = '';
   private _tokenHeaderMessageToDisplay2: string = '';
 
+  private _signalInvitationTokenCreated: boolean = false;
+
   active: number = 0;
   @Output() showPlaygroundDialogChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   // @Input() showPlaygroundDialog: boolean = false;
@@ -32,6 +35,13 @@ export class GameConnectorComponent {
   constructor() {
     this._webRtc = new WebRtcModel();
   }
+
+  get signalInvitationTokenCreated() {
+    return of(this.webRtcModel.signalInvitationTokenCreated);
+  }
+  // set signalInvitationTokenCreated(value: boolean) {
+  //   this._signalInvitationTokenCreated = value
+  // }
 
   get tokenHeaderMessageToDisplay1(): string {
     return this.optionSelected === 1 ? 'Send this Token to the partner you wish to connect with' : 'Paste the Token received from your partner';
@@ -78,9 +88,13 @@ export class GameConnectorComponent {
 
   }
 
+  resetTokenForPlayground(): void {
+    this.webRtcModel.signalInvitationToken = '';
+  }
+
   sendTokenForPlayground(): void {
-    if (this.webRtcModel.signalInvitationToken?.trim().length) {
-      this.webRtcModel.sendMessageWebRtc(this.webRtcModel.signalInvitationToken);
+    if (this._webRtc.signalInvitationToken?.trim().length) {
+      this._webRtc.sendMessageWebRtc(this._webRtc.signalInvitationToken);
       // this.showTokenDialog = false;
     } else {
       // NOTE - Show Toaster
@@ -95,7 +109,7 @@ export class GameConnectorComponent {
     //   }
     // });
 
-    await navigator.clipboard.writeText(this.webRtcModel.signalInvitationToken ?? '')
+    await navigator.clipboard.writeText(this._webRtc.signalInvitationToken ?? '')
     console.log('Clicked!!!');
   }
 

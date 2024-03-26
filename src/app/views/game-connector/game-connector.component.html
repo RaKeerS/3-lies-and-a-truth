@@ -76,6 +76,7 @@
           </ng-template>
         </p-stepperPanel>
         <p-stepperPanel>
+          <!-- 2nd Step -->
           <ng-template pTemplate="header" let-onClick="onClick" let-index="index">
             <button class="bg-transparent border-none inline-flex flex-column gap-2" (onClick)="onClick.emit()">
               <span
@@ -96,7 +97,7 @@
           </ng-template>
           <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
             <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: unset;">
-              <div *ngIf="webRtcModel.signalInvitationTokenCreated || optionSelected === 0" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay1 }} </div>
+              <div *ngIf="this.webRtcModel.signalInvitationTokenCreated || optionSelected === 0" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay1 }} </div>
               <!-- <div class="flex flex-wrap justify-content-center gap-3">
                   <p-toggleButton [(ngModel)]="option1" onLabel="Nature" offLabel="Nature" />
                   <p-toggleButton [(ngModel)]="option2" onLabel="Art" offLabel="Art" />
@@ -111,7 +112,7 @@
               </div> -->
               <div class="field p-fluid h-15rem">
                 @if(optionSelected === 1) {
-                  @if(!webRtcModel.signalInvitationTokenCreated) {
+                  @if(!this.webRtcModel.signalInvitationTokenCreated) {
                     <div class="flex flex-wrap h-full justify-content-center align-content-center">
                       Creating a Playground... Please Wait!
                     </div>
@@ -141,12 +142,12 @@
               </div>
             </div>
             <div class="flex pt-4 justify-content-between">
-              <p-button (onClick)="prevCallback.emit()" label="Back" severity="secondary" icon="pi pi-arrow-left" />
+              <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
               @if (optionSelected === 1) {
-                <p-button (onClick)="nextCallback.emit();" [disabled]="!webRtcModel.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); resetTokenForPlayground();" [disabled]="!this.webRtcModel.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
-                <p-button (onClick)="nextCallback.emit(); sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); sendTokenForPlayground();" (click)="sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
             </div>
           </ng-template>
@@ -167,9 +168,8 @@
           </ng-template>
           <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
             <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: unset;">
-              <div *ngIf="webRtcModel.signalInvitationTokenCreated || optionSelected === 1" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay2 }} </div>
+              <div *ngIf="this.webRtcModel.signalInvitationTokenCreated || optionSelected === 1" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay2 }} </div>
               <div class="field p-fluid h-15rem">
-
                 @if(optionSelected === 1) {
                   <div class="p-field p-col-12 p-3 h-full">
                     <span class="p-float-label h-full">
@@ -179,21 +179,12 @@
                   </div>
                 }
                 @else {
-                  <ng-container *ngIf="webRtcModel.signalInvitationTokenCreated">
-                    True!!!
-                  </ng-container>
-                  <ng-container *ngIf="!webRtcModel.signalInvitationTokenCreated">
-                    False!!!
-                  </ng-container>
-                  Hi! {{webRtcModel.signalInvitationTokenCreated}}
-                  @if(!webRtcModel.signalInvitationTokenCreated) {
-                    {{webRtcModel.signalInvitationTokenCreated}}
+                  @if(!this.webRtcModel.signalInvitationTokenCreated) {
                     <div class="flex flex-wrap h-full justify-content-center align-content-center">
                       Connecting to the a Playground... Please Wait!
                     </div>
                   }
                   @else {
-                    Yo! {{webRtcModel.signalInvitationTokenCreated}}
                     <!-- <p-divider align="center" type="solid"><b> Send the Token to whom you want to Join </b></p-divider> -->
                     <div class="p-field p-col-12 p-3 h-full">
                       <span class="icon flex justify-content-end pb-2">
@@ -215,7 +206,7 @@
                 <p-button (onClick)="nextCallback.emit(); sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
-                <p-button (onClick)="nextCallback.emit()" [disabled]="!webRtcModel.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit()" [disabled]="!this.webRtcModel.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
             </div>
           </ng-template>

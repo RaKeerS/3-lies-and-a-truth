@@ -33,28 +33,28 @@ export class AppComponent implements OnDestroy {
     this._playgroundService.terminateWebRtcConnection();
   }
 
-  ngAfterViewInit(): void {
+  // ngAfterViewInit(): void {
 
-    const richTextDiv = document.getElementById("richTextDiv")!;
+  //   const richTextDiv = document.getElementById("richTextDiv")!;
 
-    console.log('Here: ', richTextDiv)
+  //   console.log('Here: ', richTextDiv)
 
-    const clipboardItem = new ClipboardItem({
-        "text/plain": new Blob(
-            [JSON.stringify(richTextDiv.innerText)],
-            { type: "text/plain" }
-        ),
-        "text/html": new Blob(
-            [richTextDiv.outerHTML],
-            { type: "text/html" }
-        ),
-    });
+  //   const clipboardItem = new ClipboardItem({
+  //       "text/plain": new Blob(
+  //           [JSON.stringify(richTextDiv.innerText)],
+  //           { type: "text/plain" }
+  //       ),
+  //       "text/html": new Blob(
+  //           [richTextDiv.outerHTML],
+  //           { type: "text/html" }
+  //       ),
+  //   });
 
-    navigator.clipboard.write([clipboardItem]);
+  //   navigator.clipboard.write([clipboardItem]);
 
-    this.callMeMaybe();
+  //   this.callMeMaybe();
 
-  }
+  // }
 
   get playgroundService() {
     return this._playgroundService;

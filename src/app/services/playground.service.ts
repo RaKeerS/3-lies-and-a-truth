@@ -40,6 +40,10 @@ export class PlaygroundService {
     return this._webRtc;
   }
 
+  get token(): boolean {
+    return this.webRtcModel.signalInvitationTokenCreated;
+  }
+
   public sendMessageToOpponent(message: any): void {
     this._opponent.next(message);
   }
@@ -130,6 +134,23 @@ export class PlaygroundService {
     PlaygroundService._playgroundMap.set(this._playgroundCounter, { playgroundSubject: playgroundSubject, playgroundMetadata: playgroundMetadata })
     // this.router.navigate(['playground'], { state: { playgroundMetadata: playgroundMetadata } });
     this.router.navigate(['playground'], { state: { playgroundId: this._playgroundCounter } });
+  }
+
+
+
+
+  createOrJoinPlayground(): void {
+      this._webRtc.initiateWebRtc(this._webRtc.playerName);
+
+  }
+
+  sendTokenForPlayground(): void {
+    if (this.webRtcModel.signalInvitationToken?.trim().length) {
+      this.webRtcModel.sendMessageWebRtc(this.webRtcModel.signalInvitationToken);
+      // this.showTokenDialog = false;
+    } else {
+      // NOTE - Show Toaster
+    }
   }
 
 }

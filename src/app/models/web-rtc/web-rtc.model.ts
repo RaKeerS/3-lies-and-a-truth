@@ -389,9 +389,11 @@ export class WebRtcModel {
     // console.log('Simple Peer: ', this.peerConnection);
 
     this.peerConnection.on('signal', (data: any) => {
-      this.compressString(JSON.stringify(data));
-      // this.signalInvitationToken = JSON.stringify(data);
-      // this.signalInvitationTokenCreated = true;
+      // this.compressString(JSON.stringify(data));
+      if (data.type !== 'candidate') {
+        this.signalInvitationToken = JSON.stringify(data);
+        this.signalInvitationTokenCreated = true;
+      }
       console.log('SIGNAL: ', JSON.stringify(data));
     });
 
@@ -421,7 +423,12 @@ export class WebRtcModel {
 
     this.peerConnection = new SimplePeer({
       initiator: this.createPlayground,
-      trickle: false
+      // NOTE: (Critical)
+      // In order to fix the UI issue where the next screen is stepper was not working in case of 'Join' workflow,
+      // i.e. the UI was stuck on the message - 'Connecting to the a Playground... Please Wait!' because the code flow wasn't coming out of the 'peerConnection's on signal event handler' apparently.
+      // Do not know why, but apparently, sending signal once out of that event handler was not enough, but by setting trickle = true in case of 'Join Playground' workflow, multiple signals are thrown,
+      // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
+      trickle: !this.createPlayground
     });
     console.log('Simple Peer: ', this.peerConnection);
 
@@ -444,7 +451,7 @@ export class WebRtcModel {
 
   public sendMessageWebRtc(message: string): void {
     // this._chatChannel.send(message);
-    this.decompressString(message);
-    // this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
+    // this.decompressString(message);
+    this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
   }
 }
