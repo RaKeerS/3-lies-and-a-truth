@@ -81,9 +81,9 @@ export class PlaygroundService {
     this.webRtcModel.initiateWebRtc(playerName);
   }
 
-  sendTokenForPlayground(token: string): void {
-    this.webRtcModel.sendSignalWebRtc(token);
-  }
+  // sendTokenForPlayground(token: string): void {
+  //   this.webRtcModel.sendSignalWebRtc(token);
+  // }
 
   // initiateWebRtcConnection(playerName: string): void {
   //   // this._webRtc.createPlayground = true;

@@ -16,6 +16,9 @@ export class GameConnectorComponent {
   private _webRtc: WebRtcModel;
   private _showPlaygroundDialog: boolean = false;
 
+  private _tokenHeaderMessageToDisplay1: string = '';
+  private _tokenHeaderMessageToDisplay2: string = '';
+
   active: number = 0;
   @Output() showPlaygroundDialogChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   // @Input() showPlaygroundDialog: boolean = false;
@@ -23,8 +26,19 @@ export class GameConnectorComponent {
   playgroundOptions: any[] = [{ label: 'Create Playground', value: 1 }, { label: 'Join Playground', value: 0 }];
   optionSelected: number = 1;
 
+  // tokenHeaderMessageToDisplay1 = this.optionSelected === 1 ? 'Send this Token to whom you wish to Connect with' : 'Paste the Token received from your partner';
+  // tokenHeaderMessageToDisplay2 = this.optionSelected === 1 ? 'Paste the Token received from your partner' : 'Send this Token to whom you wish to Connect with';
+
   constructor() {
     this._webRtc = new WebRtcModel();
+  }
+
+  get tokenHeaderMessageToDisplay1(): string {
+    return this.optionSelected === 1 ? 'Send this Token to the partner you wish to connect with' : 'Paste the Token received from your partner';
+  }
+
+  get tokenHeaderMessageToDisplay2(): string {
+    return this.optionSelected === 1 ? 'Paste the Token received from your partner' : 'Send this Token to the partner you wish to connect with';
   }
 
   get showPlaygroundDialog(): boolean {
@@ -40,7 +54,6 @@ export class GameConnectorComponent {
   }
 
   createOrJoinPlayground(): void {
-
     if (this._webRtc.playerName.trim().length > 0) {
       this._webRtc.createPlayground = Boolean(this.optionSelected);
       // if (this.optionSelected === PlaygroundEnum.CREATE) {
@@ -63,6 +76,27 @@ export class GameConnectorComponent {
     //   }
     // });
 
+  }
+
+  sendTokenForPlayground(): void {
+    if (this.webRtcModel.signalInvitationToken?.trim().length) {
+      this.webRtcModel.sendMessageWebRtc(this.webRtcModel.signalInvitationToken);
+      // this.showTokenDialog = false;
+    } else {
+      // NOTE - Show Toaster
+    }
+  }
+
+  async copyToClipboard() {
+    // navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then(async (result) => {
+    //   if (result.state === "granted" || result.state === "prompt") {
+    //     /* write to the clipboard now */
+    //     await parent.navigator.clipboard.writeText('Bhai Bhai' ?? '');
+    //   }
+    // });
+
+    await navigator.clipboard.writeText(this.webRtcModel.signalInvitationToken ?? '')
+    console.log('Clicked!!!');
   }
 
 }

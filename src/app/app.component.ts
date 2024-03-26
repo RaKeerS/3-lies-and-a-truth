@@ -126,13 +126,13 @@ export class AppComponent implements OnDestroy {
 
   }
 
-  sendTokenForPlayground(): void {
-    if (this.token.trim().length > 0) {
-      this._playgroundService.sendTokenForPlayground(this.token);
-      this.showTokenDialog = false;
-    } else {
-      // NOTE - Show Toaster
-    }
-  }
+  // sendTokenForPlayground(): void {
+  //   if (this.token.trim().length > 0) {
+  //     this._playgroundService.sendTokenForPlayground(this.token);
+  //     this.showTokenDialog = false;
+  //   } else {
+  //     // NOTE - Show Toaster
+  //   }
+  // }
 
 }

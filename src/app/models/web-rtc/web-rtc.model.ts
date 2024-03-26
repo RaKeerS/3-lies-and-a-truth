@@ -1,6 +1,7 @@
 // export class WebRtcModel {
 // import * as wrtc from './../../../../node_modules/electron-webrtc/browser';
 // const wrtc = require('./../../../../node_modules/electron-webrtc/index')
+import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
 
@@ -293,9 +294,12 @@ export class WebRtcModel {
   private _sendChannel: any = null;
   private _receiveChannel: any;
 
+  // private _compressedString: string = '';
+  // private _decompressedString: string = '';
+
   private _signalInvitationToken?: string;
 
-  signalInvitationTokenCreated: boolean = false;
+  private _signalInvitationTokenCreated: boolean = false;
 
   playerName: string = '';
 
@@ -334,12 +338,49 @@ export class WebRtcModel {
   get signalInvitationToken(): string | undefined {
     return this._signalInvitationToken;
   }
+  set signalInvitationToken(value: string) {
+    // this.compressString(value);
+    // this.decompressString(value);
+    this._signalInvitationToken = value;
+  }
+
+  get signalInvitationTokenCreated(): boolean {
+    return this._signalInvitationTokenCreated;
+  }
+  set signalInvitationTokenCreated(value: boolean) {
+    this._signalInvitationTokenCreated = value;
+  }
 
   // private peerConnection(peer: any) {
   //   return (peer === this._localConnection) ? this._localConnection : this._remoteConnection;
   // }
 
-  public handleSignalingEvents(): void {
+  private async compressString(inputString: string): Promise<void> {
+    await compress(inputString, 'gzip').then((data: string) => {
+      // this._compressedString = data;
+      this.signalInvitationToken = data;
+      this.signalInvitationTokenCreated = true;
+      console.log('compressedString: ', this.signalInvitationToken);
+    });;
+    // const urlFriendly = encodeURIComponent(compressedString);
+
+    console.log('compressedString: ', this.signalInvitationToken);
+    // console.log('urlFriendly: ', urlFriendly);
+  }
+
+  private async decompressString(compressedString: string): Promise<void> {
+    // const decodedString = decodeURIComponent(urlFriendly);
+    await decompress(compressedString, 'gzip').then((data: string) => {
+      this.signalInvitationToken = data;
+      console.log('output: ', this.signalInvitationToken);
+      this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
+    });
+
+    // console.log('decodedString: ', decodedString);
+    console.log('output: ', this.signalInvitationToken);
+  }
+
+  private handleSignalingEvents(): void {
     // this.peerConnection = new SimplePeer({
     //   initiator: this.createPlayground,
     //   // wrtc: wrtc,
@@ -348,8 +389,9 @@ export class WebRtcModel {
     // console.log('Simple Peer: ', this.peerConnection);
 
     this.peerConnection.on('signal', (data: any) => {
-      this._signalInvitationToken = JSON.stringify(data);
-      this.signalInvitationTokenCreated = true;
+      this.compressString(JSON.stringify(data));
+      // this.signalInvitationToken = JSON.stringify(data);
+      // this.signalInvitationTokenCreated = true;
       console.log('SIGNAL: ', JSON.stringify(data));
     });
 
@@ -396,12 +438,13 @@ export class WebRtcModel {
     // this._signaling.postMessage({type: 'bye'});
   }
 
-  public sendSignalWebRtc(token: string) {
-    this.peerConnection.signal(token);
-  }
+  // public sendSignalWebRtc(token: string) {
+  //   this.peerConnection.signal(token);
+  // }
 
   public sendMessageWebRtc(message: string): void {
     // this._chatChannel.send(message);
-    this.peerConnection.send(message);
+    this.decompressString(message);
+    // this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
   }
 }
