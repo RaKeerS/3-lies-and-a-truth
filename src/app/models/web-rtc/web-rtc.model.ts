@@ -4,6 +4,8 @@
 import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
+import { PlaygroundService } from '../../services/playground.service';
+
 
 
 //   // // Set up an asynchronous communication channel that will be
@@ -282,74 +284,17 @@ import SimplePeer from 'simple-peer';
 
 export class WebRtcModel {
 
-  private _createPlayground?: boolean;
-  private _signaling: BroadcastChannel;
-  // private _receiver: BroadcastChannel;
-  // private peerConnection: any;
-  private _isReady: boolean = false;
-
-  private _localConnection?: RTCPeerConnection;
-  private _remoteConnection?: RTCPeerConnection;
-  private _chatChannel: any;
-  private _sendChannel: any = null;
-  private _receiveChannel: any;
-
-  // private _compressedString: string = '';
-  // private _decompressedString: string = '';
-
-  private _signalInvitationToken?: string;
-
-  private _signalInvitationTokenCreated: boolean = false;
-
-  playerName: string = '';
 
   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
 
-  constructor() {
+  constructor(private _playgroundService: PlaygroundService) {
     // NOTE - This is where it begins!
-    this._signaling = new BroadcastChannel('webrtc');
+    // this._signaling = new BroadcastChannel('webrtc');playerName: string = '';
     // this._receiver = new BroadcastChannel('webrtc');
     // this.handleSignalingEvents();
   }
 
-  get createPlayground(): boolean {
-    return !!this._createPlayground;
-  }
-  set createPlayground(value: boolean) {
-    this._createPlayground = value;
-  }
-
-  get peerConnection() {
-    return this.createPlayground ? this._localConnection : this._remoteConnection;
-  }
-  set peerConnection(value: any) {
-    // this.peerConnection = value;
-    this.createPlayground ? this._localConnection = value : this._remoteConnection = value;
-  }
-
-  get isReady(): boolean {
-    return this._isReady;
-  }
-  set isReady(value: boolean) {
-    this._isReady = value;
-  }
-
-  get signalInvitationToken(): string | undefined {
-    return this._signalInvitationToken;
-  }
-  set signalInvitationToken(value: string) {
-    // this.compressString(value);
-    // this.decompressString(value);
-    this._signalInvitationToken = value;
-  }
-
-  get signalInvitationTokenCreated(): boolean {
-    return this._signalInvitationTokenCreated;
-  }
-  set signalInvitationTokenCreated(value: boolean) {
-    this._signalInvitationTokenCreated = value;
-  }
 
   // private peerConnection(peer: any) {
   //   return (peer === this._localConnection) ? this._localConnection : this._remoteConnection;
@@ -358,26 +303,26 @@ export class WebRtcModel {
   private async compressString(inputString: string): Promise<void> {
     await compress(inputString, 'gzip').then((data: string) => {
       // this._compressedString = data;
-      this.signalInvitationToken = data;
-      this.signalInvitationTokenCreated = true;
-      console.log('compressedString: ', this.signalInvitationToken);
+      this._playgroundService.signalInvitationToken = data;
+      this._playgroundService.signalInvitationTokenCreated = true;
+      console.log('compressedString: ', this._playgroundService.signalInvitationToken);
     });;
     // const urlFriendly = encodeURIComponent(compressedString);
 
-    console.log('compressedString: ', this.signalInvitationToken);
+    console.log('compressedString: ', this._playgroundService.signalInvitationToken);
     // console.log('urlFriendly: ', urlFriendly);
   }
 
   private async decompressString(compressedString: string): Promise<void> {
     // const decodedString = decodeURIComponent(urlFriendly);
     await decompress(compressedString, 'gzip').then((data: string) => {
-      this.signalInvitationToken = data;
-      console.log('output: ', this.signalInvitationToken);
-      this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
+      this._playgroundService.signalInvitationToken = data;
+      console.log('output: ', this._playgroundService.signalInvitationToken);
+      this._playgroundService.peerConnection.signal(JSON.parse(this._playgroundService.signalInvitationToken ?? ''));
     });
 
     // console.log('decodedString: ', decodedString);
-    console.log('output: ', this.signalInvitationToken);
+    console.log('output: ', this._playgroundService.signalInvitationToken);
   }
 
   private handleSignalingEvents(): void {
@@ -388,49 +333,50 @@ export class WebRtcModel {
     // });
     // console.log('Simple Peer: ', this.peerConnection);
 
-    this.peerConnection.on('signal', (data: any) => {
-      // this.compressString(JSON.stringify(data));
+    this._playgroundService.peerConnection.on('signal', (data: any) => {
       if (data.type !== 'candidate') {
-        this.signalInvitationToken = JSON.stringify(data);
-        this.signalInvitationTokenCreated = true;
+        // this.signalInvitationToken = JSON.stringify(data);
+        // this.signalInvitationTokenCreated = true;
+        this.compressString(JSON.stringify(data));
       }
       console.log('SIGNAL: ', JSON.stringify(data));
     });
 
-    this.peerConnection.on('error', (err: any) => {
+    this._playgroundService.peerConnection.on('error', (err: any) => {
       console.error('ERROR: ', err);
     });
 
-    this.peerConnection.on('close', () => {
+    this._playgroundService.peerConnection.on('close', () => {
       console.log('CLOSED!');
     });
 
-    this.peerConnection.on('connect', () => {
+    this._playgroundService.peerConnection.on('connect', () => {
       console.log('CONNECTED!');
-      this.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)} - ${this.playerName}`);
+      this._playgroundService.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)} - ${this._playgroundService.playerName}`);
     });
 
-    this.peerConnection.on('data', (data: any) => {
+    this._playgroundService.peerConnection.on('data', (data: any) => {
       let message = new TextDecoder("utf-8").decode(data);
+      this._playgroundService.message = message;
       console.log('DATA: ', message);
+      return;
     });
   }
 
   public initiateWebRtc(playerName: string): void {
-    this._isReady = true;
-    this._createPlayground = playerName === 'Player 1';
-    this.playerName = playerName;
+    this._playgroundService.createPlayground = playerName === 'Player 1';
+    this._playgroundService.playerName = playerName;
 
-    this.peerConnection = new SimplePeer({
-      initiator: this.createPlayground,
+    this._playgroundService.peerConnection = new SimplePeer({
+      initiator: this._playgroundService.createPlayground,
       // NOTE: (Critical)
       // In order to fix the UI issue where the next screen is stepper was not working in case of 'Join' workflow,
       // i.e. the UI was stuck on the message - 'Connecting to the a Playground... Please Wait!' because the code flow wasn't coming out of the 'peerConnection's on signal event handler' apparently.
       // Do not know why, but apparently, sending signal once out of that event handler was not enough, but by setting trickle = true in case of 'Join Playground' workflow, multiple signals are thrown,
       // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
-      trickle: !this.createPlayground
+      trickle: !this._playgroundService.createPlayground
     });
-    console.log('Simple Peer: ', this.peerConnection);
+    console.log('Simple Peer: ', this._playgroundService.peerConnection);
 
     this.handleSignalingEvents();
 
@@ -449,9 +395,9 @@ export class WebRtcModel {
   //   this.peerConnection.signal(token);
   // }
 
-  public sendMessageWebRtc(message: string): void {
+  public sendMessageWebRtc(): void {
     // this._chatChannel.send(message);
-    // this.decompressString(message);
-    this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
+    this.decompressString(this._playgroundService.signalInvitationToken ?? '');
+    // this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
   }
 }

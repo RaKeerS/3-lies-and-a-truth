@@ -12,6 +12,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { StepperModule } from 'primeng/stepper';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { StepperModule } from 'primeng/stepper';
     InputTextModule,
     InputTextareaModule,
     SelectButtonModule,
-    StepperModule
+    StepperModule,
+    ToastModule
   ]
 })
 export class PrimeNgModule { }

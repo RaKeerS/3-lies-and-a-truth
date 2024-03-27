@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { of } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
-import { WebRtcModel } from '../../models/web-rtc/web-rtc.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
+import { PlaygroundService } from '../../services/playground.service';
 
 
 @Component({
@@ -14,7 +14,6 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 })
 export class GameConnectorComponent {
 
-  private _webRtc: WebRtcModel;
   private _showPlaygroundDialog: boolean = false;
 
   private _tokenHeaderMessageToDisplay1: string = '';
@@ -32,13 +31,12 @@ export class GameConnectorComponent {
   // tokenHeaderMessageToDisplay1 = this.optionSelected === 1 ? 'Send this Token to whom you wish to Connect with' : 'Paste the Token received from your partner';
   // tokenHeaderMessageToDisplay2 = this.optionSelected === 1 ? 'Paste the Token received from your partner' : 'Send this Token to whom you wish to Connect with';
 
-  constructor() {
-    this._webRtc = new WebRtcModel();
+  constructor(private messageService: MessageService, private _playgroundService: PlaygroundService) {
+    // this._webRtc = new WebRtcModel();
   }
-
-  get signalInvitationTokenCreated() {
-    return of(this.webRtcModel.signalInvitationTokenCreated);
-  }
+  // get signalInvitationTokenCreated() {
+  //   return of(this.webRtcModel.signalInvitationTokenCreated);
+  // }
   // set signalInvitationTokenCreated(value: boolean) {
   //   this._signalInvitationTokenCreated = value
   // }
@@ -59,58 +57,66 @@ export class GameConnectorComponent {
     this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
   }
 
-  get webRtcModel(): WebRtcModel {
-    return this._webRtc;
+  get playgroundService(): PlaygroundService {
+    return this._playgroundService;
   }
 
-  createOrJoinPlayground(): void {
-    if (this._webRtc.playerName.trim().length > 0) {
-      this._webRtc.createPlayground = Boolean(this.optionSelected);
-      // if (this.optionSelected === PlaygroundEnum.CREATE) {
-      this._webRtc.initiateWebRtc(this._webRtc.playerName);
-      // } else {
-      // }
+  // get message(): string {
+  //   if (this.webRtcModel.message.trim().length > 0) {
+  //     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
+  //   }
+  //   return '';
+  // }
 
-      // this.nextStage = true;
-      // this.showDialog();
-      // this.showPlaygroundDialog = false;
-      // this.showTokenDialog = true;
-    } else {
-      // NOTE - Show Toaster
-    }
+  // createOrJoinPlayground(): void {
+  //   if (this._webRtc.playerName.trim().length > 0) {
+  //     this._webRtc.createPlayground = Boolean(this.optionSelected);
+  //     // if (this.optionSelected === PlaygroundEnum.CREATE) {
+  //     this._webRtc.initiateWebRtc(this._webRtc.playerName);
+  //     // } else {
+  //     // }
 
-    // navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then((result) => {
-    //   if (result.state === "granted" || result.state === "prompt") {
-    //     /* write to the clipboard now */
-    //     this.callMeMaybe();
-    //   }
-    // });
+  //     // this.nextStage = true;
+  //     // this.showDialog();
+  //     // this.showPlaygroundDialog = false;
+  //     // this.showTokenDialog = true;
+  //   } else {
+  //     // NOTE - Show Toaster
+  //   }
 
-  }
+  //   // navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then((result) => {
+  //   //   if (result.state === "granted" || result.state === "prompt") {
+  //   //     /* write to the clipboard now */
+  //   //     this.callMeMaybe();
+  //   //   }
+  //   // });
 
-  resetTokenForPlayground(): void {
-    this.webRtcModel.signalInvitationToken = '';
-  }
+  // }
 
-  sendTokenForPlayground(): void {
-    if (this._webRtc.signalInvitationToken?.trim().length) {
-      this._webRtc.sendMessageWebRtc(this._webRtc.signalInvitationToken);
-      // this.showTokenDialog = false;
-    } else {
-      // NOTE - Show Toaster
-    }
-  }
+  // resetTokenForPlayground(): void {
+  //   this.webRtcModel.signalInvitationToken = '';
+  // }
 
-  async copyToClipboard() {
-    // navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then(async (result) => {
-    //   if (result.state === "granted" || result.state === "prompt") {
-    //     /* write to the clipboard now */
-    //     await parent.navigator.clipboard.writeText('Bhai Bhai' ?? '');
-    //   }
-    // });
+  // sendTokenForPlayground(): void {
+  //   if (this._webRtc.signalInvitationToken?.trim().length) {
+  //     // this._webRtc.sendMessageWebRtc(this._webRtc.signalInvitationToken);
+  //     this._webRtc.sendMessageWebRtc();
+  //     // this.showTokenDialog = false;
+  //   } else {
+  //     // NOTE - Show Toaster
+  //   }
+  // }
 
-    await navigator.clipboard.writeText(this._webRtc.signalInvitationToken ?? '')
-    console.log('Clicked!!!');
-  }
+  // async copyToClipboard() {
+  //   // navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then(async (result) => {
+  //   //   if (result.state === "granted" || result.state === "prompt") {
+  //   //     /* write to the clipboard now */
+  //   //     await parent.navigator.clipboard.writeText('Bhai Bhai' ?? '');
+  //   //   }
+  //   // });
+
+  //   await navigator.clipboard.writeText(this._webRtc.signalInvitationToken ?? '')
+  //   console.log('Clicked!!!');
+  // }
 
 }

@@ -49,7 +49,7 @@
               <div class="field p-fluid">
                 <div class="p-field p-col-12 p-3">
                   <span class="p-float-label">
-                    <input type="text" id="playerName" [required]="true" pInputText [(ngModel)]="webRtcModel.playerName" />
+                    <input type="text" id="playerName" [required]="true" pInputText [(ngModel)]="playgroundService.playerName" />
                     <label for="playerName">Enter Your Name</label>
                   </span>
                 </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="flex pt-4 justify-content-end">
               <!-- Call createOrJoinPlayground() -->
-              <p-button (onClick)="nextCallback.emit(); createOrJoinPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+              <p-button (onClick)="nextCallback.emit(); playgroundService.createOrJoinPlayground(optionSelected);" label="Next" icon="pi pi-arrow-right" iconPos="right" />
             </div>
           </ng-template>
         </p-stepperPanel>
@@ -97,7 +97,7 @@
           </ng-template>
           <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
             <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: unset;">
-              <div *ngIf="this.webRtcModel.signalInvitationTokenCreated || optionSelected === 0" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay1 }} </div>
+              <div *ngIf="this.playgroundService.signalInvitationTokenCreated || optionSelected === 0" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay1 }} </div>
               <!-- <div class="flex flex-wrap justify-content-center gap-3">
                   <p-toggleButton [(ngModel)]="option1" onLabel="Nature" offLabel="Nature" />
                   <p-toggleButton [(ngModel)]="option2" onLabel="Art" offLabel="Art" />
@@ -112,7 +112,7 @@
               </div> -->
               <div class="field p-fluid h-15rem">
                 @if(optionSelected === 1) {
-                  @if(!this.webRtcModel.signalInvitationTokenCreated) {
+                  @if(!this.playgroundService.signalInvitationTokenCreated) {
                     <div class="flex flex-wrap h-full justify-content-center align-content-center">
                       Creating a Playground... Please Wait!
                     </div>
@@ -122,10 +122,10 @@
                     <div class="p-field p-col-12 p-3 h-full">
                       <span class="icon flex justify-content-end pb-2">
                         <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
-                        <i class="pi pi-copy icon-copy" (click)="copyToClipboard()"></i>
+                        <i class="pi pi-copy icon-copy" (click)="playgroundService.copyToClipboard()"></i>
                       </span>
                       <span class="p-float-label h-full">
-                        <textarea id="token-output" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="webRtcModel.signalInvitationToken"></textarea>
+                        <textarea id="token-output" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                         <label for="token-output">Token</label>
                       </span>
                     </div>
@@ -134,7 +134,7 @@
                 @else {
                   <div class="p-field p-col-12 p-3 h-full">
                     <span class="p-float-label h-full">
-                      <textarea id="token-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="false" [(ngModel)]="webRtcModel.signalInvitationToken"></textarea>
+                      <textarea id="token-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="false" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                       <label for="token-input">Token</label>
                     </span>
                   </div>
@@ -144,10 +144,10 @@
             <div class="flex pt-4 justify-content-between">
               <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
               @if (optionSelected === 1) {
-                <p-button (onClick)="nextCallback.emit(); resetTokenForPlayground();" [disabled]="!this.webRtcModel.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); playgroundService.resetTokenForPlayground();" [disabled]="!this.playgroundService.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
-                <p-button (onClick)="nextCallback.emit(); sendTokenForPlayground();" (click)="sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" (click)="playgroundService.sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
             </div>
           </ng-template>
@@ -168,18 +168,18 @@
           </ng-template>
           <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
             <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: unset;">
-              <div *ngIf="this.webRtcModel.signalInvitationTokenCreated || optionSelected === 1" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay2 }} </div>
+              <div *ngIf="this.playgroundService.signalInvitationTokenCreated || optionSelected === 1" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay2 }} </div>
               <div class="field p-fluid h-15rem">
                 @if(optionSelected === 1) {
                   <div class="p-field p-col-12 p-3 h-full">
                     <span class="p-float-label h-full">
-                      <textarea id="float-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="false" [(ngModel)]="webRtcModel.signalInvitationToken"></textarea>
+                      <textarea id="float-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="false" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                       <label for="float-input">Token</label>
                     </span>
                   </div>
                 }
                 @else {
-                  @if(!this.webRtcModel.signalInvitationTokenCreated) {
+                  @if(!this.playgroundService.signalInvitationTokenCreated) {
                     <div class="flex flex-wrap h-full justify-content-center align-content-center">
                       Connecting to the a Playground... Please Wait!
                     </div>
@@ -189,10 +189,10 @@
                     <div class="p-field p-col-12 p-3 h-full">
                       <span class="icon flex justify-content-end pb-2">
                         <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
-                        <i class="pi pi-copy icon-copy" (click)="copyToClipboard()"></i>
+                        <i class="pi pi-copy icon-copy" (click)="playgroundService.copyToClipboard()"></i>
                       </span>
                       <span class="p-float-label h-full">
-                        <textarea id="token-output" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="webRtcModel.signalInvitationToken"></textarea>
+                        <textarea id="token-output" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                         <label for="token-output">Token</label>
                       </span>
                     </div>
@@ -203,10 +203,10 @@
             <div class="flex pt-4 justify-content-between">
               <p-button (onClick)="prevCallback.emit()" label="Back" severity="secondary" icon="pi pi-arrow-left" />
               @if(optionSelected === 1) {
-                <p-button (onClick)="nextCallback.emit(); sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
-                <p-button (onClick)="nextCallback.emit()" [disabled]="!this.webRtcModel.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit()" [disabled]="!this.playgroundService.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
             </div>
           </ng-template>

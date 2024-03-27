@@ -1,6 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { compress, decompress } from '@zalari/string-compression-utils';
+import { MessageService } from 'primeng/api';
 
 import { PrimeNgModule } from './prime-ng/prime-ng.module';
 import { PlaygroundService } from './services/playground.service';
@@ -11,7 +12,8 @@ import { GameConnectorComponent } from './views/game-connector/game-connector.co
     standalone: true,
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    imports: [RouterOutlet, PrimeNgModule, GameConnectorComponent]
+    imports: [RouterOutlet, PrimeNgModule, GameConnectorComponent],
+    providers: [MessageService]
 })
 export class AppComponent implements OnDestroy {
   title = '3-lies-and-a-truth';
@@ -30,7 +32,7 @@ export class AppComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._playgroundService.terminateWebRtcConnection();
+    // this._playgroundService.terminateWebRtcConnection();
   }
 
   // ngAfterViewInit(): void {
@@ -96,35 +98,35 @@ export class AppComponent implements OnDestroy {
     // this.showTokenDialog = true;
   }
 
-  joinExistingPlayground(): void {
-    if (this.playerName.trim().length > 0) {
-      this._playgroundService.joinExistingPlayground(this.playerName);
-      this.nextStage = true;
-      // this.showPlaygroundDialog = false;
-      // this.showTokenDialog = true;
-    }
-  }
+  // joinExistingPlayground(playerName: string): void {
+  //   if (this.playerName.trim().length > 0) {
+  //     this._playgroundService.joinExistingPlayground(playerName);
+  //     this.nextStage = true;
+  //     // this.showPlaygroundDialog = false;
+  //     // this.showTokenDialog = true;
+  //   }
+  // }
 
-  createNewPlayground(): void {
-    if (this.playerName.trim().length > 0) {
-      this._playgroundService.createNewPlayground(this.playerName);
-      this.createPlayground = true;
-      this.nextStage = true;
-      // this.showDialog();
-      // this.showPlaygroundDialog = false;
-      // this.showTokenDialog = true;
-    } else {
-      // NOTE - Show Toaster
-    }
+  // createNewPlayground(playerName: string): void {
+  //   if (this.playerName.trim().length > 0) {
+  //     this._playgroundService.createNewPlayground(playerName);
+  //     this.createPlayground = true;
+  //     this.nextStage = true;
+  //     // this.showDialog();
+  //     // this.showPlaygroundDialog = false;
+  //     // this.showTokenDialog = true;
+  //   } else {
+  //     // NOTE - Show Toaster
+  //   }
 
-    navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then((result) => {
-      if (result.state === "granted" || result.state === "prompt") {
-        /* write to the clipboard now */
-        this.callMeMaybe();
-      }
-    });
+  //   navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then((result) => {
+  //     if (result.state === "granted" || result.state === "prompt") {
+  //       /* write to the clipboard now */
+  //       this.callMeMaybe();
+  //     }
+  //   });
 
-  }
+  // }
 
   // sendTokenForPlayground(): void {
   //   if (this.token.trim().length > 0) {
