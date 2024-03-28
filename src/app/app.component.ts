@@ -13,7 +13,7 @@ import { GameConnectorComponent } from './views/game-connector/game-connector.co
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
     imports: [RouterOutlet, PrimeNgModule, GameConnectorComponent],
-    providers: [MessageService]
+    providers: [MessageService, PlaygroundService]
 })
 export class AppComponent implements OnDestroy {
   title = '3-lies-and-a-truth';

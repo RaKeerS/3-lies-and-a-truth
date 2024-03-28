@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
@@ -34,7 +34,7 @@ export class PlaygroundService {
   // private _message: string = '';
   private _playerName: string = '';
 
-  constructor(private router: Router) {
+  constructor(private _messageService: MessageService) {
     this._webRtc = new WebRtcModel(this);
   }
 
@@ -55,6 +55,9 @@ export class PlaygroundService {
   }
   set message(value: string) {
     this._message = value;
+    if (this.message.trim().length > 0) {
+      this._messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
+    }
   }
 
   get peerConnection() {

@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MessageService } from 'primeng/api';
 
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { PlaygroundService } from '../../services/playground.service';
@@ -31,7 +30,7 @@ export class GameConnectorComponent {
   // tokenHeaderMessageToDisplay1 = this.optionSelected === 1 ? 'Send this Token to whom you wish to Connect with' : 'Paste the Token received from your partner';
   // tokenHeaderMessageToDisplay2 = this.optionSelected === 1 ? 'Paste the Token received from your partner' : 'Send this Token to whom you wish to Connect with';
 
-  constructor(private messageService: MessageService, private _playgroundService: PlaygroundService) {
+  constructor(private _playgroundService: PlaygroundService) {
     // this._webRtc = new WebRtcModel();
   }
   // get signalInvitationTokenCreated() {
