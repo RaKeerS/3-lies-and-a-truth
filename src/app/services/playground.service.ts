@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { MessageService } from 'primeng/api';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
@@ -15,11 +15,11 @@ export class PlaygroundService {
 
   private _localConnection?: RTCPeerConnection;
   private _remoteConnection?: RTCPeerConnection;
+  private _isConnected: boolean = false;
+  private _isConnecting: boolean = true;
   private _chatChannel: any;
   private _sendChannel: any = null;
   private _receiveChannel: any;
-
-  private _message: string = '';
 
   // private _compressedString: string = '';
   // private _decompressedString: string = '';
@@ -34,8 +34,8 @@ export class PlaygroundService {
   // private _message: string = '';
   private _playerName: string = '';
 
-  constructor(private _messageService: MessageService) {
-    this._webRtc = new WebRtcModel(this);
+  constructor(private _messageService: MessageService, private _ngZone: NgZone) {
+    this._webRtc = new WebRtcModel(this, _ngZone);
   }
 
   // get signalInvitationTokenCreated() {
@@ -50,14 +50,22 @@ export class PlaygroundService {
     this._createPlayground = value;
   }
 
-  get message(): string {
-    return this._message;
+  get isConnected(): boolean {
+    return this._isConnected;
   }
-  set message(value: string) {
-    this._message = value;
-    if (this.message.trim().length > 0) {
-      this._messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
-    }
+  set isConnected(value: boolean) {
+    this._isConnected = value;
+  }
+
+  get isConnecting(): boolean {
+    return this._isConnecting;
+  }
+  set isConnecting(value: boolean) {
+    this._isConnecting = value;
+  }
+
+  get messageService(): MessageService {
+    return this._messageService;
   }
 
   get peerConnection() {

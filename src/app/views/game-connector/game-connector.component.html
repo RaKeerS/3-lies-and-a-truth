@@ -1,6 +1,6 @@
 <p>game-connector works!</p>
 @if (showPlaygroundDialog) {
-  <p-dialog class="dialog-pick-playground" header="Header" [(visible)]="showPlaygroundDialog" [closable]="true" [modal]="true" [breakpoints]="{ '2000px': '50vw', '1199px': '75vw', '575px': '90vw' }">
+  <p-dialog class="dialog-pick-playground" header="Header" [(visible)]="showPlaygroundDialog" [closable]="(active !== 3 || (active === 3 && !playgroundService.isConnecting))" [modal]="true" [breakpoints]="{ '2000px': '50vw', '1199px': '75vw', '575px': '90vw' }">
     <ng-template pTemplate="header">
         <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
             <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> -->
@@ -114,7 +114,7 @@
                 @if(optionSelected === 1) {
                   @if(!this.playgroundService.signalInvitationTokenCreated) {
                     <div class="flex flex-wrap h-full justify-content-center align-content-center">
-                      Creating a Playground... Please Wait!
+                      Creating a Playground... Please wait!
                     </div>
                   }
                   @else {
@@ -144,7 +144,7 @@
             <div class="flex pt-4 justify-content-between">
               <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
               @if (optionSelected === 1) {
-                <p-button (onClick)="nextCallback.emit(); playgroundService.resetTokenForPlayground();" [disabled]="!this.playgroundService.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); playgroundService.resetTokenForPlayground();" [disabled]="!playgroundService.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
                 <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" (click)="playgroundService.sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
@@ -181,7 +181,7 @@
                 @else {
                   @if(!this.playgroundService.signalInvitationTokenCreated) {
                     <div class="flex flex-wrap h-full justify-content-center align-content-center">
-                      Connecting to the a Playground... Please Wait!
+                      Connecting to the a Playground... Please wait!
                     </div>
                   }
                   @else {
@@ -206,7 +206,7 @@
                 <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
-                <p-button (onClick)="nextCallback.emit()" [disabled]="!this.playgroundService.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit()" [disabled]="!playgroundService.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
             </div>
           </ng-template>
@@ -225,16 +225,34 @@
             </button>
           </ng-template>
           <ng-template pTemplate="content" let-prevCallback="prevCallback">
-            Here: {{playgroundService.message}}
-            <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 24rem;">
-              <div class="text-center mt-3 mb-3 text-xl font-semibold">Connected successfully!!!</div>
-              <div class="text-center">
-                  <img alt="logo" src="https://primefaces.org/cdn/primeng/images/stepper/content.svg" />
-              </div>
+            <!-- Here: {{playgroundService.message}} -->
+            <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 30rem;">
+              @if (playgroundService.isConnecting) {
+                <div class="field p-fluid h-15rem">
+                  <div class="flex flex-wrap h-full justify-content-center align-content-center">
+                    Connecting with your partner... Please wait!
+                  </div>
+                </div>
+              }
+              @else {
+                <div class="text-center mt-3 mb-3 text-xl font-semibold"> Connected successfully </div>
+                <div class="text-center">
+                  <!-- <img alt="logo" src="https://primefaces.org/cdn/primeng/images/stepper/content.svg" /> -->
+                  <!-- <div class="success-animation">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" /><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" /></svg>
+                  </div> -->
+                  @if(playgroundService.isConnected) {
+                    <img alt="connection-successful" src="./assets/svg/Artist-drawing-graphic-on-tablet-while-drinking-coffee-Illustration.svg" />
+                  }
+                  @else {
+                    <img alt="connection-successful" src="./assets/svg/Man-confusing-due-to-no-connection-error-Illustration.svg" />
+                  }
+                </div>
+              }
             </div>
-            <div class="flex pt-4 justify-content-start">
+            <!-- <div class="flex pt-4 justify-content-start">
               <p-button (onClick)="prevCallback.emit()" label="Back" severity="secondary" icon="pi pi-arrow-left" />
-            </div>
+            </div> -->
           </ng-template>
         </p-stepperPanel>
       </p-stepper>

@@ -1,6 +1,7 @@
 // export class WebRtcModel {
 // import * as wrtc from './../../../../node_modules/electron-webrtc/browser';
 // const wrtc = require('./../../../../node_modules/electron-webrtc/index')
+import { NgZone } from '@angular/core';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
@@ -288,7 +289,7 @@ export class WebRtcModel {
   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
 
-  constructor(private _playgroundService: PlaygroundService) {
+  constructor(private _playgroundService: PlaygroundService, private _ngZone: NgZone) {
     // NOTE - This is where it begins!
     // this._signaling = new BroadcastChannel('webrtc');playerName: string = '';
     // this._receiver = new BroadcastChannel('webrtc');
@@ -343,7 +344,10 @@ export class WebRtcModel {
     });
 
     this._playgroundService.peerConnection.on('error', (err: any) => {
+      this._playgroundService.isConnected = false;
+      this._playgroundService.isConnecting = false;
       console.error('ERROR: ', err);
+      this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'Connected Successfully!!' });
     });
 
     this._playgroundService.peerConnection.on('close', () => {
@@ -351,15 +355,20 @@ export class WebRtcModel {
     });
 
     this._playgroundService.peerConnection.on('connect', () => {
+      this._ngZone.run(() => {
+        {
+          this._playgroundService.isConnected = true;
+          this._playgroundService.isConnecting = false;
+          this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
+        }
+      });
       console.log('CONNECTED!');
       this._playgroundService.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)} - ${this._playgroundService.playerName}`);
     });
 
     this._playgroundService.peerConnection.on('data', (data: any) => {
       let message = new TextDecoder("utf-8").decode(data);
-      this._playgroundService.message = message;
       console.log('DATA: ', message);
-      return;
     });
   }
 

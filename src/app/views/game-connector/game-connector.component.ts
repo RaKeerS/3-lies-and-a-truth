@@ -60,6 +60,16 @@ export class GameConnectorComponent {
     return this._playgroundService;
   }
 
+  get toolTipForJoinWorkflow(): string | undefined {
+    return !this.playgroundService.signalInvitationTokenCreated ?
+    'Waiting to be connected to a Playground' : !this.playgroundService.isConnected ?
+    'Waiting for the connection to be established': '';
+  }
+
+  get disableStateForJoinWorkflow(): boolean {
+    return !this.playgroundService.signalInvitationTokenCreated ? true : !this.playgroundService.isConnected ? true : false;
+  }
+
   // get message(): string {
   //   if (this.webRtcModel.message.trim().length > 0) {
   //     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
