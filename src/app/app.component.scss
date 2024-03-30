@@ -44,6 +44,12 @@ p {
   color: var(--gray-700);
 }
 
+.p-confirm-dialog {
+  p {
+    color: var(--gray-400);
+  }
+}
+
 .card {
   display: flex;
   width: 100%;

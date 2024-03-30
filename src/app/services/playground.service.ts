@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
@@ -34,7 +34,7 @@ export class PlaygroundService {
   // private _message: string = '';
   private _playerName: string = '';
 
-  constructor(private _messageService: MessageService, private _ngZone: NgZone) {
+  constructor(private _messageService: MessageService, private _confirmationService: ConfirmationService, private _ngZone: NgZone) {
     this._webRtc = new WebRtcModel(this, _ngZone);
   }
 
@@ -66,6 +66,10 @@ export class PlaygroundService {
 
   get messageService(): MessageService {
     return this._messageService;
+  }
+
+  get confirmationService(): ConfirmationService {
+    return this._confirmationService;
   }
 
   get peerConnection() {

@@ -1,6 +1,7 @@
 <p>game-connector works!</p>
+
 @if (showPlaygroundDialog) {
-  <p-dialog class="dialog-pick-playground" header="Header" [(visible)]="showPlaygroundDialog" [closable]="(active !== 3 || (active === 3 && !playgroundService.isConnecting))" [modal]="true" [breakpoints]="{ '2000px': '50vw', '1199px': '75vw', '575px': '90vw' }">
+  <p-dialog class="dialog-pick-playground" header="Header" [(visible)]="showPlaygroundDialog" [closable]="true" [modal]="true" [breakpoints]="{ '2000px': '50vw', '1199px': '75vw', '575px': '90vw' }">
     <ng-template pTemplate="header">
         <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
             <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> -->
@@ -26,7 +27,7 @@
           <ng-template pTemplate="content" let-nextCallback="nextCallback">
             <!-- <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem"> -->
             <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 30rem;">
-              <div class="text-center mt-3 mb-3 text-xl font-semibold">Create or Join a Playground</div>
+              <div class="text-center mt-3 mb-3 text-xl font-semibold"> Create or Join a Playground </div>
               <!-- <div class="field p-fluid">
                   <p-iconField>
                       <p-inputIcon>
@@ -71,7 +72,7 @@
             </div>
             <div class="flex pt-4 justify-content-end">
               <!-- Call createOrJoinPlayground() -->
-              <p-button (onClick)="nextCallback.emit(); playgroundService.createOrJoinPlayground(optionSelected);" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+              <p-button (onClick)="nextCallback.emit(); playgroundService.createOrJoinPlayground(optionSelected);" [disabled]="!playgroundService.playerName.trim().length" label="Next" icon="pi pi-arrow-right" iconPos="right" />
             </div>
           </ng-template>
         </p-stepperPanel>
@@ -192,7 +193,7 @@
                         <i class="pi pi-copy icon-copy" (click)="playgroundService.copyToClipboard()"></i>
                       </span>
                       <span class="p-float-label h-full">
-                        <textarea id="token-output" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
+                        <textarea [required]="true" id="token-output" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                         <label for="token-output">Token</label>
                       </span>
                     </div>
@@ -203,7 +204,7 @@
             <div class="flex pt-4 justify-content-between">
               <p-button (onClick)="prevCallback.emit()" label="Back" severity="secondary" icon="pi pi-arrow-left" />
               @if(optionSelected === 1) {
-                <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" [disabled]="!playgroundService.signalInvitationToken?.trim()?.length" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
                 <p-button (onClick)="nextCallback.emit()" [disabled]="!playgroundService.signalInvitationTokenCreated && optionSelected === 0" label="Next" icon="pi pi-arrow-right" iconPos="right" />
@@ -235,7 +236,12 @@
                 </div>
               }
               @else {
-                <div class="text-center mt-3 mb-3 text-xl font-semibold"> Connected successfully </div>
+                @if(playgroundService.isConnected) {
+                  <div class="text-center mt-3 mb-3 text-xl font-semibold"> Connected successfully </div>
+                }
+                @else {
+                  <div class="text-center mt-3 mb-3 text-xl font-semibold"> Connection unsuccessful </div>
+                }
                 <div class="text-center">
                   <!-- <img alt="logo" src="https://primefaces.org/cdn/primeng/images/stepper/content.svg" /> -->
                   <!-- <div class="success-animation">
@@ -245,7 +251,7 @@
                     <img alt="connection-successful" src="./assets/svg/Artist-drawing-graphic-on-tablet-while-drinking-coffee-Illustration.svg" />
                   }
                   @else {
-                    <img alt="connection-successful" src="./assets/svg/Man-confusing-due-to-no-connection-error-Illustration.svg" />
+                    <img alt="connection-unsuccessful" src="./assets/svg/Man-confusing-due-to-no-connection-error-Illustration.svg" />
                   }
                 </div>
               }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { PlaygroundService } from '../../services/playground.service';
@@ -11,7 +11,7 @@ import { PlaygroundService } from '../../services/playground.service';
   templateUrl: './game-connector.component.html',
   styleUrl: './game-connector.component.scss'
 })
-export class GameConnectorComponent {
+export class GameConnectorComponent implements OnDestroy {
 
   private _showPlaygroundDialog: boolean = false;
 
@@ -40,6 +40,11 @@ export class GameConnectorComponent {
   //   this._signalInvitationTokenCreated = value
   // }
 
+  ngOnDestroy(): void {
+    this.playgroundService.playerName = '';
+    this.playgroundService.signalInvitationToken = '';
+  }
+
   get tokenHeaderMessageToDisplay1(): string {
     return this.optionSelected === 1 ? 'Send this Token to the partner you wish to connect with' : 'Paste the Token received from your partner';
   }
@@ -52,8 +57,12 @@ export class GameConnectorComponent {
     return this._showPlaygroundDialog;
   }
   @Input() set showPlaygroundDialog(value: boolean) {
-    this._showPlaygroundDialog = value;
-    this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+    if (!value && this.active !== 3) {
+      this.confirmCancellation();
+    } else {
+      this._showPlaygroundDialog = value;
+      this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+    }
   }
 
   get playgroundService(): PlaygroundService {
@@ -68,6 +77,21 @@ export class GameConnectorComponent {
 
   get disableStateForJoinWorkflow(): boolean {
     return !this.playgroundService.signalInvitationTokenCreated ? true : !this.playgroundService.isConnected ? true : false;
+  }
+
+  confirmCancellation(): void {
+    this.playgroundService.confirmationService.confirm({
+      header: 'Are you sure?',
+      message: 'Please confirm to proceed.',
+      accept: () => {
+        this.playgroundService.messageService.add({ severity: 'error', summary: 'Connection Error', detail: 'Connection not established due to interruption!', life: 3000 });
+        this._showPlaygroundDialog = false;
+        this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+      },
+      reject: () => {
+        return false;
+      }
+    });
   }
 
   // get message(): string {

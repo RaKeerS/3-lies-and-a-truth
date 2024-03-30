@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -19,6 +20,7 @@ import { TooltipModule } from 'primeng/tooltip';
 @NgModule({
   exports: [
     CommonModule,
+    ConfirmDialogModule,
     FormsModule,
     ButtonModule,
     CardModule,
