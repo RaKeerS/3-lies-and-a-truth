@@ -57,9 +57,19 @@ export class GameConnectorComponent implements OnDestroy {
     return this._showPlaygroundDialog;
   }
   @Input() set showPlaygroundDialog(value: boolean) {
-    if (!value && this.active !== 3) {
+    if (!value && [1,2].includes(this.active) || this.active === 3 && this.playgroundService.isConnecting) {
       this.confirmCancellation();
-    } else {
+    }
+    // if (!value && this.active !== 0) {
+    //   if (this.active === 3 && this.playgroundService.isConnecting) {
+    //     this.confirmCancellation();
+    //   } else {
+    //     this._showPlaygroundDialog = value;
+    //     this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+    //   }
+    //   this.confirmCancellation();
+    // }
+    else {
       this._showPlaygroundDialog = value;
       this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
     }

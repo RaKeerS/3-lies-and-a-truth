@@ -58,7 +58,7 @@
                 <div class="p-field p-col-12 p-3">
                   <label for="createOrJoinPlayground"> Would you like to? </label>
                   <span class="p-float-label pt-3">
-                    <p-selectButton id="createOrJoinPlayground" [options]="playgroundOptions" [(ngModel)]="optionSelected" optionLabel="label" optionValue="value"></p-selectButton>
+                    <p-selectButton id="createOrJoinPlayground" [unselectable]="true" [options]="playgroundOptions" [(ngModel)]="optionSelected" optionLabel="label" optionValue="value"></p-selectButton>
                   </span>
                 </div>
 

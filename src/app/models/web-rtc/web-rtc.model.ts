@@ -347,7 +347,7 @@ export class WebRtcModel {
       this._playgroundService.isConnected = false;
       this._playgroundService.isConnecting = false;
       console.error('ERROR: ', err);
-      this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'Connected Successfully!!' });
+      this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'Connection Unsuccessful' });
     });
 
     this._playgroundService.peerConnection.on('close', () => {
