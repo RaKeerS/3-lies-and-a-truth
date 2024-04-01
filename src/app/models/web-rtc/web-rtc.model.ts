@@ -344,8 +344,8 @@ export class WebRtcModel {
     });
 
     this._playgroundService.peerConnection.on('error', (err: any) => {
-      this._playgroundService.isConnected = false;
       this._playgroundService.isConnecting = false;
+      this._playgroundService.isConnected = false;
       console.error('ERROR: ', err);
       this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'Connection Unsuccessful' });
     });
@@ -357,8 +357,8 @@ export class WebRtcModel {
     this._playgroundService.peerConnection.on('connect', () => {
       this._ngZone.run(() => {
         {
-          this._playgroundService.isConnected = true;
           this._playgroundService.isConnecting = false;
+          this._playgroundService.isConnected = true;
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
         }
       });

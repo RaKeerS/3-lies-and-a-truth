@@ -1,4 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, Injector, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
@@ -12,6 +13,11 @@ export class PlaygroundService {
   // private _receiver: BroadcastChannel;
   // private peerConnection: any;
   // private _isReady: boolean = false;
+
+  private _messageService: MessageService;
+  private _confirmationService: ConfirmationService;
+  private _ngZone: NgZone;
+  private _router: Router;
 
   private _localConnection?: RTCPeerConnection;
   private _remoteConnection?: RTCPeerConnection;
@@ -34,8 +40,12 @@ export class PlaygroundService {
   // private _message: string = '';
   private _playerName: string = '';
 
-  constructor(private _messageService: MessageService, private _confirmationService: ConfirmationService, private _ngZone: NgZone) {
-    this._webRtc = new WebRtcModel(this, _ngZone);
+  constructor(injector: Injector) {
+    this._messageService = injector.get(MessageService);
+    this._confirmationService = injector.get(ConfirmationService);
+    this._ngZone = injector.get(NgZone);
+    this._router = injector.get(Router);
+    this._webRtc = new WebRtcModel(this, this._ngZone);
   }
 
   // get signalInvitationTokenCreated() {
@@ -55,6 +65,9 @@ export class PlaygroundService {
   }
   set isConnected(value: boolean) {
     this._isConnected = value;
+    if (value) {
+      this._router.navigate(['playground'], { state: { } });
+    }
   }
 
   get isConnecting(): boolean {
