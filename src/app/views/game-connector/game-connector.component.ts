@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Injector, Input, OnDestroy, Output } from '@angular/core';
+import { delay, of, Subscription, tap } from 'rxjs';
 
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { PlaygroundService } from '../../services/playground.service';
@@ -11,14 +12,19 @@ import { PlaygroundService } from '../../services/playground.service';
   templateUrl: './game-connector.component.html',
   styleUrl: './game-connector.component.scss'
 })
-export class GameConnectorComponent implements OnDestroy {
 
+export class GameConnectorComponent implements OnDestroy {
   private _showPlaygroundDialog: boolean = false;
+  private _playgroundService: PlaygroundService;
+
+  private _modalClosed = false;
 
   private _tokenHeaderMessageToDisplay1: string = '';
   private _tokenHeaderMessageToDisplay2: string = '';
 
   private _signalInvitationTokenCreated: boolean = false;
+
+  private _subscription?: Subscription;
 
   active: number = 0;
   @Output() showPlaygroundDialogChange: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -30,7 +36,8 @@ export class GameConnectorComponent implements OnDestroy {
   // tokenHeaderMessageToDisplay1 = this.optionSelected === 1 ? 'Send this Token to whom you wish to Connect with' : 'Paste the Token received from your partner';
   // tokenHeaderMessageToDisplay2 = this.optionSelected === 1 ? 'Paste the Token received from your partner' : 'Send this Token to whom you wish to Connect with';
 
-  constructor(private _playgroundService: PlaygroundService) {
+  constructor(injector: Injector) {
+    this._playgroundService = injector.get(PlaygroundService);
     // this._webRtc = new WebRtcModel();
   }
   // get signalInvitationTokenCreated() {
@@ -43,6 +50,7 @@ export class GameConnectorComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.playgroundService.playerName = '';
     this.playgroundService.signalInvitationToken = '';
+    this._subscription?.unsubscribe();
   }
 
   get tokenHeaderMessageToDisplay1(): string {
@@ -72,11 +80,24 @@ export class GameConnectorComponent implements OnDestroy {
     else {
       this._showPlaygroundDialog = value;
       this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+      if (this.active === 3 && this.playgroundService.isConnected && this.playgroundService.redirectCounter !== 0) {
+        this.playgroundService.redirectToPlayground(true);
+      }
     }
   }
 
   get playgroundService(): PlaygroundService {
     return this._playgroundService;
+  }
+
+  get redirectCounter(): number {
+    if (this.playgroundService.redirectCounter === 0 && !this._modalClosed) {
+      this._modalClosed = true;
+      this._subscription = of(this._modalClosed).pipe(
+        delay(100),
+        tap(() => this.closeDialog())).subscribe();
+    }
+    return this.playgroundService.redirectCounter;
   }
 
   get toolTipForJoinWorkflow(): string | undefined {
@@ -89,14 +110,29 @@ export class GameConnectorComponent implements OnDestroy {
     return !this.playgroundService.signalInvitationTokenCreated ? true : !this.playgroundService.isConnected ? true : false;
   }
 
+
+  // private navigateIfNotAutoRedirected(instant: boolean): void {
+  //   if (instant) {
+  //     if(this.active === 3 && this.playgroundService.isConnected) {
+  //       this.playgroundService.redirectToPlayground(true);
+  //     }
+  //   }
+  // }
+
+  private closeDialog(): void {
+    this.playgroundService.ngZone.run(() => {
+      this._showPlaygroundDialog = false;
+      this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+    });
+  }
+
   confirmCancellation(): void {
     this.playgroundService.confirmationService.confirm({
       header: 'Are you sure?',
       message: 'Please confirm to proceed.',
       accept: () => {
         this.playgroundService.messageService.add({ severity: 'error', summary: 'Connection Error', detail: 'Connection not established due to interruption!', life: 3000 });
-        this._showPlaygroundDialog = false;
-        this.showPlaygroundDialogChange.emit(this.showPlaygroundDialog);
+        this.closeDialog();
       },
       reject: () => {
         return false;

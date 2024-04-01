@@ -1,6 +1,7 @@
 import { Injectable, Injector, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { concat, interval, of, Subscription, take, tap } from 'rxjs';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
@@ -36,6 +37,8 @@ export class PlaygroundService {
 
   private _webRtc: WebRtcModel;
 
+  private _redirectCounter: number = 5;
+
   // private _signalInvitationTokenCreated: boolean = false;
   // private _message: string = '';
   private _playerName: string = '';
@@ -66,7 +69,7 @@ export class PlaygroundService {
   set isConnected(value: boolean) {
     this._isConnected = value;
     if (value) {
-      this._router.navigate(['playground'], { state: { } });
+      this.redirectToPlayground(false);
     }
   }
 
@@ -83,6 +86,18 @@ export class PlaygroundService {
 
   get confirmationService(): ConfirmationService {
     return this._confirmationService;
+  }
+
+  get ngZone(): NgZone {
+    return this._ngZone;
+  }
+
+  get router(): Router {
+    return this._router;
+  }
+
+  get redirectCounter(): number {
+    return this._redirectCounter;
   }
 
   get peerConnection() {
@@ -116,6 +131,9 @@ export class PlaygroundService {
     this._playerName = value;
   }
 
+  private navigateToPlayground(): void {
+    this._router.navigate(['playground'], { state: { } });
+  }
 
   createOrJoinPlayground(optionSelected: number): void {
     if (this.playerName.trim().length > 0) {
@@ -140,6 +158,20 @@ export class PlaygroundService {
     //   }
     // });
 
+  }
+
+  redirectToPlayground(instant: boolean): void {
+    if (instant) {
+      this.navigateToPlayground();
+    } else {
+      const subscription: Subscription = concat(
+        interval(1000).pipe(
+          take(5),
+          tap(() => this._redirectCounter--)),
+        of(this.redirectCounter === 0).pipe(
+          tap(() => (subscription.unsubscribe(), this.navigateToPlayground())))
+      ).subscribe()
+    }
   }
 
   resetTokenForPlayground(): void {

@@ -238,6 +238,11 @@
               @else {
                 @if(playgroundService.isConnected) {
                   <div class="text-center mt-3 mb-3 text-xl font-semibold"> Connected successfully </div>
+                  <div class="text-center mt-3 mb-3">
+                    You are being redirected to the playground in {{ redirectCounter }}...
+                    <br>
+                    To get to the playground immediately close this dialog.
+                  </div>
                 }
                 @else {
                   <div class="text-center mt-3 mb-3 text-xl font-semibold"> Connection unsuccessful </div>
