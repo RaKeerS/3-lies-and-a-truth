@@ -1,5 +1,6 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
 
 import { PlaygroundModel } from '../../models/playground.model';
@@ -18,7 +19,8 @@ import { VoidZoneComponent } from '../void-zone/void-zone.component';
     standalone: true,
     templateUrl: './playground.component.html',
     styleUrl: './playground.component.scss',
-    imports: [PrimeNgModule, OpponentComponent, MidZoneComponent, PlayerComponent, DeckComponent, VoidZoneComponent, PlaygroundGameRulesComponent]
+    imports: [PrimeNgModule, OpponentComponent, MidZoneComponent, PlayerComponent, DeckComponent, VoidZoneComponent, PlaygroundGameRulesComponent],
+    providers: [DialogService]
 })
 export class PlaygroundComponent implements OnInit, OnDestroy {
 
@@ -27,10 +29,14 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
   private readonly _playgroundId: number;
   // private readonly _playgroundSubject: BehaviorSubject<PlayGroundMetadata>;
+
+  private _dialogService: DialogService
   private _subscription?: Subscription;
 
   private _router: Router
   private _playgroundService: PlaygroundService;
+
+  private _dialogRef: DynamicDialogRef | undefined;
 
   // public webSocketModel: WebSocketsModel;
   public playgroundModel: PlaygroundModel;
@@ -40,6 +46,7 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     this._playgroundService = injector.get(PlaygroundService);
     this.playgroundModel = new PlaygroundModel(this._playgroundService);
     this._playgroundId = this._router.getCurrentNavigation()?.extras.state?.['playgroundId'];
+    this._dialogService = injector.get( DialogService);
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
   }
 
@@ -48,6 +55,7 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.showDialog();
     // this._subscription = this._playgroundSubject.subscribe(value => console.log('Playground Component: ', value));
   }
 
@@ -55,6 +63,26 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     // this._playgroundService.webRtcModel.playerName === 'Player 1' ?
     // this._playgroundService.webRtcModel.sendMessageWebRtc('Ohayo, Sekai!') :
     // this._playgroundService.webRtcModel.sendMessageWebRtc('Good Morning World!!');
+  }
+
+  public showDialog(): void {
+    this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
+      header: 'Welcome to the Playground!',
+      width: '50vw',
+      contentStyle: { overflow: 'auto' },
+      breakpoints: {
+          '2000px': '50vw',
+          '1199px': '75vw',
+          '640px': '90vw'
+      },
+      modal: true,
+      closable: false
+      // templates: {
+      //     footer: Footer
+      // }
+    });
+    console.log('DialogRef: ', this._dialogRef);
+    console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
   }
 
 }
