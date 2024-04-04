@@ -1,8 +1,13 @@
+import { Injector } from '@angular/core';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { concat, delay, fromEvent, interval, of, take, takeUntil, tap } from 'rxjs';
 
-import { PlaygroundService } from '../services/playground.service';
+import { PlaygroundGameRulesComponent } from '../views/playground-game-rules/playground-game-rules.component';
 
 export class PlaygroundModel {
+
+  private _dialogService: DialogService
+  private _dialogRef: DynamicDialogRef | undefined;
 
   private _gameToss: boolean = true;
   private _switch: boolean = false;
@@ -12,8 +17,14 @@ export class PlaygroundModel {
   private _playerTwoBetAmount: number = 0;
 
 
-  constructor(private _playgroundService: PlaygroundService) {
+
+  constructor(injector: Injector) {
     this.commenceRound().subscribe();
+    this._dialogService = injector.get( DialogService);
+  }
+
+  get dialogRef(): DynamicDialogRef | undefined {
+    return this._dialogRef;
   }
 
   get gameToss(): boolean {
@@ -49,6 +60,56 @@ export class PlaygroundModel {
     return concat(
       this.toss(),
       this.placeBets());
+  }
+
+  public showPlaygroundGameRulesDialog(): void {
+    this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
+      header: 'Welcome to the Playground!',
+      width: '50vw',
+      contentStyle: { overflow: 'auto' },
+      breakpoints: {
+          '2000px': '50vw',
+          '1199px': '75vw',
+          '640px': '90vw'
+      },
+      modal: true,
+      closable: false
+      // templates: {
+      //     footer: Footer
+      // }
+    });
+
+    this._dialogRef.onClose.subscribe((data: any) => {
+      console.log('Playground Game Rules Dialog Closed. Data: ', data);
+    })
+
+    console.log('DialogRef: ', this._dialogRef);
+    console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
+  }
+
+  public showPlaygroundGameTossDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
+    this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
+      header: 'Welcome to the Playground!',
+      width: '50vw',
+      contentStyle: { overflow: 'auto' },
+      breakpoints: {
+          '2000px': '50vw',
+          '1199px': '75vw',
+          '640px': '90vw'
+      },
+      modal: true,
+      closable: false
+      // templates: {
+      //     footer: Footer
+      // }
+    });
+
+    this._dialogRef.onClose.subscribe((data: any) => {
+      console.log('Playground Game Rules Dialog Closed. Data: ', data);
+    })
+
+    console.log('DialogRef: ', this._dialogRef);
+    console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
   }
 
   public toss() {

@@ -145,45 +145,7 @@
 
         <div class="flex pt-4 justify-content-between">
           <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
-          <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
-        </div>
-      </ng-template>
-    </p-stepperPanel>
-    <p-stepperPanel>
-      <ng-template pTemplate="header" let-onClick="onClick" let-index="index" let-model="model">
-        <button class="bg-transparent border-none inline-flex flex-column gap-2" (onClick)="onClick.emit()">
-          <span
-            class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
-            [ngClass]="{
-                'bg-primary border-primary': index <= active,
-                'surface-border': index > active
-            }">
-            @if (active <= index) {
-              <i class="pi pi-star"></i>
-            }
-            @else {
-              <i class="pi pi-star-fill"></i>
-            }
-          </span>
-        </button>
-      </ng-template>
-      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
-        <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 30rem;">
-          <div class="text-center mt-3 mb-3 text-xl font-semibold"> Rules of the Playground for the Game </div>
-
-          <div class="field p-fluid">
-            <div class="p-field p-col-12 p-3">
-              <div class="toss-players">
-                <p-button label="Player 1" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': switch, 'player-buttons': true }"></p-button>
-                <p-button label="Player 2" [outlined]="true" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !switch, 'player-buttons': true }"></p-button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex pt-4 justify-content-between">
-          <!-- <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" /> -->
-          <p-button (onClick)="nextCallback.emit(); moveToGameRound();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+          <p-button (onClick)="nextCallback.emit(); moveToGameRounds();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
         </div>
       </ng-template>
     </p-stepperPanel>

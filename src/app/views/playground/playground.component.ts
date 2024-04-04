@@ -1,6 +1,6 @@
 import { Component, HostBinding, Injector, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
 
 import { PlaygroundModel } from '../../models/playground.model';
@@ -30,33 +30,35 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   private readonly _playgroundId: number;
   // private readonly _playgroundSubject: BehaviorSubject<PlayGroundMetadata>;
 
-  private _dialogService: DialogService
   private _subscription?: Subscription;
 
   private _router: Router
   private _playgroundService: PlaygroundService;
 
-  private _dialogRef: DynamicDialogRef | undefined;
-
   // public webSocketModel: WebSocketsModel;
-  public playgroundModel: PlaygroundModel;
+  private _playgroundModel: PlaygroundModel;
 
   constructor(injector: Injector) {
     this._router = injector.get(Router);
     this._playgroundService = injector.get(PlaygroundService);
-    this.playgroundModel = new PlaygroundModel(this._playgroundService);
+    this._playgroundModel = new PlaygroundModel(injector);
     this._playgroundId = this._router.getCurrentNavigation()?.extras.state?.['playgroundId'];
-    this._dialogService = injector.get( DialogService);
+
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
   }
 
   ngOnDestroy(): void {
     this._subscription?.unsubscribe();
+    this._playgroundModel.dialogRef?.close();
   }
 
   ngOnInit(): void {
-    this.showDialog();
+    this._playgroundModel.showPlaygroundGameRulesDialog();
     // this._subscription = this._playgroundSubject.subscribe(value => console.log('Playground Component: ', value));
+  }
+
+  get playgroundModel(): PlaygroundModel {
+    return this._playgroundModel;
   }
 
   sendMessage(): void {
@@ -65,24 +67,6 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     // this._playgroundService.webRtcModel.sendMessageWebRtc('Good Morning World!!');
   }
 
-  public showDialog(): void {
-    this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
-      header: 'Welcome to the Playground!',
-      width: '50vw',
-      contentStyle: { overflow: 'auto' },
-      breakpoints: {
-          '2000px': '50vw',
-          '1199px': '75vw',
-          '640px': '90vw'
-      },
-      modal: true,
-      closable: false
-      // templates: {
-      //     footer: Footer
-      // }
-    });
-    console.log('DialogRef: ', this._dialogRef);
-    console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
-  }
+
 
 }
