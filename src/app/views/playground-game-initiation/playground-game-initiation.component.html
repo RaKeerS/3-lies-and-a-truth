@@ -1,0 +1,15 @@
+<p>playground-game-initiation works!</p>
+
+<div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 30rem;">
+  <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ gameTossWinnerDetails }} </div>
+
+  <div class="field p-fluid">
+    <div class="p-field p-col-12 p-3">
+      <div class="toss-players">
+        <p-button label="Player 1" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': switch, 'player-buttons': true }"></p-button>
+        <p-button label="Player 2" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !switch, 'player-buttons': true }"></p-button>
+      </div>
+    </div>
+  </div>
+
+</div>
