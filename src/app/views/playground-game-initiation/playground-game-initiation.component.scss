@@ -1,5 +1,25 @@
+:host {
+  &::ng-deep {
+    .player-buttons {
+      // inline-size: 12rem;
+      opacity: 1;
+      .p-button {
+        inline-size: 12rem;
+      }
+    }
+  }
+}
+
 .toss-players {
   display: flex;
   justify-content: space-between;
   padding: 1rem 0;
+}
+
+.button-highlight {
+  background: rgba(255, 224, 130, 0.16);
+  color: #ffe082;
+  border-radius: 2rem;
+  border: 1px solid;
+  box-shadow: 0 0 0 1px #ffecb3;
 }

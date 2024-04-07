@@ -2,6 +2,7 @@ import { Injector } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { concat, delay, fromEvent, interval, of, take, takeUntil, tap } from 'rxjs';
 
+import { PlaygroundTossOutcome } from '../enums/playground.enum';
 import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
 import { PlaygroundGameRulesComponent } from '../views/playground-game-rules/playground-game-rules.component';
 
@@ -11,6 +12,7 @@ export class PlaygroundModel {
   private _dialogRef: DynamicDialogRef | undefined;
 
   private _gameToss: boolean = true;
+  private _gameTossWinnerDetails: string = '';
   private _switch: boolean = false;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
@@ -20,7 +22,7 @@ export class PlaygroundModel {
 
 
   constructor(injector: Injector) {
-    this.commenceRound().subscribe();
+    // this.commenceRound().subscribe();
     this._dialogService = injector.get( DialogService);
   }
 
@@ -33,6 +35,10 @@ export class PlaygroundModel {
   }
   set gameToss(value: boolean) {
     this._gameToss = value;
+  }
+
+  get gameTossWinnerDetails(): string {
+    return this._gameTossWinnerDetails;
   }
 
   get playerOrder(): Map<string, number> {
@@ -115,6 +121,51 @@ export class PlaygroundModel {
 
     console.log('DialogRef: ', this._dialogRef);
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
+  }
+
+  public doGameToss() {
+    // Toss between Player and Opponent automatically, just show their names as 'Player 1', 'Player 2' as buttons and highlight borders alternatively for like 5 secs and using randomizer just pick between the two Players.
+    // Randomizer logic to get Players's order.
+
+    const getRandomOrder = () => (Math.floor(Math.random() * 2) + 1);
+
+    // NOTE - Player 1 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_1
+    // NOTE - Player 2 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_2
+    const setPlayerOrder = (tossOutcome: number) => {
+      if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
+        this._switch = true;
+        this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
+      } else {
+        this._switch = false;
+        this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
+      }
+    }
+
+    // {
+    //   if(tossResult === 1) {
+    //     this._switch = true; // NOTE - Player 1 Wins the Toss, starts first!
+
+    //   } else {
+    //     this._switch = false; // NOTE - Player 2 Wins the Toss, starts first!
+
+    //   }
+    // }
+
+
+    const interval$ = interval(500).pipe(
+  take(10),
+  tap(() => this._switch = !this._switch));
+
+    const gameOrder$ = of(this.switch).pipe(
+      tap(() => setPlayerOrder(getRandomOrder())),
+      delay(5000),
+      tap(() => this._dialogRef?.close()));
+
+
+    return concat(
+      interval$,
+      gameOrder$
+    )
   }
 
   public toss() {

@@ -1,6 +1,7 @@
-import { Component, Injector } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
+import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
 @Component({
@@ -10,15 +11,19 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
   templateUrl: './playground-game-initiation.component.html',
   styleUrl: './playground-game-initiation.component.scss'
 })
-export class PlaygroundGameInitiationComponent {
+export class PlaygroundGameInitiationComponent implements OnInit {
 
   private _dynamicDialogConfig: DynamicDialogConfig;
-  private _gameTossWinnerDetails: string = '';
-  private _modalData: any;
+  private _modalData: PlaygroundModel;
 
   constructor(injector: Injector) {
     this._dynamicDialogConfig = injector.get(DynamicDialogConfig);
     this._modalData = this._dynamicDialogConfig.data.playgroundModel;
+  }
+
+  ngOnInit(): void {
+    // this._modalData.commenceRound();
+    this._modalData.doGameToss().subscribe();
   }
 
   get switch(): boolean {
@@ -26,7 +31,7 @@ export class PlaygroundGameInitiationComponent {
   }
 
   get gameTossWinnerDetails(): string {
-    return this._gameTossWinnerDetails;
+    return this._modalData.gameTossWinnerDetails;
   }
 
 }
