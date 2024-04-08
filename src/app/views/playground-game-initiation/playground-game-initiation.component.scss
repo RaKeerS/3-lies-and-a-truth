@@ -1,3 +1,11 @@
+// Hiding vertical scrollbar at html viewport
+::ng-deep {
+  :root {
+    overflow-y: hidden !important;
+  }
+}
+
+
 :host {
   &::ng-deep {
     .player-buttons {

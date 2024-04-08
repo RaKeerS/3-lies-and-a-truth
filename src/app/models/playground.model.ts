@@ -20,7 +20,6 @@ export class PlaygroundModel {
   private _playerTwoBetAmount: number = 0;
 
 
-
   constructor(injector: Injector) {
     // this.commenceRound().subscribe();
     this._dialogService = injector.get( DialogService);

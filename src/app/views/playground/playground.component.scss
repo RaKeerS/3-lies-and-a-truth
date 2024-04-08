@@ -113,6 +113,14 @@
     }
 
     .outer.root-card {
+      > .p-card {
+        width: 100%;
+
+        > .p-card-body {
+          padding: 0.55rem;
+        }
+      }
+
       :first-child(.p-card-content) {
         padding: 0%;
       }

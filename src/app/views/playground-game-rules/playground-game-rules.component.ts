@@ -15,7 +15,6 @@ export class PlaygroundGameRulesComponent {
   // @Output() commenceGame: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   private _gameToss: boolean = true;
-  private _showPlaygroundGameRulesDialog: boolean = true;
   private _switch: boolean = false;
 
   private _dialogRef: DynamicDialogRef;
@@ -35,13 +34,6 @@ export class PlaygroundGameRulesComponent {
   }
   set gameToss(value: boolean) {
     this._gameToss = value;
-  }
-
-  get showPlaygroundGameRulesDialog(): boolean {
-    return this._showPlaygroundGameRulesDialog;
-  }
-  set showPlaygroundGameRulesDialog(value: boolean) {
-    this._showPlaygroundGameRulesDialog = value;
   }
 
 //   public toss() {
