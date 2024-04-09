@@ -1,8 +1,8 @@
 import { Injector } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { concat, delay, fromEvent, interval, of, take, takeUntil, tap } from 'rxjs';
+import { concat, delay, interval, of, switchMap, take, tap } from 'rxjs';
 
-import { PlaygroundTossOutcome } from '../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundTossOutcome } from '../enums/playground.enum';
 import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
 import { PlaygroundGameRulesComponent } from '../views/playground-game-rules/playground-game-rules.component';
 
@@ -19,6 +19,7 @@ export class PlaygroundModel {
   private _playerOneBetAmount: number = 0;
   private _playerTwoBetAmount: number = 0;
 
+  private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
 
   constructor(injector: Injector) {
     // this.commenceRound().subscribe();
@@ -27,6 +28,10 @@ export class PlaygroundModel {
 
   get dialogRef(): DynamicDialogRef | undefined {
     return this._dialogRef;
+  }
+
+  get gameStages(): Map<PlaygroundGameStage, boolean> {
+    return this._gameStages;
   }
 
   get gameToss(): boolean {
@@ -90,6 +95,26 @@ export class PlaygroundModel {
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
   }
 
+
+  private placeBets() {
+    // This method should return the graphic(Place Bets Modal or Image/Gif) to be shown on screen and not the bet amounts of players.
+
+    this.gameStages.set(PlaygroundGameStage.BET, true);
+
+
+
+    return of();
+    // return combineLatest([this.playerOneBet(), this.playerTwoBet()]);
+  }
+
+  private toss() {
+    this.gameStages.set(PlaygroundGameStage.TOSS, true);
+    return of(this.gameStages.get(PlaygroundGameStage.TOSS)).pipe(
+      switchMap(() => this.doGameToss()),
+      tap(() => this.gameStages.set(PlaygroundGameStage.TOSS, true))
+    );
+  }
+
   public commenceRound() {
     return concat(
       this.toss(),
@@ -116,7 +141,7 @@ export class PlaygroundModel {
     this._dialogRef.onClose.subscribe((data: any) => {
       this.showPlaygroundGameInitiationDialog();
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
-    })
+    });
 
     console.log('DialogRef: ', this._dialogRef);
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
@@ -167,81 +192,74 @@ export class PlaygroundModel {
     )
   }
 
-  public toss() {
-    // Toss between Player and Opponent automatically, just show their names as 'Player 1', 'Player 2' as buttons and highlight borders alternatively for like 5 secs and using randomizer just pick between the two Players.
-    // Randomizer logic to get Players's order.
+//   public toss() {
+//     // Toss between Player and Opponent automatically, just show their names as 'Player 1', 'Player 2' as buttons and highlight borders alternatively for like 5 secs and using randomizer just pick between the two Players.
+//     // Randomizer logic to get Players's order.
 
-    // this._playerOrder.set('Player1', 1);
-    // this._playerOrder.set('Player2', 2);
-
-
-    const source = interval(1000);
-    const clicks = fromEvent(document, 'click');
-    const result = source.pipe(takeUntil(clicks));
-    // result.subscribe(x => console.log(x));
-
-    const timer = interval(500);
-
-    const getRandomOrder = () => (Math.floor(Math.random() * 2) + 1);
-    const setPlayerOrder = (tossResult: number) => {
-      if(tossResult === 1) {
-        this._switch = true; // NOTE - Player 1 Wins the Toss, starts first!
-        this._playerOrder.set('Player1', 1);
-        this._playerOrder.set('Player2', 2);
-      } else {
-        this._switch = false; // NOTE - Player 2 Wins the Toss, starts first!
-        this._playerOrder.set('Player1', 2);
-        this._playerOrder.set('Player2', 1);
-      }
-    }
-
-    this.gameToss = true;
-    // return of(this.gameToss).pipe(
-    // // delay(15000),
-    // tap(() => this.gameToss = false),
-    // map(() => this._playerOrder));
-
-    const timer$ = timer.pipe(
-take(10),
-tap(() => this._switch = !this._switch));
-// tap(() => this._playgroundService.sendWebRtcMessages('Ohayo! Sekai!! Good Morning World!!!')));
-
-  const gameOrder$ = of(this.gameToss).pipe(
-    tap(() => setPlayerOrder(getRandomOrder())),
-    delay(5000),
-    tap(() => this.gameToss = false));
-    // tap(() => console.log('Hi!')),
-    // delay(5000),
-    // tap(() => console.log('Bye!')),
-    // map(() => (this.gameToss = false, getRandomOrder())),
-    // map(yo => yo));
-
-    return concat(
-      timer$,
-      gameOrder$
-    )
+//     // this._playerOrder.set('Player1', 1);
+//     // this._playerOrder.set('Player2', 2);
 
 
+//     const source = interval(1000);
+//     const clicks = fromEvent(document, 'click');
+//     const result = source.pipe(takeUntil(clicks));
+//     // result.subscribe(x => console.log(x));
 
-    // const abc = interval(1000);
+//     const timer = interval(500);
 
-    // this.gameToss = true;
-    // return abc.pipe(
-    //   take(5),
-    //                 tap(() => this.counter++),
-    // delay(5000),
-    // tap(() => this.gameToss = false),
-    // map(() => this._playerOrder));
+//     const getRandomOrder = () => (Math.floor(Math.random() * 2) + 1);
+//     const setPlayerOrder = (tossResult: number) => {
+//       if(tossResult === 1) {
+//         this._switch = true; // NOTE - Player 1 Wins the Toss, starts first!
+//         this._playerOrder.set('Player1', 1);
+//         this._playerOrder.set('Player2', 2);
+//       } else {
+//         this._switch = false; // NOTE - Player 2 Wins the Toss, starts first!
+//         this._playerOrder.set('Player1', 2);
+//         this._playerOrder.set('Player2', 1);
+//       }
+//     }
 
-    // return of(this._playerOrder);
-  }
+//     this.gameToss = true;
+//     // return of(this.gameToss).pipe(
+//     // // delay(15000),
+//     // tap(() => this.gameToss = false),
+//     // map(() => this._playerOrder));
 
-  public placeBets() {
-    // This method should return the graphic(Place Bets Modal or Image/Gif) to be shown on screen and not the bet amounts of players.
+//     const timer$ = timer.pipe(
+// take(10),
+// tap(() => this._switch = !this._switch));
+// // tap(() => this._playgroundService.sendWebRtcMessages('Ohayo! Sekai!! Good Morning World!!!')));
 
-    return of();
-    // return combineLatest([this.playerOneBet(), this.playerTwoBet()]);
-  }
+//   const gameOrder$ = of(this.gameToss).pipe(
+//     tap(() => setPlayerOrder(getRandomOrder())),
+//     delay(5000),
+//     tap(() => this.gameToss = false));
+//     // tap(() => console.log('Hi!')),
+//     // delay(5000),
+//     // tap(() => console.log('Bye!')),
+//     // map(() => (this.gameToss = false, getRandomOrder())),
+//     // map(yo => yo));
+
+//     return concat(
+//       timer$,
+//       gameOrder$
+//     )
+
+
+
+//     // const abc = interval(1000);
+
+//     // this.gameToss = true;
+//     // return abc.pipe(
+//     //   take(5),
+//     //                 tap(() => this.counter++),
+//     // delay(5000),
+//     // tap(() => this.gameToss = false),
+//     // map(() => this._playerOrder));
+
+//     // return of(this._playerOrder);
+//   }
 
 
   // public playerOneBet() {
