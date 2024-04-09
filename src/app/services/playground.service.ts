@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { concat, interval, of, Subscription, take, tap } from 'rxjs';
 
+import { PlaygroundModel } from '../models/playground.model';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
 @Injectable({
@@ -45,11 +46,14 @@ export class PlaygroundService {
   // private _message: string = '';
   private _playerName: string = '';
 
+  private _playgroundModel: PlaygroundModel;
+
   constructor(injector: Injector) {
     this._messageService = injector.get(MessageService);
     this._confirmationService = injector.get(ConfirmationService);
     this._ngZone = injector.get(NgZone);
     this._router = injector.get(Router);
+    this._playgroundModel = new PlaygroundModel(injector, this);
     this._webRtc = new WebRtcModel(this, this._ngZone);
   }
 
@@ -88,6 +92,10 @@ export class PlaygroundService {
 
   get confirmationService(): ConfirmationService {
     return this._confirmationService;
+  }
+
+  get playgroundModel(): PlaygroundModel {
+    return this._playgroundModel;
   }
 
   get ngZone(): NgZone {

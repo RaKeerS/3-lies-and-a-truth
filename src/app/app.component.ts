@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { PrimeNgModule } from './prime-ng/prime-ng.module';
 import { PlaygroundService } from './services/playground.service';
@@ -13,7 +14,7 @@ import { GameConnectorComponent } from './views/game-connector/game-connector.co
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
     imports: [RouterOutlet, PrimeNgModule, GameConnectorComponent],
-    providers: [MessageService, PlaygroundService, ConfirmationService]
+    providers: [DialogService, MessageService, PlaygroundService, ConfirmationService]
 })
 export class AppComponent implements OnDestroy {
   title = '3-lies-and-a-truth';

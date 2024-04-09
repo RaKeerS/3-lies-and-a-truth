@@ -26,9 +26,10 @@ export class PlaygroundModel {
 
   private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
 
-  constructor(injector: Injector) {
+  constructor(injector: Injector, playgroundService: PlaygroundService) {
     this.commenceRound().subscribe();
-    this._playgroundService = injector.get(PlaygroundService);
+    // this._playgroundService = injector.get(PlaygroundService);
+    this._playgroundService = playgroundService;
     this._dialogService = injector.get( DialogService);
   }
 
@@ -100,9 +101,9 @@ export class PlaygroundModel {
       },
       modal: true,
       closable: false,
-      data: {
-        playgroundModel: this
-      }
+      // data: {
+      //   playgroundModel: this
+      // }
       // templates: {
       //     footer: Footer
       // }

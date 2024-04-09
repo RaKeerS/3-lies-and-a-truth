@@ -4,6 +4,7 @@ import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { PlaygroundGameStage } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
+import { PlaygroundService } from '../../services/playground.service';
 
 @Component({
   selector: 'app-playground-game-initiation',
@@ -15,13 +16,15 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 export class PlaygroundGameInitiationComponent implements OnInit {
 
   private _dynamicDialogConfig: DynamicDialogConfig;
-  private _modalData: PlaygroundModel;
+  // private _modalData: PlaygroundModel;
+  private _playgroundService: PlaygroundService;
 
   public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
 
   constructor(injector: Injector) {
     this._dynamicDialogConfig = injector.get(DynamicDialogConfig);
-    this._modalData = this._dynamicDialogConfig.data.playgroundModel;
+    this._playgroundService = injector.get(PlaygroundService);
+    // this._modalData = this._dynamicDialogConfig.data.playgroundModel;
   }
 
   ngOnInit(): void {
@@ -30,7 +33,8 @@ export class PlaygroundGameInitiationComponent implements OnInit {
   }
 
   get playgroundModel(): PlaygroundModel {
-    return this._modalData;
+    // return this._modalData;
+    return this._playgroundService.playgroundModel;
   }
 
   // get switch(): boolean {

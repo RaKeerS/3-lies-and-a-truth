@@ -36,12 +36,12 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   private _playgroundService: PlaygroundService;
 
   // public webSocketModel: WebSocketsModel;
-  private _playgroundModel: PlaygroundModel;
+  // private _playgroundModel: PlaygroundModel;
 
   constructor(injector: Injector) {
     this._router = injector.get(Router);
     this._playgroundService = injector.get(PlaygroundService);
-    this._playgroundModel = new PlaygroundModel(injector);
+    // this._playgroundModel = new PlaygroundModel(injector);
     this._playgroundId = this._router.getCurrentNavigation()?.extras.state?.['playgroundId'];
 
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
@@ -49,16 +49,17 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscription?.unsubscribe();
-    this._playgroundModel.dialogRef?.close();
+    this.playgroundModel.dialogRef?.close();
   }
 
   ngOnInit(): void {
-    this._playgroundModel.showPlaygroundGameRulesDialog();
+    this.playgroundModel.showPlaygroundGameRulesDialog();
     // this._subscription = this._playgroundSubject.subscribe(value => console.log('Playground Component: ', value));
   }
 
   get playgroundModel(): PlaygroundModel {
-    return this._playgroundModel;
+    // return this._playgroundModel;
+    return this._playgroundService.playgroundModel;
   }
 
   sendMessage(): void {
