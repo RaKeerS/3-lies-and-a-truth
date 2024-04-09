@@ -1,27 +1,50 @@
 <p>playground-game-initiation works!</p>
 
-<div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 40rem;">
-  <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ gameTossWinnerDetails }} </div> -->
+@if((playgroundModel.gameStage$ | async) === PlaygroundGameStage.TOSS) {
+  <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 40rem;">
+    <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ gameTossWinnerDetails }} </div> -->
 
-  <div class="field p-fluid">
-    <div class="p-field p-col-12 p-3">
-      <div class="toss-players">
-        <p-button label="Player 1" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': switch, 'player-buttons': true }"></p-button>
-        <p-button label="Player 2" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !switch, 'player-buttons': true }"></p-button>
+    <div class="field p-fluid">
+      <div class="p-field p-col-12 p-3">
+        <div class="toss-players">
+          <p-button label="Player 1" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': playgroundModel.switch, 'player-buttons': true }"></p-button>
+          <p-button label="Player 2" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !playgroundModel.switch, 'player-buttons': true }"></p-button>
+        </div>
+
+        <!-- <div class="toss-result flex p-3 justify-content-center">
+          <h3>
+            @if (playgroundModel.playerOrder.get('Player1') === 1) {
+              Player 1 Wins the Toss! Begins first!!
+            } @else {
+              Player 2 Wins the Toss! Begins first!!
+            }
+          </h3>
+        </div> -->
       </div>
+    </div>
 
-      <!-- <div class="toss-result flex p-3 justify-content-center">
-        <h3>
-          @if (playgroundModel.playerOrder.get('Player1') === 1) {
-            Player 1 Wins the Toss! Begins first!!
-          } @else {
-            Player 2 Wins the Toss! Begins first!!
-          }
-        </h3>
-      </div> -->
+    <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ playgroundModel.gameTossWinnerDetails }} </div>
+
+  </div>
+}
+
+@if((playgroundModel.gameStage$ | async) === PlaygroundGameStage.BET) {
+  <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 40rem;">
+    <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ gameTossWinnerDetails }} </div> -->
+    <div class="field p-fluid">
+      <div class="p-field p-col-12 p-3">
+        Betting Karle Boss!!
+
+        <!-- <div class="toss-result flex p-3 justify-content-center">
+          <h3>
+            @if (playgroundModel.playerOrder.get('Player1') === 1) {
+              Player 1 Wins the Toss! Begins first!!
+            } @else {
+              Player 2 Wins the Toss! Begins first!!
+            }
+          </h3>
+        </div> -->
+      </div>
     </div>
   </div>
-
-  <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ gameTossWinnerDetails }} </div>
-
-</div>
+}

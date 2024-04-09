@@ -1,8 +1,9 @@
 import { Injector } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { concat, delay, interval, of, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, concat, delay, filter, forkJoin, interval, Observable, of, switchMap, take, tap } from 'rxjs';
 
 import { PlaygroundGameStage, PlaygroundTossOutcome } from '../enums/playground.enum';
+import { PlaygroundService } from '../services/playground.service';
 import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
 import { PlaygroundGameRulesComponent } from '../views/playground-game-rules/playground-game-rules.component';
 
@@ -16,13 +17,18 @@ export class PlaygroundModel {
   private _switch: boolean = false;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
+  private _playgroundService: PlaygroundService;
+
   private _playerOneBetAmount: number = 0;
   private _playerTwoBetAmount: number = 0;
 
   private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
 
+  private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
+
   constructor(injector: Injector) {
-    // this.commenceRound().subscribe();
+    this.commenceRound().subscribe();
+    this._playgroundService = injector.get(PlaygroundService);
     this._dialogService = injector.get( DialogService);
   }
 
@@ -30,8 +36,20 @@ export class PlaygroundModel {
     return this._dialogRef;
   }
 
+  get gameStage$(): Observable<PlaygroundGameStage> {
+    return this._gameStage.asObservable();
+  }
+
   get gameStages(): Map<PlaygroundGameStage, boolean> {
     return this._gameStages;
+  }
+
+  get gameStageToss() {
+    return of(this.gameStages.get(PlaygroundGameStage.TOSS));
+  }
+
+  get gameStageBet(): boolean | undefined {
+    return this.gameStages.get(PlaygroundGameStage.BET);
   }
 
   get gameToss(): boolean {
@@ -68,6 +86,9 @@ export class PlaygroundModel {
   }
 
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
+    this.gameStages.set(PlaygroundGameStage.TOSS, true);
+    this._gameStage.next(PlaygroundGameStage.TOSS);
+
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
       header: 'Game Toss',
       width: '50vw',
@@ -108,10 +129,14 @@ export class PlaygroundModel {
   }
 
   private toss() {
-    this.gameStages.set(PlaygroundGameStage.TOSS, true);
-    return of(this.gameStages.get(PlaygroundGameStage.TOSS)).pipe(
-      switchMap(() => this.doGameToss()),
-      tap(() => this.gameStages.set(PlaygroundGameStage.TOSS, true))
+    // this.gameStages.set(PlaygroundGameStage.TOSS, true);
+
+    return this.gameStage$.pipe(
+      filter((stage) => stage === PlaygroundGameStage.TOSS),
+      switchMap(() => forkJoin({ test: this.doGameToss() }).pipe(
+        // tap((data) => this.gameStages.set(PlaygroundGameStage.TOSS, false))
+        tap((data) => this._gameStage.next(PlaygroundGameStage.BET))
+      )),
     );
   }
 
@@ -183,7 +208,10 @@ export class PlaygroundModel {
     const gameOrder$ = of(this.switch).pipe(
       tap(() => setPlayerOrder(getRandomOrder())),
       delay(5000),
-      tap(() => this._dialogRef?.close()));
+      tap(() =>
+        // this._dialogRef?.close())
+      console.log('gameToss: ', this.dialogRef)
+    ));
 
 
     return concat(

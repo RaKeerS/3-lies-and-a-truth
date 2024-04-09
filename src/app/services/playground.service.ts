@@ -39,6 +39,8 @@ export class PlaygroundService {
 
   private _redirectCounter: number = 5;
 
+  private _counter = 0;
+
   // private _signalInvitationTokenCreated: boolean = false;
   // private _message: string = '';
   private _playerName: string = '';
@@ -195,6 +197,7 @@ export class PlaygroundService {
     //     await parent.navigator.clipboard.writeText('Bhai Bhai' ?? '');
     //   }
     // });
+    this._counter++;
 
     await navigator.clipboard.writeText(this.signalInvitationToken ?? '')
     console.log('Clicked!!!');
