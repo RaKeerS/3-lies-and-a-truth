@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
-import { PlaygroundService } from '../../services/playground.service';
 import { APP_CONTAINER_FLEX_CLASS } from '../../types/app-types';
 import { DeckComponent } from '../deck/deck.component';
 import { MidZoneComponent } from '../mid-zone/mid-zone.component';
@@ -33,15 +32,15 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   private _subscription?: Subscription;
 
   private _router: Router
-  private _playgroundService: PlaygroundService;
+  // private _playgroundService: PlaygroundService;
 
   // public webSocketModel: WebSocketsModel;
-  // private _playgroundModel: PlaygroundModel;
+  private _playgroundModel: PlaygroundModel;
 
   constructor(injector: Injector) {
     this._router = injector.get(Router);
-    this._playgroundService = injector.get(PlaygroundService);
-    // this._playgroundModel = new PlaygroundModel(injector);
+    // this._playgroundService = injector.get(PlaygroundService);
+    this._playgroundModel = new PlaygroundModel(injector);
     this._playgroundId = this._router.getCurrentNavigation()?.extras.state?.['playgroundId'];
 
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
@@ -58,8 +57,8 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   }
 
   get playgroundModel(): PlaygroundModel {
-    // return this._playgroundModel;
-    return this._playgroundService.playgroundModel;
+    return this._playgroundModel;
+    // return this._playgroundService.playgroundModel;
   }
 
   sendMessage(): void {

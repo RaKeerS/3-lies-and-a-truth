@@ -18,7 +18,6 @@ import { GameConnectorComponent } from './views/game-connector/game-connector.co
 })
 export class AppComponent implements OnDestroy {
   title = '3-lies-and-a-truth';
-  private _playgroundService: PlaygroundService;
 
   createPlayground: boolean = false;
   nextStage = false;
@@ -27,10 +26,6 @@ export class AppComponent implements OnDestroy {
   playerName: string = '';
   playgroundId?: number;
   token: string = '';
-
-  constructor(playgroundService: PlaygroundService) {
-    this._playgroundService = playgroundService;
-  }
 
   ngOnDestroy(): void {
     // this._playgroundService.terminateWebRtcConnection();
@@ -58,10 +53,6 @@ export class AppComponent implements OnDestroy {
   //   this.callMeMaybe();
 
   // }
-
-  get playgroundService() {
-    return this._playgroundService;
-  }
 
   async callMeMaybe() {
 

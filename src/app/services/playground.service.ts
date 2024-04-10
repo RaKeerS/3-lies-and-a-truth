@@ -1,9 +1,8 @@
 import { Injectable, Injector, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { concat, interval, of, Subscription, take, tap } from 'rxjs';
+import { BehaviorSubject, concat, interval, Observable, of, Subscription, take, tap } from 'rxjs';
 
-import { PlaygroundModel } from '../models/playground.model';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
 @Injectable({
@@ -33,10 +32,11 @@ export class PlaygroundService {
   // private _decompressedString: string = '';
 
   private _signalInvitationToken?: string;
-
   private _signalInvitationTokenCreated: boolean = false;
 
   private _webRtc: WebRtcModel;
+
+  private _switch: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private _redirectCounter: number = 5;
 
@@ -46,14 +46,11 @@ export class PlaygroundService {
   // private _message: string = '';
   private _playerName: string = '';
 
-  private _playgroundModel: PlaygroundModel;
-
   constructor(injector: Injector) {
     this._messageService = injector.get(MessageService);
     this._confirmationService = injector.get(ConfirmationService);
     this._ngZone = injector.get(NgZone);
     this._router = injector.get(Router);
-    this._playgroundModel = new PlaygroundModel(injector, this);
     this._webRtc = new WebRtcModel(this, this._ngZone);
   }
 
@@ -94,10 +91,6 @@ export class PlaygroundService {
     return this._confirmationService;
   }
 
-  get playgroundModel(): PlaygroundModel {
-    return this._playgroundModel;
-  }
-
   get ngZone(): NgZone {
     return this._ngZone;
   }
@@ -108,6 +101,14 @@ export class PlaygroundService {
 
   get redirectCounter(): number {
     return this._redirectCounter;
+  }
+
+  get switch(): BehaviorSubject<boolean> {
+    return this._switch;
+  }
+
+  get switch$(): Observable<boolean> {
+    return this._switch.asObservable();
   }
 
   get peerConnection() {
@@ -149,7 +150,7 @@ export class PlaygroundService {
     if (this.playerName.trim().length > 0) {
       this.createPlayground = Boolean(optionSelected);
       // if (this.optionSelected === PlaygroundEnum.CREATE) {
-      this._webRtc.initiateWebRtc(this.playerName);
+      this._webRtc.initiateWebRtc();
       // } else {
       // }
 

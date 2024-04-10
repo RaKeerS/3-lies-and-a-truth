@@ -14,7 +14,6 @@ export class PlaygroundModel {
 
   private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
-  private _switch: boolean = false;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
   private _playgroundService: PlaygroundService;
@@ -26,10 +25,10 @@ export class PlaygroundModel {
 
   private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
 
-  constructor(injector: Injector, playgroundService: PlaygroundService) {
+  constructor(injector: Injector) {
     this.commenceRound().subscribe();
-    // this._playgroundService = injector.get(PlaygroundService);
-    this._playgroundService = playgroundService;
+    this._playgroundService = injector.get(PlaygroundService);
+    // this._playgroundService = playgroundService;
     this._dialogService = injector.get( DialogService);
   }
 
@@ -82,8 +81,8 @@ export class PlaygroundModel {
     this._playerTwoBetAmount = value;
   }
 
-  get switch(): boolean {
-    return this._switch;
+  get switch$(): Observable<boolean> {
+    return this._playgroundService.switch$;
   }
 
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
@@ -101,9 +100,9 @@ export class PlaygroundModel {
       },
       modal: true,
       closable: false,
-      // data: {
-      //   playgroundModel: this
-      // }
+      data: {
+        playgroundModel: this
+      }
       // templates: {
       //     footer: Footer
       // }
@@ -121,7 +120,7 @@ export class PlaygroundModel {
   private placeBets() {
     // This method should return the graphic(Place Bets Modal or Image/Gif) to be shown on screen and not the bet amounts of players.
 
-    this.gameStages.set(PlaygroundGameStage.BET, true);
+    // this.gameStages.set(PlaygroundGameStage.BET, true);
 
 
 
@@ -182,13 +181,18 @@ export class PlaygroundModel {
     // NOTE - Player 1 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_1
     // NOTE - Player 2 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_2
     const setPlayerOrder = (tossOutcome: number) => {
-      if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
-        this._switch = true;
-        this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
-      } else {
-        this._switch = false;
-        this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
+      if (!this._playgroundService.createPlayground) {
+        if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
+          // TODO: Alongside the below line, call the 'peerConnection's send method'
+          this._playgroundService.switch.next(true);
+          // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
+        } else {
+          // TODO: Alongside the below line, call the 'peerConnection's send method'
+          this._playgroundService.switch.next(false);
+          // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
+        }
       }
+      // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
     }
 
     // {
@@ -201,23 +205,33 @@ export class PlaygroundModel {
     //   }
     // }
 
+    let toggleSwitch = false;
 
     const interval$ = interval(500).pipe(
-  take(10),
-  tap(() => this._switch = !this._switch));
+    take(10),
+    tap(() => {
+      toggleSwitch = !toggleSwitch;
+      // this._playgroundService.switch = !this._playgroundService.switch
+      this._playgroundService.switch.next(toggleSwitch);
+    }));
 
-    const gameOrder$ = of(this.switch).pipe(
-      tap(() => setPlayerOrder(getRandomOrder())),
-      delay(5000),
-      tap(() =>
+    const gameOrder$ = of(toggleSwitch).pipe(
+      // takeLast(1),
+      tap(() => setPlayerOrder(getRandomOrder())));
+
+    const gameTossResult$ = this.switch$.pipe(
+      // takeLast(1),
+      tap((data) => {
         // this._dialogRef?.close())
-      console.log('gameToss: ', this.dialogRef)
-    ));
-
+        this._gameTossWinnerDetails = data ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+        console.log('gameToss: ', this.dialogRef);
+      }),
+    delay(5000));
 
     return concat(
       interval$,
-      gameOrder$
+      gameOrder$,
+      gameTossResult$
     )
   }
 

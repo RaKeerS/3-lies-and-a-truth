@@ -7,8 +7,8 @@
     <div class="field p-fluid">
       <div class="p-field p-col-12 p-3">
         <div class="toss-players">
-          <p-button label="Player 1" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': playgroundModel.switch, 'player-buttons': true }"></p-button>
-          <p-button label="Player 2" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !playgroundModel.switch, 'player-buttons': true }"></p-button>
+          <p-button label="Player 1" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': (playgroundModel.switch$ | async), 'player-buttons': true }"></p-button>
+          <p-button label="Player 2" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !(playgroundModel.switch$ | async), 'player-buttons': true }"></p-button>
         </div>
 
         <!-- <div class="toss-result flex p-3 justify-content-center">

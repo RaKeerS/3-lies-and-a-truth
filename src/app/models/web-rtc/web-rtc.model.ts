@@ -372,9 +372,9 @@ export class WebRtcModel {
     });
   }
 
-  public initiateWebRtc(playerName: string): void {
-    this._playgroundService.createPlayground = playerName === 'Player 1';
-    this._playgroundService.playerName = playerName;
+  public initiateWebRtc(): void {
+    // this._playgroundService.createPlayground = playerName === 'Player 1';
+    // this._playgroundService.playerName = playerName;
 
     this._playgroundService.peerConnection = new SimplePeer({
       initiator: this._playgroundService.createPlayground,
