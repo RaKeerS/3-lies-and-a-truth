@@ -36,7 +36,7 @@ export class PlaygroundService {
 
   private _webRtc: WebRtcModel;
 
-  private _switch: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _switch: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(undefined);
 
   private _redirectCounter: number = 5;
 
@@ -103,11 +103,11 @@ export class PlaygroundService {
     return this._redirectCounter;
   }
 
-  get switch(): BehaviorSubject<boolean> {
+  get switch(): BehaviorSubject<boolean | undefined> {
     return this._switch;
   }
 
-  get switch$(): Observable<boolean> {
+  get switch$(): Observable<boolean | undefined> {
     return this._switch.asObservable();
   }
 
@@ -192,11 +192,15 @@ export class PlaygroundService {
   sendTokenForPlayground(): void {
     if (this.signalInvitationToken?.trim().length) {
       // this._webRtc.sendMessageWebRtc(this._webRtc.signalInvitationToken);
-      this._webRtc.sendMessageWebRtc();
+      this._webRtc.sendSignalWebRtc();
       // this.showTokenDialog = false;
     } else {
       // NOTE - Show Toaster
     }
+  }
+
+  sendMessageForPlayground(message: any): void {
+    this._webRtc.sendMessageWebRtc(message);
   }
 
   async copyToClipboard() {

@@ -81,7 +81,7 @@ export class PlaygroundModel {
     this._playerTwoBetAmount = value;
   }
 
-  get switch$(): Observable<boolean> {
+  get switch$(): Observable<boolean | undefined> {
     return this._playgroundService.switch$;
   }
 
@@ -181,13 +181,15 @@ export class PlaygroundModel {
     // NOTE - Player 1 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_1
     // NOTE - Player 2 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_2
     const setPlayerOrder = (tossOutcome: number) => {
-      if (!this._playgroundService.createPlayground) {
+      if (this._playgroundService.createPlayground) {
         if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '1' }));
           this._playgroundService.switch.next(true);
           // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
         } else {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '0' }));
           this._playgroundService.switch.next(false);
           // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
         }
@@ -223,8 +225,12 @@ export class PlaygroundModel {
       // takeLast(1),
       tap((data) => {
         // this._dialogRef?.close())
-        this._gameTossWinnerDetails = data ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
-        console.log('gameToss: ', this.dialogRef);
+        if (data !== undefined) {
+          this._playgroundService.ngZone.run(() => {
+            this._gameTossWinnerDetails = data ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+            console.log('gameTossWinnerDetails: ', this._gameTossWinnerDetails);
+          })
+        }
       }),
     delay(5000));
 

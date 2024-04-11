@@ -5,6 +5,7 @@ import { NgZone } from '@angular/core';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
+import { PlaygroundGameStage } from '../../enums/playground.enum';
 import { PlaygroundService } from '../../services/playground.service';
 
 
@@ -363,13 +364,32 @@ export class WebRtcModel {
         }
       });
       console.log('CONNECTED!');
-      this._playgroundService.peerConnection.send(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)} - ${this._playgroundService.playerName}`);
+      this._playgroundService.peerConnection.send(JSON.stringify(`Ohayo Sekai! Good Morning World!! x ${(Math.floor(Math.random() * 2) + 10)} - ${this._playgroundService.playerName}`));
     });
 
     this._playgroundService.peerConnection.on('data', (data: any) => {
       let message = new TextDecoder("utf-8").decode(data);
-      console.log('DATA: ', message);
+      this.handleMessages(message);
     });
+  }
+
+  private handleMessages(message: string): void {
+    const parsedData: { gameStage: PlaygroundGameStage, message: string } = JSON.parse(message);
+    if (parsedData?.gameStage && parsedData?.message) {
+      switch(parsedData.gameStage) {
+        case PlaygroundGameStage.TOSS: {
+          const tossResult = Boolean(+parsedData.message);
+          this._playgroundService.switch.next(tossResult);
+          break;
+        }
+
+        default: {
+          break;
+        }
+      }
+    } else {
+      console.log('DATA: ', message);
+    }
   }
 
   public initiateWebRtc(): void {
@@ -404,9 +424,13 @@ export class WebRtcModel {
   //   this.peerConnection.signal(token);
   // }
 
-  public sendMessageWebRtc(): void {
+  public sendSignalWebRtc(): void {
     // this._chatChannel.send(message);
     this.decompressString(this._playgroundService.signalInvitationToken ?? '');
     // this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
+  }
+
+  public sendMessageWebRtc(message: object): void {
+    this._playgroundService.peerConnection.send(message);
   }
 }
