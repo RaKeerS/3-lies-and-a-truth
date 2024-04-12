@@ -1,7 +1,7 @@
 import { Injectable, Injector, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { BehaviorSubject, concat, interval, Observable, of, Subscription, take, tap } from 'rxjs';
+import { BehaviorSubject, concat, interval, Observable, of, Subject, Subscription, take, tap } from 'rxjs';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
@@ -37,6 +37,7 @@ export class PlaygroundService {
   private _webRtc: WebRtcModel;
 
   private _switch: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(undefined);
+  private _tossCompleted: Subject<boolean> = new Subject<boolean>();
 
   private _redirectCounter: number = 5;
 
@@ -109,6 +110,14 @@ export class PlaygroundService {
 
   get switch$(): Observable<boolean | undefined> {
     return this._switch.asObservable();
+  }
+
+  get tossCompleted(): Subject<boolean>  {
+    return this._tossCompleted;
+  }
+
+  get tossCompleted$(): Observable<boolean>  {
+    return this._tossCompleted.asObservable();
   }
 
   get peerConnection() {

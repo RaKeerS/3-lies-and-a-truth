@@ -1,6 +1,6 @@
 import { Injector } from '@angular/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { BehaviorSubject, concat, delay, filter, forkJoin, interval, Observable, of, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, concat, delay, filter, forkJoin, interval, Observable, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { PlaygroundGameStage, PlaygroundTossOutcome } from '../enums/playground.enum';
 import { PlaygroundService } from '../services/playground.service';
@@ -208,9 +208,11 @@ export class PlaygroundModel {
     // }
 
     let toggleSwitch = false;
+    this._gameTossWinnerDetails = 'Waiting for your partner to start the toss';
 
     const interval$ = interval(500).pipe(
-    take(10),
+    takeUntil(this._playgroundService.tossCompleted),
+    // take(10),
     tap(() => {
       toggleSwitch = !toggleSwitch;
       // this._playgroundService.switch = !this._playgroundService.switch
