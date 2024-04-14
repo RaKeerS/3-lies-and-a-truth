@@ -382,6 +382,7 @@ export class WebRtcModel {
           this._playgroundService.tossCompleted.next(true);
           this._playgroundService.tossCompleted.complete();
           this._playgroundService.switch.next(tossResult);
+          // this._playgroundService.switch.complete();
           break;
         }
 
