@@ -98,6 +98,10 @@ export class PlaygroundModel {
     return this._playgroundService.switch$;
   }
 
+  get tossCompleted$(): Observable<boolean> {
+    return this._playgroundService.tossCompleted$;
+  }
+
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
     this.gameStages.set(PlaygroundGameStage.TOSS, true);
     this._gameStage.next(PlaygroundGameStage.TOSS);
@@ -252,11 +256,20 @@ export class PlaygroundModel {
     delay(5000),
     tap((data) => console.log('delay: ', data)));
 
+    const tossCompleted$ = this.tossCompleted$.pipe(
+      tap((data) => console.log('This is Me: ', data))
+    );
+
     return concat(
       interval$,
       gameOrder$,
-      gameTossResult$
+      gameTossResult$,
+      tossCompleted$
     )
+  }
+
+  public initializeBetting(): void {
+    this._gameStage.next(PlaygroundGameStage.BET);
   }
 
 //   public toss() {
