@@ -115,7 +115,7 @@ export class PlaygroundModel {
       closable: false,
       data: {
         playgroundModel: this
-      }
+      },
       // templates: {
       //     footer: Footer
       // }
@@ -146,10 +146,12 @@ export class PlaygroundModel {
 
     return this.gameStage$.pipe(
       filter((stage) => stage === PlaygroundGameStage.TOSS),
-      switchMap(() => forkJoin({ test: this.doGameToss() }).pipe(
-        // tap((data) => this.gameStages.set(PlaygroundGameStage.TOSS, false))
-        tap((data) => this._gameStage.next(PlaygroundGameStage.BET))
-      )),
+      switchMap(() => forkJoin({ test: this.doGameToss() })
+      // .pipe(
+      //   // tap((data) => this.gameStages.set(PlaygroundGameStage.TOSS, false))
+      //   tap((data) => this._gameStage.next(PlaygroundGameStage.BET))
+      // )
+    ),
     );
   }
 
@@ -247,7 +249,8 @@ export class PlaygroundModel {
           })
         }
       }),
-    delay(5000));
+    delay(5000),
+    tap((data) => console.log('delay: ', data)));
 
     return concat(
       interval$,
