@@ -5,7 +5,7 @@ import { NgZone } from '@angular/core';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
-import { PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameTossStage } from '../../enums/playground.enum';
 import { PlaygroundService } from '../../services/playground.service';
 
 
@@ -379,6 +379,8 @@ export class WebRtcModel {
       switch(parsedData.gameStage) {
         case PlaygroundGameStage.TOSS: {
           const tossResult = Boolean(+parsedData.message);
+          this._playgroundService.tossCompleted.next(PlaygroundGameTossStage.PHASE_0);
+          // this._playgroundService.tossCompleted.complete();
           this._playgroundService.switch.next(tossResult);
           break;
         }

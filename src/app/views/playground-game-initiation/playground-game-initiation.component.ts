@@ -1,7 +1,7 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
-import { PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameTossStage } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
@@ -18,6 +18,7 @@ export class PlaygroundGameInitiationComponent implements OnInit {
   private _modalData: PlaygroundModel;
 
   public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
+  public PlaygroundGameTossStage: typeof PlaygroundGameTossStage = PlaygroundGameTossStage;
 
   constructor(injector: Injector) {
     this._dynamicDialogConfig = injector.get(DynamicDialogConfig);

@@ -1,5 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 
+import { PlaygroundGameStage } from '../enums/playground.enum';
+
 export const APP_CONTAINER_FLEX_CLASS = 'class.app-container-flex';
 
 export type PlayGroundMetadata = {
@@ -22,4 +24,10 @@ export type PlayerMetadata = {
 export type GameMetadata = {
   playgroundSubject: BehaviorSubject<PlayGroundMetadata>;
   playgroundMetadata: PlayGroundMetadata;
+}
+
+export type GameMidSegwayMetadata = {
+  gameStage: PlaygroundGameStage;
+  messageFrom: 'peer' | 'subject';
+  message: string;
 }

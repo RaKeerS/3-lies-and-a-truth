@@ -7,6 +7,7 @@ import {
   filter,
   forkJoin,
   interval,
+  merge,
   Observable,
   of,
   switchMap,
@@ -15,8 +16,9 @@ import {
   tap,
 } from 'rxjs';
 
-import { PlaygroundGameStage, PlaygroundTossOutcome } from '../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameTossStage, PlaygroundTossOutcome } from '../enums/playground.enum';
 import { PlaygroundService } from '../services/playground.service';
+import { GameMidSegwayMetadata } from '../types/app-types';
 import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
 import { PlaygroundGameRulesComponent } from '../views/playground-game-rules/playground-game-rules.component';
 
@@ -98,7 +100,7 @@ export class PlaygroundModel {
     return this._playgroundService.switch$;
   }
 
-  get tossCompleted$(): Observable<boolean> {
+  get tossCompleted$(): Observable<PlaygroundGameTossStage> {
     return this._playgroundService.tossCompleted$;
   }
 
@@ -203,12 +205,12 @@ export class PlaygroundModel {
       if (this._playgroundService.createPlayground) {
         if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '1' }));
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '1', messageFrom: 'peer' } as GameMidSegwayMetadata));
           this._playgroundService.switch.next(true);
           // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
         } else {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '0' }));
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '0', messageFrom: 'peer' } as GameMidSegwayMetadata));
           this._playgroundService.switch.next(false);
           // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
         }
@@ -249,23 +251,36 @@ export class PlaygroundModel {
         if (data !== undefined) {
           this._playgroundService.ngZone.run(() => {
             this._gameTossWinnerDetails = data ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+            if (!this._playgroundService.createPlayground) {
+              this._playgroundService.tossCompleted.next(PlaygroundGameTossStage.PHASE_1);
+            }
             console.log('gameTossWinnerDetails: ', this._gameTossWinnerDetails);
-          })
+          });
         }
       }),
     delay(5000),
-    tap((data) => console.log('delay: ', data)));
+    tap((data) => {
+      console.log('delay: ', data);
+      // this._playgroundService.tossCompleted.next(true);
+      // this._playgroundService.tossCompleted.complete();
+  }));
 
     const tossCompleted$ = this.tossCompleted$.pipe(
-      tap((data) => console.log('This is Me: ', data))
+      tap((tossPhase: PlaygroundGameTossStage) => {
+        if (tossPhase === PlaygroundGameTossStage.PHASE_1) {
+          this._playgroundService.switch.complete();
+        }
+        console.log('This is Me: ', tossPhase);
+      })
     );
 
-    return concat(
+    return merge(
+      concat(
       interval$,
-      gameOrder$,
-      gameTossResult$,
-      tossCompleted$
-    )
+      this._playgroundService.createPlayground ? gameOrder$ : of(),
+      gameTossResult$
+    ),
+    tossCompleted$)
   }
 
   public initializeBetting(): void {

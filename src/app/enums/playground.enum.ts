@@ -17,3 +17,9 @@ export enum PlaygroundGameStage {
   CHOOSE = 5,
   EVALUATE = 6
 }
+
+export enum PlaygroundGameTossStage {
+  PHASE_0,
+  PHASE_1,
+  PHASE_2
+}

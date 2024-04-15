@@ -27,7 +27,7 @@
     <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ playgroundModel.gameTossWinnerDetails }} </div>
 
     This right here: {{ (playgroundModel.tossCompleted$ | async) }}
-    @if ((playgroundModel.tossCompleted$ | async) === true) {
+    @if ((playgroundModel.tossCompleted$ | async) === PlaygroundGameTossStage.PHASE_1) {
       Is Me: {{(playgroundModel.tossCompleted$ | async)}}
       <div class="flex w-full justify-content-end mt-3">
         <p-button type="button" label="Cancel" icon="pi pi-times" (click)="playgroundModel.initializeBetting()"></p-button>

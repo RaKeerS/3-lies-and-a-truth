@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BehaviorSubject, concat, interval, Observable, of, Subject, Subscription, take, tap } from 'rxjs';
 
+import { PlaygroundGameTossStage } from '../enums/playground.enum';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 
 @Injectable({
@@ -37,7 +38,7 @@ export class PlaygroundService {
   private _webRtc: WebRtcModel;
 
   private _switch: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(undefined);
-  private _tossCompleted: Subject<boolean> = new Subject<boolean>();
+  private _tossCompleted: Subject<PlaygroundGameTossStage> = new Subject<PlaygroundGameTossStage>();
 
   private _redirectCounter: number = 5;
 
@@ -112,11 +113,11 @@ export class PlaygroundService {
     return this._switch.asObservable();
   }
 
-  get tossCompleted(): Subject<boolean>  {
+  get tossCompleted(): Subject<PlaygroundGameTossStage>  {
     return this._tossCompleted;
   }
 
-  get tossCompleted$(): Observable<boolean>  {
+  get tossCompleted$(): Observable<PlaygroundGameTossStage>  {
     return this._tossCompleted.asObservable();
   }
 
