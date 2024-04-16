@@ -7,6 +7,7 @@ import SimplePeer from 'simple-peer';
 
 import { PlaygroundGameStage, PlaygroundGameTossStage } from '../../enums/playground.enum';
 import { PlaygroundService } from '../../services/playground.service';
+import { GameMidSegwayMetadata } from '../../types/app-types';
 
 
 
@@ -381,7 +382,7 @@ export class WebRtcModel {
           const tossResult = Boolean(+parsedData.message);
           this._playgroundService.tossCompleted.next(PlaygroundGameTossStage.PHASE_0);
           // this._playgroundService.tossCompleted.complete();
-          this._playgroundService.switch.next(tossResult);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'peer' } as GameMidSegwayMetadata);
           break;
         }
 

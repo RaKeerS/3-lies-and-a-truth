@@ -5,6 +5,7 @@ import { BehaviorSubject, concat, interval, Observable, of, Subject, Subscriptio
 
 import { PlaygroundGameTossStage } from '../enums/playground.enum';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
+import { GameMidSegwayMetadata } from '../types/app-types';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class PlaygroundService {
 
   private _webRtc: WebRtcModel;
 
-  private _switch: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(undefined);
+  private _switch: BehaviorSubject<GameMidSegwayMetadata | undefined> = new BehaviorSubject<GameMidSegwayMetadata | undefined>(undefined);
   private _tossCompleted: Subject<PlaygroundGameTossStage> = new Subject<PlaygroundGameTossStage>();
 
   private _redirectCounter: number = 5;
@@ -105,11 +106,11 @@ export class PlaygroundService {
     return this._redirectCounter;
   }
 
-  get switch(): BehaviorSubject<boolean | undefined> {
+  get switch(): BehaviorSubject<GameMidSegwayMetadata | undefined> {
     return this._switch;
   }
 
-  get switch$(): Observable<boolean | undefined> {
+  get switch$(): Observable<GameMidSegwayMetadata | undefined> {
     return this._switch.asObservable();
   }
 

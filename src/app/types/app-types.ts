@@ -29,5 +29,5 @@ export type GameMetadata = {
 export type GameMidSegwayMetadata = {
   gameStage: PlaygroundGameStage;
   messageFrom: 'peer' | 'subject';
-  message: string;
+  message: any;
 }
