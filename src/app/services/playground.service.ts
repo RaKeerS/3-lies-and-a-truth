@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BehaviorSubject, concat, interval, Observable, of, Subject, Subscription, take, tap } from 'rxjs';
 
-import { PlaygroundGameTossStage } from '../enums/playground.enum';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 import { GameMidSegwayMetadata } from '../types/app-types';
 
@@ -39,7 +38,7 @@ export class PlaygroundService {
   private _webRtc: WebRtcModel;
 
   private _switch: BehaviorSubject<GameMidSegwayMetadata | undefined> = new BehaviorSubject<GameMidSegwayMetadata | undefined>(undefined);
-  private _tossCompleted: Subject<PlaygroundGameTossStage> = new Subject<PlaygroundGameTossStage>();
+  private _tossCompleted: BehaviorSubject<GameMidSegwayMetadata | undefined> = new BehaviorSubject<GameMidSegwayMetadata | undefined>(undefined);
 
   private _redirectCounter: number = 5;
 
@@ -114,11 +113,11 @@ export class PlaygroundService {
     return this._switch.asObservable();
   }
 
-  get tossCompleted(): Subject<PlaygroundGameTossStage>  {
+  get tossCompleted(): Subject<GameMidSegwayMetadata | undefined>  {
     return this._tossCompleted;
   }
 
-  get tossCompleted$(): Observable<PlaygroundGameTossStage>  {
+  get tossCompleted$(): Observable<GameMidSegwayMetadata | undefined>  {
     return this._tossCompleted.asObservable();
   }
 

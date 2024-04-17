@@ -10,6 +10,7 @@ import {
   merge,
   Observable,
   of,
+  Subscription,
   switchMap,
   take,
   takeUntil,
@@ -40,8 +41,10 @@ export class PlaygroundModel {
 
   private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
 
+  private _subscription: Subscription;
+
   constructor(injector: Injector) {
-    this.commenceRound().subscribe();
+    this._subscription = this.commenceRound().subscribe();
     this._playgroundService = injector.get(PlaygroundService);
     // this._playgroundService = playgroundService;
     this._dialogService = injector.get( DialogService);
@@ -100,7 +103,7 @@ export class PlaygroundModel {
     return this._playgroundService.switch$;
   }
 
-  get tossCompleted$(): Observable<PlaygroundGameTossStage> {
+  get tossCompleted$(): Observable<GameMidSegwayMetadata | undefined> {
     return this._playgroundService.tossCompleted$;
   }
 
@@ -127,7 +130,7 @@ export class PlaygroundModel {
       // }
     });
 
-    this._dialogRef.onClose.subscribe((data: any) => {
+    this._subscription = this._dialogRef.onClose.subscribe((data: any) => {
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
     })
 
@@ -184,7 +187,7 @@ export class PlaygroundModel {
       // }
     });
 
-    this._dialogRef.onClose.subscribe((data: any) => {
+    this._subscription = this._dialogRef.onClose.subscribe((data: any) => {
       this.showPlaygroundGameInitiationDialog();
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
     });
@@ -232,7 +235,7 @@ export class PlaygroundModel {
     this._gameTossWinnerDetails = 'Waiting for your partner to start the toss';
 
     const interval$ = interval(500).pipe(
-    (this._playgroundService.createPlayground ? take(10) : takeUntil(this._playgroundService.tossCompleted)),
+    (this._playgroundService.createPlayground ? take(10) : takeUntil((this._playgroundService.tossCompleted))),
     // take(10),
     tap(() => {
       toggleSwitch = !toggleSwitch;
@@ -264,13 +267,13 @@ export class PlaygroundModel {
       // this._playgroundService.tossCompleted.next(true);
       // this._playgroundService.tossCompleted.complete();
       if (metaData?.messageFrom === 'peer') {
-        this._playgroundService.tossCompleted.next(PlaygroundGameTossStage.PHASE_1);
+        this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
       }
   }));
 
     const tossCompleted$ = this.tossCompleted$.pipe(
-      tap((tossPhase: PlaygroundGameTossStage) => {
-        if (tossPhase === PlaygroundGameTossStage.PHASE_1) {
+      tap((tossPhase: GameMidSegwayMetadata | undefined) => {
+        if (tossPhase?.message === PlaygroundGameTossStage.PHASE_1) {
           // delay(2500);
           this._playgroundService.switch.complete();
         }
@@ -289,6 +292,10 @@ export class PlaygroundModel {
 
   public initializeBetting(): void {
     this._gameStage.next(PlaygroundGameStage.BET);
+  }
+
+  public unsubscribeAll(): void {
+    this._subscription.unsubscribe();
   }
 
 //   public toss() {

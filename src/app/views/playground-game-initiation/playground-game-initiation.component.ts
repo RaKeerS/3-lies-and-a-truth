@@ -1,4 +1,4 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 import { PlaygroundGameStage, PlaygroundGameTossStage } from '../../enums/playground.enum';
@@ -12,7 +12,7 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
   templateUrl: './playground-game-initiation.component.html',
   styleUrl: './playground-game-initiation.component.scss'
 })
-export class PlaygroundGameInitiationComponent implements OnInit {
+export class PlaygroundGameInitiationComponent implements OnInit, OnDestroy {
 
   private _dynamicDialogConfig: DynamicDialogConfig;
   private _modalData: PlaygroundModel;
@@ -28,6 +28,10 @@ export class PlaygroundGameInitiationComponent implements OnInit {
   ngOnInit(): void {
     // this._modalData.commenceRound();
     // this._modalData.doGameToss().subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.playgroundModel.unsubscribeAll();
   }
 
   get playgroundModel(): PlaygroundModel {
