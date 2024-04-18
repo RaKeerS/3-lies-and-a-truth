@@ -103,7 +103,7 @@ export class PlaygroundModel {
     return this._playgroundService.switch$;
   }
 
-  get tossCompleted$(): Observable<GameMidSegwayMetadata | undefined> {
+  get tossCompleted$(): Observable<GameMidSegwayMetadata> {
     return this._playgroundService.tossCompleted$;
   }
 
@@ -257,6 +257,9 @@ export class PlaygroundModel {
             // if (metaData.messageFrom === 'peer') {
             //   this._playgroundService.tossCompleted.next(PlaygroundGameTossStage.PHASE_1);
             // }
+            if (metaData?.messageFrom === 'peer') {
+              this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
+            }
             console.log('gameTossWinnerDetails: ', this._gameTossWinnerDetails);
           });
         }
@@ -266,17 +269,17 @@ export class PlaygroundModel {
       console.log('delay: ', metaData);
       // this._playgroundService.tossCompleted.next(true);
       // this._playgroundService.tossCompleted.complete();
-      if (metaData?.messageFrom === 'peer') {
-        this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
-      }
-  }));
+    }));
 
     const tossCompleted$ = this.tossCompleted$.pipe(
       tap((tossPhase: GameMidSegwayMetadata | undefined) => {
         if (tossPhase?.message === PlaygroundGameTossStage.PHASE_1) {
           // delay(2500);
-          this._playgroundService.switch.complete();
+          // this._playgroundService.switch.complete();
         }
+        // this._playgroundService.ngZone.run(() => {
+        //   // this._tossCompleted = tossPhase?.message;
+        // })
         console.log('This is Me: ', tossPhase);
       })
     );

@@ -370,7 +370,9 @@ export class WebRtcModel {
 
     this._playgroundService.peerConnection.on('data', (data: any) => {
       let message = new TextDecoder("utf-8").decode(data);
-      this.handleMessages(message);
+      this._playgroundService.ngZone.run(() => {
+        this.handleMessages(message);
+      })
     });
   }
 
