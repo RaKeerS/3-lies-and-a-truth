@@ -7,7 +7,6 @@ import {
   filter,
   forkJoin,
   interval,
-  merge,
   Observable,
   of,
   Subscription,
@@ -254,12 +253,13 @@ export class PlaygroundModel {
         if (metaData !== undefined) {
           this._playgroundService.ngZone.run(() => {
             this._gameTossWinnerDetails = metaData.message ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
-            // if (metaData.messageFrom === 'peer') {
-            //   this._playgroundService.tossCompleted.next(PlaygroundGameTossStage.PHASE_1);
-            // }
-            if (metaData?.messageFrom === 'peer') {
+            if (this._playgroundService.createPlayground) {
               this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
             }
+            // NOTE - Commented for now, but this code works!
+            // if (metaData?.messageFrom === 'peer') {
+            //   this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
+            // }
             console.log('gameTossWinnerDetails: ', this._gameTossWinnerDetails);
           });
         }
@@ -271,26 +271,34 @@ export class PlaygroundModel {
       // this._playgroundService.tossCompleted.complete();
     }));
 
-    const tossCompleted$ = this.tossCompleted$.pipe(
-      tap((tossPhase: GameMidSegwayMetadata | undefined) => {
-        if (tossPhase?.message === PlaygroundGameTossStage.PHASE_1) {
-          // delay(2500);
-          // this._playgroundService.switch.complete();
-        }
-        // this._playgroundService.ngZone.run(() => {
-        //   // this._tossCompleted = tossPhase?.message;
-        // })
-        console.log('This is Me: ', tossPhase);
-      })
-    );
+    // NOTE - Commented for now, but this code works!
+    // const tossCompleted$ = this.tossCompleted$.pipe(
+    //   tap((tossPhase: GameMidSegwayMetadata | undefined) => {
+    //     if (tossPhase?.message === PlaygroundGameTossStage.PHASE_1) {
+    //       // delay(2500);
+    //       // this._playgroundService.switch.complete();
+    //     }
+    //     // this._playgroundService.ngZone.run(() => {
+    //     //   // this._tossCompleted = tossPhase?.message;
+    //     // })
+    //     console.log('This is Me: ', tossPhase);
+    //   })
+    // );
 
-    return merge(
-      concat(
+    // NOTE - Commented for now, but this code works!
+    // return merge(
+    //   concat(
+    //   interval$,
+    //   this._playgroundService.createPlayground ? gameOrder$ : of(),
+    //   gameTossResult$
+    // ),
+    // tossCompleted$)
+
+    return concat(
       interval$,
       this._playgroundService.createPlayground ? gameOrder$ : of(),
       gameTossResult$
-    ),
-    tossCompleted$)
+    );
   }
 
   public initializeBetting(): void {

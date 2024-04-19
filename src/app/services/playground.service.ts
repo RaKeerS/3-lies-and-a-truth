@@ -209,7 +209,7 @@ export class PlaygroundService {
     }
   }
 
-  sendMessageForPlayground(message: any): void {
+  sendMessageForPlayground(message: string): void {
     this._webRtc.sendMessageWebRtc(message);
   }
 

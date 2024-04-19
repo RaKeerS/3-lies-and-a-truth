@@ -382,9 +382,12 @@ export class WebRtcModel {
       switch(parsedData.gameStage) {
         case PlaygroundGameStage.TOSS: {
           const tossResult = Boolean(+parsedData.message);
-          this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          // NOTE - Commented for now, but this code works!
+          // this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this.sendMessageWebRtc(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '1', messageFrom: 'peer' } as GameMidSegwayMetadata))
           // this._playgroundService.tossCompleted.complete();
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'peer' } as GameMidSegwayMetadata);
           break;
         }
 
@@ -435,7 +438,7 @@ export class WebRtcModel {
     // this.peerConnection.signal(JSON.parse(this.signalInvitationToken ?? ''));
   }
 
-  public sendMessageWebRtc(message: object): void {
+  public sendMessageWebRtc(message: string): void {
     this._playgroundService.peerConnection.send(message);
   }
 }
