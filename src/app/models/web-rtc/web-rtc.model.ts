@@ -378,7 +378,7 @@ export class WebRtcModel {
 
   private handleMessages(message: string): void {
     const parsedData: { gameStage: PlaygroundGameStage, message: string } = JSON.parse(message);
-    if (parsedData?.gameStage && parsedData?.message) {
+    if (parsedData?.gameStage && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
         case PlaygroundGameStage.TOSS: {
           const tossResult = Boolean(+parsedData.message);

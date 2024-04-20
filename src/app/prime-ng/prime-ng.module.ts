@@ -11,6 +11,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { KeyFilterModule } from 'primeng/keyfilter';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { StepperModule } from 'primeng/stepper';
 import { ToastModule } from 'primeng/toast';
@@ -34,7 +35,8 @@ import { TooltipModule } from 'primeng/tooltip';
     SelectButtonModule,
     StepperModule,
     ToastModule,
-    TooltipModule
+    TooltipModule,
+    KeyFilterModule
   ]
 })
 export class PrimeNgModule { }
