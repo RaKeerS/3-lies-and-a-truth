@@ -255,6 +255,8 @@ export class PlaygroundModel {
             this._gameTossWinnerDetails = metaData.message ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
             if (this._playgroundService.createPlayground) {
               this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
+            } else {
+              this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: metaData.message, messageFrom: 'peer' } as GameMidSegwayMetadata))
             }
             // NOTE - Commented for now, but this code works!
             // if (metaData?.messageFrom === 'peer') {

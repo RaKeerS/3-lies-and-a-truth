@@ -31,9 +31,9 @@
     This right here: {{ (playgroundModel.tossCompleted) }}
     This right here: {{ (playgroundModel.switch$ | async)?.message }} -->
     @if ((playgroundModel.tossCompleted$ | async)?.message === PlaygroundGameTossStage.PHASE_1) {
-      Is Me: {{(playgroundModel.tossCompleted$ | async)}}
+      <!-- Is Me: {{(playgroundModel.tossCompleted$ | async)}} -->
       <div class="flex w-full justify-content-end mt-3">
-        <p-button type="button" label="Cancel" icon="pi pi-times" (click)="playgroundModel.initializeBetting()"></p-button>
+        <p-button type="button" label="Place Bets" icon="pi pi-arrow-right" iconPos="right" (click)="playgroundModel.initializeBetting()"></p-button>
       </div>
     }
   </div>

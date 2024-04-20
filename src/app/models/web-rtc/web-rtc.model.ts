@@ -386,7 +386,10 @@ export class WebRtcModel {
           // NOTE - Commented for now, but this code works!
           // this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
           this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' } as GameMidSegwayMetadata);
-          this.sendMessageWebRtc(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '1', messageFrom: 'peer' } as GameMidSegwayMetadata))
+          // NOTE - Commented for now, but this code works! (if block only)
+          // if (!this._playgroundService.createPlayground) {
+          //   this.sendMessageWebRtc(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'peer' } as GameMidSegwayMetadata))
+          // }
           // this._playgroundService.tossCompleted.complete();
           break;
         }
