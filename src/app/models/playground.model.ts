@@ -35,6 +35,7 @@ export class PlaygroundModel {
 
   private _playerOneBetAmount: number = 0;
   private _playerTwoBetAmount: number = 0;
+  private _playgroundTimer: number = 0o0;
 
   private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
 
@@ -96,6 +97,10 @@ export class PlaygroundModel {
   }
   set playerTwoBetAmount(value: number) {
     this._playerTwoBetAmount = value;
+  }
+
+  get playgroundTimer(): number {
+    return this._playgroundTimer;
   }
 
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {

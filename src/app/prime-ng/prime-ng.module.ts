@@ -9,6 +9,7 @@ import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { KeyFilterModule } from 'primeng/keyfilter';
@@ -36,7 +37,8 @@ import { TooltipModule } from 'primeng/tooltip';
     StepperModule,
     ToastModule,
     TooltipModule,
-    KeyFilterModule
+    KeyFilterModule,
+    InputOtpModule
   ]
 })
 export class PrimeNgModule { }
