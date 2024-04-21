@@ -102,6 +102,9 @@ export class PlaygroundModel {
   get playgroundTimer(): number {
     return this._playgroundTimer;
   }
+  set playgroundTimer(value: number) {
+    this._playgroundTimer = value;;
+  }
 
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {
     return this._playgroundService.switch$;
