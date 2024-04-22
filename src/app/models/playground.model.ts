@@ -7,6 +7,7 @@ import {
   filter,
   forkJoin,
   interval,
+  merge,
   Observable,
   of,
   Subscription,
@@ -33,8 +34,8 @@ export class PlaygroundModel {
 
   private _playgroundService: PlaygroundService;
 
-  private _playerOneBetAmount: number = 0;
-  private _playerTwoBetAmount: number = 0;
+  private _playerOneBetAmount: number = 10;
+  private _playerTwoBetAmount: number = 10;
   private _playgroundTimer: number = 0o0;
 
   private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
@@ -42,6 +43,7 @@ export class PlaygroundModel {
   private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
 
   private _subscription: Subscription;
+
 
   constructor(injector: Injector) {
     this._subscription = this.commenceRound().subscribe();
@@ -99,11 +101,18 @@ export class PlaygroundModel {
     this._playerTwoBetAmount = value;
   }
 
-  get playgroundTimer(): number {
-    return this._playgroundTimer;
+  get playgroundTimer(): string {
+    return String(this._playgroundTimer).padStart(4, '0');
   }
   set playgroundTimer(value: number) {
-    this._playgroundTimer = value;;
+    this._playgroundTimer = value;
+  }
+
+  get playgroundBetAmount(): number {
+    return this._playgroundService.createPlayground ? this._playerOneBetAmount : this._playerTwoBetAmount
+  }
+  set playgroundBetAmount(value: number) {
+    this._playgroundService.createPlayground ? this._playerOneBetAmount += value : this._playerTwoBetAmount += value;
   }
 
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {
@@ -146,14 +155,16 @@ export class PlaygroundModel {
   }
 
 
-  private placeBets() {
+  private placeBets(): Observable<number | boolean> {
     // This method should return the graphic(Place Bets Modal or Image/Gif) to be shown on screen and not the bet amounts of players.
 
     // this.gameStages.set(PlaygroundGameStage.BET, true);
 
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.BET),
+      switchMap(() => this.doGameBetting())
+    );
 
-
-    return of();
     // return combineLatest([this.playerOneBet(), this.playerTwoBet()]);
   }
 
@@ -167,12 +178,12 @@ export class PlaygroundModel {
       //   // tap((data) => this.gameStages.set(PlaygroundGameStage.TOSS, false))
       //   tap((data) => this._gameStage.next(PlaygroundGameStage.BET))
       // )
-    ),
+      ),
     );
   }
 
   public commenceRound() {
-    return concat(
+    return merge(
       this.toss(),
       this.placeBets());
   }
@@ -309,6 +320,36 @@ export class PlaygroundModel {
       this._playgroundService.createPlayground ? gameOrder$ : of(),
       gameTossResult$
     );
+  }
+
+  public doGameBetting() {
+    this.playgroundTimer = 200;
+    console.log()
+    this.playgroundBetAmount = 10;
+
+    const interval$ = interval(1000).pipe(
+      takeUntil(of(+this.playgroundTimer !== 0)),
+      tap(() => {
+        this.playgroundTimer = +this.playgroundTimer - 1;
+        if (+this.playgroundTimer % 100 === 99) {
+          this.playgroundTimer = +this.playgroundTimer - 40;
+        }
+      })
+    );
+
+    const bettingConclusion$ = interval$.pipe(
+      tap((data) => console.log('Inside Interval: ', data))
+    );
+
+    const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
+      tap(() => console.log('Timeout!'))
+    )
+
+    return concat(
+      interval$,
+      bettingConclusion$,
+      bettingCompleted$
+    )
   }
 
   public initializeBetting(): void {

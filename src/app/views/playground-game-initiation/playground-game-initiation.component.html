@@ -73,7 +73,8 @@
         </div>
 
         <span class="p-float-label">
-          <input pInputText pKeyFilter="int" />
+          <!-- <input pInputText pKeyFilter="int" /> -->
+          <p-inputNumber pKeyFilter="int" inputId="betAmount" [min]="10" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [ngModel]=""></p-inputNumber>
           <label for="playerName"> Enter Bet Amount </label>
         </span>
 
