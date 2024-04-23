@@ -14,6 +14,7 @@ import {
   switchMap,
   take,
   takeUntil,
+  takeWhile,
   tap,
 } from 'rxjs';
 
@@ -328,7 +329,7 @@ export class PlaygroundModel {
     this.playgroundBetAmount = 10;
 
     const interval$ = interval(1000).pipe(
-      takeUntil(of(+this.playgroundTimer !== 0)),
+      takeWhile(() => +this.playgroundTimer !== 0),
       tap(() => {
         this.playgroundTimer = +this.playgroundTimer - 1;
         if (+this.playgroundTimer % 100 === 99) {
@@ -337,9 +338,9 @@ export class PlaygroundModel {
       })
     );
 
-    const bettingConclusion$ = interval$.pipe(
-      tap((data) => console.log('Inside Interval: ', data))
-    );
+    // const bettingConclusion$ = interval$.pipe(
+    //   tap((data) => console.log('Inside Interval: ', data))
+    // );
 
     const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
       tap(() => console.log('Timeout!'))
@@ -347,7 +348,7 @@ export class PlaygroundModel {
 
     return concat(
       interval$,
-      bettingConclusion$,
+      // bettingConclusion$,
       bettingCompleted$
     )
   }
