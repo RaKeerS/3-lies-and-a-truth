@@ -113,7 +113,7 @@ export class PlaygroundModel {
     return this._playgroundService.createPlayground ? this._playerOneBetAmount : this._playerTwoBetAmount
   }
   set playgroundBetAmount(value: number) {
-    this._playgroundService.createPlayground ? this._playerOneBetAmount += value : this._playerTwoBetAmount += value;
+    this._playgroundService.createPlayground ? this._playerOneBetAmount = value : this._playerTwoBetAmount = value;
   }
 
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {
