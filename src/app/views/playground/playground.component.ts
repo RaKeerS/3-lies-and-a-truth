@@ -1,4 +1,4 @@
-import { Component, HostBinding, Injector, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, Injector, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
@@ -21,7 +21,9 @@ import { VoidZoneComponent } from '../void-zone/void-zone.component';
     imports: [PrimeNgModule, OpponentComponent, MidZoneComponent, PlayerComponent, DeckComponent, VoidZoneComponent, PlaygroundGameRulesComponent],
     providers: [DialogService]
 })
-export class PlaygroundComponent implements OnInit, OnDestroy {
+export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('card-list') cardList?: any;
 
   @HostBinding(APP_CONTAINER_FLEX_CLASS)
   protected readonly containerFlex = true;
@@ -44,6 +46,9 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     this._playgroundId = this._router.getCurrentNavigation()?.extras.state?.['playgroundId'];
 
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
+  }
+  ngAfterViewInit(): void {
+    this.cardList.classList.add('is-animated');
   }
 
   ngOnDestroy(): void {

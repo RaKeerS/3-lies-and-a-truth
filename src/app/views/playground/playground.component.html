@@ -59,6 +59,44 @@
   </div> -->
 <!-- } -->
 
+
+<div class="backdrop mid-graphics">
+  <div class="backdrop-body flex justify-content-center">
+    <div class="toss top-40 fixed">
+      <p-card header="Toss!" class="h-15rem flex flex-column p-3">
+
+        <div class="card-wrapper">
+          <ul class="card-list">
+            <li class="card-list-item" data-card="0">
+              <div class="card"></div>
+            </li>
+            <li class="card-list-item" data-card="1">
+              <div class="card"></div>
+            </li>
+            <li class="card-list-item" data-card="2">
+              <div class="card"></div>
+            </li>
+          </ul>
+        </div>
+
+        @if (playgroundModel.playerOrder.size > 0) {
+          <div class="toss-result flex p-3 justify-content-center">
+            <h3>
+              @if (playgroundModel.playerOrder.get('Player1') === 1) {
+                Player 1 Wins the Toss! Begins first!!
+              } @else {
+                Player 2 Wins the Toss! Begins first!!
+              }
+            </h3>
+          </div>
+        }
+      </p-card>
+    </div>
+  </div>
+</div>
+
+
+
 <p-card header="Title" class="outer root-card flex">
   <div class="flex root-div">
     <div class="flex void-zone mb-5 pr-4">
