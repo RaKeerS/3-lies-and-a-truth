@@ -256,6 +256,11 @@
   }
 }
 
+.card-deck-shuffle {
+  block-size: 52%;
+  inline-size: 52%;
+}
+
 .card-wrapper {
   display: flex;
   flex-direction: row;
@@ -278,7 +283,7 @@
   list-style: none;
 }
 
-.card-list__item {
+.card-list-item {
   position: absolute;
 
   animation: none;
