@@ -290,44 +290,97 @@
   animation-fill-mode: forwards;
 
   &[data-card="0"] {
-    z-index: 6;
+    z-index: 15;
 
     margin-top: 0;
   }
 
   &[data-card="1"] {
-    z-index: 5;
+    z-index: 14;
+
+    margin-top: 2px;
+  }
+
+  &[data-card="2"] {
+    z-index: 13;
 
     margin-top: 4px;
   }
 
-  &[data-card="2"] {
-    z-index: 4;
+  &[data-card="3"] {
+    z-index: 12;
+
+    margin-top: 6px;
+  }
+
+  &[data-card="4"] {
+    z-index: 11;
 
     margin-top: 8px;
   }
+
+  &[data-card="5"] {
+    z-index: 10;
+
+    margin-top: 10px;
+  }
+
+  &[data-card="6"] {
+    z-index: 9;
+
+    margin-top: 12px;
+  }
+
 
   .is-animated & {
 
     &[data-card="0"] {
       animation: shuffle 1s ease-in-out 0s 1 normal;
-      z-index: 2;
+      z-index: 6;
 
       transition: z-index 0s ease-in-out 0.5s;
     }
 
     &[data-card="1"] {
       animation: shuffle 1s ease-in-out 1s 1 normal;
-      z-index: 1;
+      z-index: 5;
 
       transition: z-index 0s ease-in-out 1.5s;
     }
 
     &[data-card="2"] {
       animation: shuffle 1s ease-in-out 2s 1 normal;
-      z-index: 0;
+      z-index: 4;
 
       transition: z-index 0s ease-in-out 2.5s;
+    }
+
+    &[data-card="3"] {
+      animation: shuffle 1s ease-in-out 3s 1 normal;
+      z-index: 3;
+
+      transition: z-index 0s ease-in-out 3.5s;
+    }
+
+    &[data-card="4"] {
+      animation: shuffle 1s ease-in-out 4s 1 normal;
+      z-index: 2;
+
+      transition: z-index 0s ease-in-out 4.5s;
+    }
+
+    &[data-card="5"] {
+      animation: shuffle 1s ease-in-out 5s 1 normal;
+      z-index: 1;
+
+      transition: z-index 0s ease-in-out 5.5s;
+    }
+
+    &[data-card="6"] {
+      animation: shuffle 1s ease-in-out 6s 1 normal;
+      z-index: 0;
+
+      transition: z-index 0s ease-in-out 6.5s;
     }
   }
 }
@@ -358,6 +411,22 @@
 
 [data-card="2"] .card {
   background: #3a7;
+}
+
+[data-card="3"] .card {
+  background: rgb(49, 156, 232);
+}
+
+[data-card="4"] .card {
+  background: rgb(5, 8, 53);
+}
+
+[data-card="5"] .card {
+  background: rgb(244, 247, 103);
+}
+
+[data-card="6"] .card {
+  background: rgb(213, 72, 79);
 }
 
 // .min-h-200p {
