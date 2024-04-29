@@ -148,8 +148,8 @@ export class PlaygroundModel {
     });
 
     this._subscription = this._dialogRef.onClose.subscribe((data: any) => {
-      console.log('Playground Game Rules Dialog Closed. Data: ', data);
-    })
+      console.log('Playground Game Initiation Dialog Closed. Data: ', data);
+    });
 
     console.log('DialogRef: ', this._dialogRef);
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
@@ -343,7 +343,10 @@ export class PlaygroundModel {
     // );
 
     const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
-      tap(() => console.log('Timeout!'))
+      tap(() => {
+        this.shuffleDeck();
+        console.log('Timeout!');
+      })
     )
 
     return concat(
@@ -355,6 +358,11 @@ export class PlaygroundModel {
 
   public initializeBetting(): void {
     this._gameStage.next(PlaygroundGameStage.BET);
+  }
+
+  public shuffleDeck(): void {
+    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+    this._dialogService.getInstance(this._dialogRef!).hide();
   }
 
   public unsubscribeAll(): void {

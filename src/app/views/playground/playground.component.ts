@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
 import { delay, of, Subscription, tap } from 'rxjs';
 
+import { PlaygroundGameStage } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { APP_CONTAINER_FLEX_CLASS } from '../../types/app-types';
@@ -24,6 +25,8 @@ import { VoidZoneComponent } from '../void-zone/void-zone.component';
 export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('cardDeckShuffleList') cardList?: ElementRef;
+
+  public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
 
   @HostBinding(APP_CONTAINER_FLEX_CLASS)
   protected readonly containerFlex = true;
@@ -59,7 +62,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     // NOTE: Commented below line for testing 'card-deck-shuffle' animation
-    // this.playgroundModel.showPlaygroundGameRulesDialog();
+    this.playgroundModel.showPlaygroundGameRulesDialog();
 
     // this._subscription = this._playgroundSubject.subscribe(value => console.log('Playground Component: ', value));
   }

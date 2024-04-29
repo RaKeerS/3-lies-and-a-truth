@@ -59,55 +59,54 @@
   </div> -->
 <!-- } -->
 
+@if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE) {
+  <div class="backdrop mid-graphics">
+    <div class="backdrop-body flex justify-content-center align-items-center">
+      <div class="card-deck-shuffle top-0 fixed">
+        <p-card header="Shuffling Deck, Please Wait..." class="flex flex-column p-3 mt-3">
 
-<div class="backdrop mid-graphics">
-  <div class="backdrop-body flex justify-content-center align-items-center">
-    <div class="card-deck-shuffle fixed">
-      <p-card header="Shuffling Deck, Please Wait..." class="flex flex-column p-3 mt-3">
-
-        <div class="card-wrapper">
-          <ul class="card-list" #cardDeckShuffleList>
-            <li class="card-list-item" data-card="0">
-              <div class="card"></div>
-            </li>
-            <li class="card-list-item" data-card="1">
-              <div class="card"></div>
-            </li>
-            <li class="card-list-item" data-card="2">
-              <div class="card"></div>
-            </li>
-            <li class="card-list-item" data-card="3">
-              <div class="card"></div>
-            </li>
-            <li class="card-list-item" data-card="4">
-              <div class="card"></div>
-            </li>
-            <li class="card-list-item" data-card="5">
-              <div class="card"></div>
-            </li>
-            <li class="card-list-item" data-card="6">
-              <div class="card"></div>
-            </li>
-          </ul>
-        </div>
-
-        @if (playgroundModel.playerOrder.size > 0) {
-          <div class="toss-result flex p-3 justify-content-center">
-            <h3>
-              @if (playgroundModel.playerOrder.get('Player1') === 1) {
-                Player 1 Wins the Toss! Begins first!!
-              } @else {
-                Player 2 Wins the Toss! Begins first!!
-              }
-            </h3>
+          <div class="card-wrapper">
+            <ul class="card-list" #cardDeckShuffleList>
+              <li class="card-list-item" data-card="0">
+                <div class="card"></div>
+              </li>
+              <li class="card-list-item" data-card="1">
+                <div class="card"></div>
+              </li>
+              <li class="card-list-item" data-card="2">
+                <div class="card"></div>
+              </li>
+              <li class="card-list-item" data-card="3">
+                <div class="card"></div>
+              </li>
+              <li class="card-list-item" data-card="4">
+                <div class="card"></div>
+              </li>
+              <li class="card-list-item" data-card="5">
+                <div class="card"></div>
+              </li>
+              <li class="card-list-item" data-card="6">
+                <div class="card"></div>
+              </li>
+            </ul>
           </div>
-        }
-      </p-card>
+
+          @if (playgroundModel.playerOrder.size > 0) {
+            <div class="toss-result flex p-3 justify-content-center">
+              <h3>
+                @if (playgroundModel.playerOrder.get('Player1') === 1) {
+                  Player 1 Wins the Toss! Begins first!!
+                } @else {
+                  Player 2 Wins the Toss! Begins first!!
+                }
+              </h3>
+            </div>
+          }
+        </p-card>
+      </div>
     </div>
   </div>
-</div>
-
-
+}
 
 <p-card header="Title" class="outer root-card flex">
   <div class="flex root-div">
