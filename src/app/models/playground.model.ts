@@ -45,6 +45,8 @@ export class PlaygroundModel {
 
   private _subscription: Subscription;
 
+  private _isShuffleDeckInitiated: boolean = false;
+
 
   constructor(injector: Injector) {
     this._subscription = this.commenceRound().subscribe();
@@ -116,6 +118,13 @@ export class PlaygroundModel {
     this._playgroundService.createPlayground ? this._playerOneBetAmount = value : this._playerTwoBetAmount = value;
   }
 
+  get isShuffleDeckInitiated(): boolean {
+    return this._isShuffleDeckInitiated;
+  }
+  set isShuffleDeckInitiated(value: boolean) {
+    this._isShuffleDeckInitiated = value;
+  }
+
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {
     return this._playgroundService.switch$;
   }
@@ -123,6 +132,7 @@ export class PlaygroundModel {
   get tossCompleted$(): Observable<GameMidSegwayMetadata> {
     return this._playgroundService.tossCompleted$;
   }
+
 
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
     this.gameStages.set(PlaygroundGameStage.TOSS, true);
@@ -344,6 +354,7 @@ export class PlaygroundModel {
 
     const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
       tap(() => {
+        this.playgroundBetAmount = !!this.playgroundBetAmount || this.playgroundBetAmount < 10 ? 10 : this.playgroundBetAmount;
         this.shuffleDeck();
         console.log('Timeout!');
       })
@@ -363,6 +374,7 @@ export class PlaygroundModel {
   public shuffleDeck(): void {
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
     this._dialogService.getInstance(this._dialogRef!).hide();
+    this.isShuffleDeckInitiated = true;
   }
 
   public unsubscribeAll(): void {

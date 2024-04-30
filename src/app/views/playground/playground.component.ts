@@ -50,13 +50,14 @@ export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
   }
+
   ngAfterViewInit(): void {
     of({}).pipe(delay(2000), tap(() => { this.cardList?.nativeElement.classList.add('is-animated'); })).subscribe();
     // this.cardList?.nativeElement.classList.add('is-animated');
   }
 
   ngOnDestroy(): void {
-    this._subscription?.unsubscribe();
+    // this._subscription?.unsubscribe();
     this.playgroundModel.dialogRef?.close();
   }
 
@@ -70,6 +71,13 @@ export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
   get playgroundModel(): PlaygroundModel {
     return this._playgroundModel;
     // return this._playgroundService.playgroundModel;
+  }
+
+  get isShuffleDeckInitiated(): boolean {
+    if (this.playgroundModel.isShuffleDeckInitiated && this.cardList) {
+      this.cardList?.nativeElement.classList.add('is-animated');
+    }
+    return this.playgroundModel.isShuffleDeckInitiated;
   }
 
   sendMessage(): void {

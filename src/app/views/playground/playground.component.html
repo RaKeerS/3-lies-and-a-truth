@@ -59,7 +59,7 @@
   </div> -->
 <!-- } -->
 
-@if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE) {
+@if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE && isShuffleDeckInitiated) {
   <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center align-items-center">
       <div class="card-deck-shuffle top-0 fixed">
