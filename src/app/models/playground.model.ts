@@ -353,6 +353,7 @@ export class PlaygroundModel {
     // );
 
     const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
+      takeWhile(() => !this.isShuffleDeckInitiated),
       tap(() => {
         this.playgroundBetAmount = !!this.playgroundBetAmount || this.playgroundBetAmount < 10 ? 10 : this.playgroundBetAmount;
         this.shuffleDeck();

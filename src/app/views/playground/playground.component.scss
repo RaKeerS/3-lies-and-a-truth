@@ -301,13 +301,13 @@
     block-size: 24rem;
     inline-size: 15rem;
 
-    padding: 30px;
+    padding: 0;
 
     border-radius: 15px;
     box-shadow: 0 1px 3px 0 #222;
 
     background: #555;
-}
+  }
 
   &[data-card="0"] {
     z-index: 15;
@@ -431,6 +431,18 @@
 
 [data-card="6"] .card {
   background: rgb(213, 72, 79);
+}
+
+.inline-size-15rem {
+  inline-size: 15rem;
+}
+
+.block-size-24rem {
+  block-size: 24rem;
+}
+
+.border-radius-6px {
+  border-radius: 6px;
 }
 
 // .min-h-200p {
