@@ -7,6 +7,7 @@ import {
   filter,
   forkJoin,
   interval,
+  last,
   merge,
   Observable,
   of,
@@ -46,6 +47,7 @@ export class PlaygroundModel {
   private _subscription: Subscription;
 
   private _isShuffleDeckInitiated: boolean = false;
+  private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
 
 
   constructor(injector: Injector) {
@@ -125,6 +127,13 @@ export class PlaygroundModel {
     this._isShuffleDeckInitiated = value;
   }
 
+  get shuffleDeckHeader(): string {
+    return this._shuffleDeckHeader;
+  }
+  set shuffleDeckHeader(value: string) {
+    this._shuffleDeckHeader = value;
+  }
+
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {
     return this._playgroundService.switch$;
   }
@@ -193,10 +202,19 @@ export class PlaygroundModel {
     );
   }
 
+  private deckShuffling() {
+    return this.gameStage$.pipe(
+      filter((stage) => stage === PlaygroundGameStage.SHUFFLE),
+      filter(() => this.isShuffleDeckInitiated === true),
+      switchMap(() => this.doDeckShuffling())
+    );
+  }
+
   public commenceRound() {
     return merge(
       this.toss(),
-      this.placeBets());
+      this.placeBets(),
+      this.deckShuffling());
   }
 
   public showPlaygroundGameRulesDialog(): void {
@@ -356,7 +374,7 @@ export class PlaygroundModel {
       takeWhile(() => !this.isShuffleDeckInitiated),
       tap(() => {
         this.playgroundBetAmount = !!this.playgroundBetAmount || this.playgroundBetAmount < 10 ? 10 : this.playgroundBetAmount;
-        this.shuffleDeck();
+        this.beginDeckShuffling();
         console.log('Timeout!');
       })
     )
@@ -368,14 +386,24 @@ export class PlaygroundModel {
     )
   }
 
+  public doDeckShuffling() {
+    this.shuffleDeckHeader = 'Deck Shuffled';
+    return of();
+  }
+
   public initializeBetting(): void {
     this._gameStage.next(PlaygroundGameStage.BET);
   }
 
-  public shuffleDeck(): void {
+  public beginDeckShuffling(): void {
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.isShuffleDeckInitiated = true;
+    interval(1000).pipe(
+      take(7),
+      delay(7000),
+      last(),
+      tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   }
 
   public unsubscribeAll(): void {

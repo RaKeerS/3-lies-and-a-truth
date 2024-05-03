@@ -63,7 +63,7 @@
   <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center align-items-center">
       <div class="card-deck-shuffle top-0 fixed">
-        <p-card header="Shuffling Deck, Please Wait..." class="flex flex-column p-3 mt-3">
+        <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
 
           <div class="card-wrapper">
             <ul class="card-list" #cardDeckShuffleList>
@@ -105,17 +105,6 @@
             </ul>
           </div>
 
-          @if (playgroundModel.playerOrder.size > 0) {
-            <div class="toss-result flex p-3 justify-content-center">
-              <h3>
-                @if (playgroundModel.playerOrder.get('Player1') === 1) {
-                  Player 1 Wins the Toss! Begins first!!
-                } @else {
-                  Player 2 Wins the Toss! Begins first!!
-                }
-              </h3>
-            </div>
-          }
         </p-card>
       </div>
     </div>
