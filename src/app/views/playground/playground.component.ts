@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, ElementRef, HostBinding, Injector, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, Injector, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
-import { delay, of, Subscription, tap } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { PlaygroundGameStage } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
@@ -22,7 +22,7 @@ import { VoidZoneComponent } from '../void-zone/void-zone.component';
     imports: [PrimeNgModule, OpponentComponent, MidZoneComponent, PlayerComponent, DeckComponent, VoidZoneComponent, PlaygroundGameRulesComponent],
     providers: [DialogService]
 })
-export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PlaygroundComponent implements OnInit, OnDestroy {
 
   @ViewChild('cardDeckShuffleList') cardList?: ElementRef;
 
@@ -51,10 +51,10 @@ export class PlaygroundComponent implements OnInit, AfterViewInit, OnDestroy {
     // this._playgroundSubject = PlaygroundService.playgroundMap.get(this._playgroundId)?.playgroundSubject!;
   }
 
-  ngAfterViewInit(): void {
-    of({}).pipe(delay(2000), tap(() => { this.cardList?.nativeElement.classList.add('is-animated'); })).subscribe();
-    // this.cardList?.nativeElement.classList.add('is-animated');
-  }
+  // ngAfterViewInit(): void {
+  //   of({}).pipe(delay(2000), tap(() => { this.cardList?.nativeElement.classList.add('is-animated'); })).subscribe();
+  //   // this.cardList?.nativeElement.classList.add('is-animated');
+  // }
 
   ngOnDestroy(): void {
     // this._subscription?.unsubscribe();

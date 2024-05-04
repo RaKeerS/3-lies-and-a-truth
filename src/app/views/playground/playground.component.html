@@ -59,54 +59,67 @@
   </div> -->
 <!-- } -->
 
-@if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE && isShuffleDeckInitiated) {
+@if (isShuffleDeckInitiated) {
   <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center align-items-center">
-      <div class="card-deck-shuffle top-0 fixed">
-        <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
 
-          <div class="card-wrapper">
-            <ul class="card-list" #cardDeckShuffleList>
-              <li class="card-list-item" data-card="0">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-              <li class="card-list-item" data-card="1">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-              <li class="card-list-item" data-card="2">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-              <li class="card-list-item" data-card="3">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-              <li class="card-list-item" data-card="4">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-              <li class="card-list-item" data-card="5">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-              <li class="card-list-item" data-card="6">
-                <div class="card">
-                  <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
-                </div>
-              </li>
-            </ul>
+        @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE) {
+          <div class="card-deck-shuffle top-0 fixed">
+            <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
+              <div class="card-wrapper">
+                <ul class="card-list" #cardDeckShuffleList>
+                  <li class="card-list-item" data-card="0">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                  <li class="card-list-item" data-card="1">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                  <li class="card-list-item" data-card="2">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                  <li class="card-list-item" data-card="3">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                  <li class="card-list-item" data-card="4">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                  <li class="card-list-item" data-card="5">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                  <li class="card-list-item" data-card="6">
+                    <div class="card">
+                      <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+            </p-card>
           </div>
+        }
 
-        </p-card>
-      </div>
+        @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
+          <div class="card-deck-pick top-25n fixed">
+            <p-card header="Pick the suitable options!" class="flex flex-column p-3 mt-3">
+              <div class="card-wrapper">
+
+              </div>
+            </p-card>
+          </div>
+        }
+
     </div>
   </div>
 }

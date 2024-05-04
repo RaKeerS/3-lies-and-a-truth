@@ -388,6 +388,7 @@ export class PlaygroundModel {
 
   public doDeckShuffling() {
     this.shuffleDeckHeader = 'Deck Shuffled';
+    this._gameStage.next(PlaygroundGameStage.PICK);
     return of();
   }
 

@@ -212,6 +212,15 @@
         margin-top: 0.75rem;
       }
     }
+    .card-deck-pick {
+      .p-card-body {
+        block-size: 3.5rem;
+        min-block-size: auto;
+        padding: 0 2rem;
+        justify-content: center;
+        display: flex;
+      }
+    }
 
   }
 }
@@ -246,6 +255,10 @@
   border-radius: 2rem;
   border: 1px solid;
   box-shadow: 0 0 0 1px #ffecb3;
+}
+
+.top-25n {
+  top: -30px;
 }
 
 // Card-Shuffle Styling
