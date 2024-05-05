@@ -236,6 +236,7 @@ export class PlaygroundModel {
 
     this._subscription = this._dialogRef.onClose.subscribe((data: any) => {
       this.showPlaygroundGameInitiationDialog();
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.RULES, message: '', messageFrom: 'peer' } as GameMidSegwayMetadata))
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
     });
 
@@ -296,6 +297,12 @@ export class PlaygroundModel {
 
     const gameTossResult$ = this.switch$.pipe(
       // takeLast(1),
+      filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES || metaData?.gameStage ===  PlaygroundGameStage.TOSS)),
+      tap((metadata?: GameMidSegwayMetadata) => {
+        if (metadata?.gameStage === PlaygroundGameStage.RULES) {
+          this._gameTossWinnerDetails = 'Starting Toss!'
+        }
+      }),
       tap((metaData?: GameMidSegwayMetadata) => {
         // this._dialogRef?.close())
         if (metaData !== undefined) {
@@ -387,7 +394,6 @@ export class PlaygroundModel {
   }
 
   public doDeckShuffling() {
-    this.shuffleDeckHeader = 'Deck Shuffled';
     this._gameStage.next(PlaygroundGameStage.PICK);
     return of();
   }
@@ -402,8 +408,10 @@ export class PlaygroundModel {
     this.isShuffleDeckInitiated = true;
     interval(1000).pipe(
       take(7),
-      delay(7000),
+      delay(1000),
       last(),
+      tap(() =>this.shuffleDeckHeader = 'Deck Shuffled'),
+      delay(500),
       tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   }
 

@@ -380,6 +380,10 @@ export class WebRtcModel {
     const parsedData: { gameStage: PlaygroundGameStage, message: string } = JSON.parse(message);
     if (parsedData?.gameStage && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
+        case (PlaygroundGameStage.RULES as PlaygroundGameStage): {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
+          break;
+        }
         case PlaygroundGameStage.TOSS: {
           const tossResult = Boolean(+parsedData.message);
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'subject' } as GameMidSegwayMetadata);
