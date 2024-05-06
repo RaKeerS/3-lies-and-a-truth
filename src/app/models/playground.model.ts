@@ -42,6 +42,7 @@ export class PlaygroundModel {
 
   private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
 
+  // NOTE - This Subject is only used to 'Update the GameStages'
   private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
 
   private _subscription: Subscription;
@@ -51,10 +52,11 @@ export class PlaygroundModel {
 
 
   constructor(injector: Injector) {
-    this._subscription = this.commenceRound().subscribe();
     this._playgroundService = injector.get(PlaygroundService);
     // this._playgroundService = playgroundService;
     this._dialogService = injector.get( DialogService);
+
+    this._subscription = this.commenceRound().subscribe();
   }
 
   get dialogRef(): DynamicDialogRef | undefined {
@@ -134,6 +136,7 @@ export class PlaygroundModel {
     this._shuffleDeckHeader = value;
   }
 
+  // NOTE: This observable is present in the Service since, it is used to contain/send Game's mid segment metadata, which is similar to the async updates of values/data
   get switch$(): Observable<GameMidSegwayMetadata | undefined> {
     return this._playgroundService.switch$;
   }
@@ -188,6 +191,19 @@ export class PlaygroundModel {
     // return combineLatest([this.playerOneBet(), this.playerTwoBet()]);
   }
 
+  private rules() {
+    // this.gameStages.set(PlaygroundGameStage.TOSS, true);
+
+    return this.switch$.pipe(
+    // takeLast(1),
+    filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES)),
+    tap((metadata?: GameMidSegwayMetadata) => {
+      if (metadata?.gameStage === PlaygroundGameStage.RULES) {
+        this._gameTossWinnerDetails = 'Starting Toss!';
+      }
+    }));
+  }
+
   private toss() {
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
 
@@ -212,6 +228,7 @@ export class PlaygroundModel {
 
   public commenceRound() {
     return merge(
+      this.rules(),
       this.toss(),
       this.placeBets(),
       this.deckShuffling());
@@ -280,7 +297,7 @@ export class PlaygroundModel {
     // }
 
     let toggleSwitch = false;
-    this._gameTossWinnerDetails = 'Waiting for your partner to start the toss';
+    this._gameTossWinnerDetails = this._playgroundService.createPlayground ? 'Starting Toss!' : 'Waiting for your partner to start the toss';
 
     const interval$ = interval(500).pipe(
     (this._playgroundService.createPlayground ? take(10) : takeUntil((this._playgroundService.tossCompleted))),
@@ -298,11 +315,6 @@ export class PlaygroundModel {
     const gameTossResult$ = this.switch$.pipe(
       // takeLast(1),
       filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES || metaData?.gameStage ===  PlaygroundGameStage.TOSS)),
-      tap((metadata?: GameMidSegwayMetadata) => {
-        if (metadata?.gameStage === PlaygroundGameStage.RULES) {
-          this._gameTossWinnerDetails = 'Starting Toss!'
-        }
-      }),
       tap((metaData?: GameMidSegwayMetadata) => {
         // this._dialogRef?.close())
         if (metaData !== undefined) {
@@ -410,7 +422,7 @@ export class PlaygroundModel {
       take(7),
       delay(1000),
       last(),
-      tap(() =>this.shuffleDeckHeader = 'Deck Shuffled'),
+      tap(() => this.shuffleDeckHeader = 'Deck Shuffled'),
       delay(500),
       tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   }

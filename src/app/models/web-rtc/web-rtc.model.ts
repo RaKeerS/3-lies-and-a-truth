@@ -378,9 +378,9 @@ export class WebRtcModel {
 
   private handleMessages(message: string): void {
     const parsedData: { gameStage: PlaygroundGameStage, message: string } = JSON.parse(message);
-    if (parsedData?.gameStage && parsedData?.message !== undefined) {
+    if (parsedData?.gameStage !== undefined && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
-        case (PlaygroundGameStage.RULES as PlaygroundGameStage): {
+        case PlaygroundGameStage.RULES: {
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
