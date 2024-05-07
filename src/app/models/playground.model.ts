@@ -49,6 +49,7 @@ export class PlaygroundModel {
 
   private _isShuffleDeckInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
+  private _cardDeckPickerHeader: string = '';
 
 
   constructor(injector: Injector) {
@@ -134,6 +135,13 @@ export class PlaygroundModel {
   }
   set shuffleDeckHeader(value: string) {
     this._shuffleDeckHeader = value;
+  }
+
+  get cardDeckPickerHeader(): string {
+    return this._cardDeckPickerHeader;
+  }
+  set cardDeckPickerHeader(value: string) {
+    this._cardDeckPickerHeader = value;
   }
 
   // NOTE: This observable is present in the Service since, it is used to contain/send Game's mid segment metadata, which is similar to the async updates of values/data
@@ -407,7 +415,14 @@ export class PlaygroundModel {
 
   public doDeckShuffling() {
     this._gameStage.next(PlaygroundGameStage.PICK);
-    return of();
+    this.cardDeckPickerHeader = 'Distributing Cards...';
+
+    return interval(1000).pipe(
+      take(4000),
+      last(),
+      tap(() => this.cardDeckPickerHeader = 'Pick the suitable options!')
+    );
+    // return of();
   }
 
   public initializeBetting(): void {
