@@ -19,6 +19,8 @@ import {
   tap,
 } from 'rxjs';
 
+import { CardDeckDictionary } from '../constants/card-deck.dictionary';
+import { CardDeckEnum } from '../enums/card-deck.enum';
 import { PlaygroundGameStage, PlaygroundGameTossStage, PlaygroundTossOutcome } from '../enums/playground.enum';
 import { PlaygroundService } from '../services/playground.service';
 import { GameMidSegwayMetadata } from '../types/app-types';
@@ -50,6 +52,11 @@ export class PlaygroundModel {
   private _isShuffleDeckInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
+
+  private _deckCardsList: Map<string, CardDeckEnum> = CardDeckDictionary;
+  private _voidDeckCardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+  private _p1CardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+  private _p2CardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
 
 
   constructor(injector: Injector) {
@@ -142,6 +149,34 @@ export class PlaygroundModel {
   }
   set cardDeckPickerHeader(value: string) {
     this._cardDeckPickerHeader = value;
+  }
+
+  get p1CardsList(): Map<string, CardDeckEnum> {
+    return this._p1CardsList;
+  }
+  set p1CardsList(value: Map<string, CardDeckEnum>) {
+    this._p1CardsList = value;
+  }
+
+  get p2CardsList(): Map<string, CardDeckEnum> {
+    return this._p2CardsList;
+  }
+  set p2CardsList(value: Map<string, CardDeckEnum>) {
+    this._p2CardsList = value;
+  }
+
+  get deckCardsList(): Map<string, CardDeckEnum> {
+    return this._deckCardsList;
+  }
+  set deckCardsList(value: Map<string, CardDeckEnum>) {
+    this._deckCardsList = value;
+  }
+
+  get voidDeckCardsList(): Map<string, CardDeckEnum> {
+    return this._voidDeckCardsList;
+  }
+  set voidDeckCardsList(value: Map<string, CardDeckEnum>) {
+    this._voidDeckCardsList = value;
   }
 
   // NOTE: This observable is present in the Service since, it is used to contain/send Game's mid segment metadata, which is similar to the async updates of values/data
@@ -433,6 +468,7 @@ export class PlaygroundModel {
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.isShuffleDeckInitiated = true;
+
     interval(1000).pipe(
       take(7),
       delay(1000),
@@ -440,6 +476,35 @@ export class PlaygroundModel {
       tap(() => this.shuffleDeckHeader = 'Deck Shuffled'),
       delay(500),
       tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
+  }
+
+  private distributeDeckCards(player: number): void {
+    // const distributionOngoing = true;
+    let counter: number = 1;
+
+    while(true) {
+      const randomNumber = Math.floor(Math.random() * 53) + 1;
+
+      if (player === 1) {
+        if (this.p1CardsList.size === 0) {
+          this.p1CardsList.set(CardDeckEnum[randomNumber], randomNumber);
+        } else {
+          if (!this.p1CardsList.has(CardDeckEnum[randomNumber])) {
+            this.p1CardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          }
+        }
+
+        if (this.p1CardsList.size === 4) {
+          break;
+        }
+
+        counter++;
+
+      } else {
+
+      }
+      this.deckCardsList
+    }
   }
 
   public unsubscribeAll(): void {
