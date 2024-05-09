@@ -34,6 +34,7 @@ export class PlaygroundModel {
 
   private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
+  private _playerTossWinner?: PlaygroundTossOutcome;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
   private _playgroundService: PlaygroundService;
@@ -100,6 +101,13 @@ export class PlaygroundModel {
 
   get playerOrder(): Map<string, number> {
     return this._playerOrder;
+  }
+
+  get playerTossWinner(): PlaygroundTossOutcome | undefined {
+    return this._playerTossWinner;
+  }
+  set playerTossWinner(value: PlaygroundTossOutcome) {
+    this._playerTossWinner = value;
   }
 
   get playerOneBetAmount(): number { // Use for data-binding with HTML
@@ -475,12 +483,14 @@ export class PlaygroundModel {
       last(),
       tap(() => this.shuffleDeckHeader = 'Deck Shuffled'),
       delay(500),
+      tap(() => 'Distributing Cards...'),
+                      delay(1000),
+                      tap(() => this.distributeDeckCards(1)),
       tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   }
 
   private distributeDeckCards(player: number): void {
     // const distributionOngoing = true;
-    let counter: number = 1;
 
     while(true) {
       const randomNumber = Math.floor(Math.random() * 53) + 1;
@@ -497,8 +507,6 @@ export class PlaygroundModel {
         if (this.p1CardsList.size === 4) {
           break;
         }
-
-        counter++;
 
       } else {
 
