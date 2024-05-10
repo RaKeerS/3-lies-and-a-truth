@@ -176,9 +176,9 @@ export class PlaygroundModel {
   get deckCardsList(): Map<string, CardDeckEnum> {
     return this._deckCardsList;
   }
-  set deckCardsList(value: Map<string, CardDeckEnum>) {
-    this._deckCardsList = value;
-  }
+  // set deckCardsList(value: Map<string, CardDeckEnum>) {
+  //   this._deckCardsList = value;
+  // }
 
   get voidDeckCardsList(): Map<string, CardDeckEnum> {
     return this._voidDeckCardsList;
@@ -321,6 +321,7 @@ export class PlaygroundModel {
     // NOTE - Player 1 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_1
     // NOTE - Player 2 Wins the Toss, starts first! - PlaygroundTossOutcome.PLAYER_2
     const setPlayerOrder = (tossOutcome: number) => {
+      this.playerTossWinner = tossOutcome;
       if (this._playgroundService.createPlayground) {
         if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
@@ -485,34 +486,64 @@ export class PlaygroundModel {
       delay(500),
       tap(() => 'Distributing Cards...'),
                       delay(1000),
-                      tap(() => this.distributeDeckCards(1)),
+                      tap(() => this.distributeDeckCards()),
       tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   }
 
-  private distributeDeckCards(player: number): void {
+  private distributeDeckCards(_player?: PlaygroundTossOutcome): void {
     // const distributionOngoing = true;
+
+    // const firstPlayerCardsList = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? this.p1CardsList : this.p2CardsList;
+    // const secondPlayerCardsList = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? this.p2CardsList : this.p1CardsList;
+
+    const firstPlayerCardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+    const secondPlayerCardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+
+    // if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
+      // NOTE: Distributing Cards to Player 1 first and next to Player 2
 
     while(true) {
       const randomNumber = Math.floor(Math.random() * 53) + 1;
-
-      if (player === 1) {
-        if (this.p1CardsList.size === 0) {
-          this.p1CardsList.set(CardDeckEnum[randomNumber], randomNumber);
+      if (this.deckCardsList.has(CardDeckEnum[randomNumber])) {
+        if (firstPlayerCardsList.size === 0) {
+          firstPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
         } else {
-          if (!this.p1CardsList.has(CardDeckEnum[randomNumber])) {
-            this.p1CardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          if (!firstPlayerCardsList.has(CardDeckEnum[randomNumber])) {
+            firstPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
           }
         }
-
-        if (this.p1CardsList.size === 4) {
-          break;
-        }
-
-      } else {
-
+        this.deckCardsList.delete(CardDeckEnum[randomNumber]);
       }
-      this.deckCardsList
+
+      if (firstPlayerCardsList.size === 4) {
+        break;
+      }
     }
+
+    while(true) {
+      const randomNumber = Math.floor(Math.random() * 53) + 1;
+      if (this.deckCardsList.has(CardDeckEnum[randomNumber])) {
+        if (secondPlayerCardsList.size === 0) {
+          secondPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
+        } else {
+          if (!secondPlayerCardsList.has(CardDeckEnum[randomNumber]) && !firstPlayerCardsList.has(CardDeckEnum[randomNumber])) { // NOTE: Even if we exclude '&& !firstPlayerCardsList.has(CardDeckEnum[randomNumber])' this part, it would still work since, the 'this.deckCardsList' deletes the entry when distributing cards to 'firstPlayer'.
+            secondPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          }
+        }
+        this.deckCardsList.delete(CardDeckEnum[randomNumber]);
+      }
+
+
+      if (secondPlayerCardsList.size === 4) {
+        break;
+      }
+    }
+
+    this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
+
+    // } else {
+
+    // }
   }
 
   public unsubscribeAll(): void {
