@@ -1,10 +1,12 @@
 import { CardDeckEnum } from '../enums/card-deck.enum';
 
-const CardDeckDictionary: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+const CardDeckDictionary: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
 
-for (const key in CardDeckEnum) {
+const CardDeckList = Object.keys(CardDeckEnum).filter(key => !isNaN(Number(key)));
+
+for (const key in CardDeckList) {
   if (CardDeckEnum.hasOwnProperty(key)) {
-    CardDeckDictionary.set(key, +CardDeckEnum[key]);
+    CardDeckDictionary.set( +key, CardDeckEnum[key],);
   }
 }
 

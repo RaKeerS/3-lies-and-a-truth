@@ -54,10 +54,12 @@ export class PlaygroundModel {
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
 
-  private _deckCardsList: Map<string, CardDeckEnum> = CardDeckDictionary;
-  private _voidDeckCardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
-  private _p1CardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
-  private _p2CardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+  private _deckCardsList: Map<CardDeckEnum, string> = CardDeckDictionary;
+  private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+
+  public PlaygroundTossOutcome = PlaygroundTossOutcome;
 
 
   constructor(injector: Injector) {
@@ -159,31 +161,31 @@ export class PlaygroundModel {
     this._cardDeckPickerHeader = value;
   }
 
-  get p1CardsList(): Map<string, CardDeckEnum> {
+  get p1CardsList(): Map<CardDeckEnum, string> {
     return this._p1CardsList;
   }
-  set p1CardsList(value: Map<string, CardDeckEnum>) {
+  set p1CardsList(value: Map<CardDeckEnum, string>) {
     this._p1CardsList = value;
   }
 
-  get p2CardsList(): Map<string, CardDeckEnum> {
+  get p2CardsList(): Map<CardDeckEnum, string> {
     return this._p2CardsList;
   }
-  set p2CardsList(value: Map<string, CardDeckEnum>) {
+  set p2CardsList(value: Map<CardDeckEnum, string>) {
     this._p2CardsList = value;
   }
 
-  get deckCardsList(): Map<string, CardDeckEnum> {
+  get deckCardsList(): Map<CardDeckEnum, string> {
     return this._deckCardsList;
   }
-  // set deckCardsList(value: Map<string, CardDeckEnum>) {
+  // set deckCardsList(value: Map<CardDeckEnum, string>) {
   //   this._deckCardsList = value;
   // }
 
-  get voidDeckCardsList(): Map<string, CardDeckEnum> {
+  get voidDeckCardsList(): Map<CardDeckEnum, string> {
     return this._voidDeckCardsList;
   }
-  set voidDeckCardsList(value: Map<string, CardDeckEnum>) {
+  set voidDeckCardsList(value: Map<CardDeckEnum, string>) {
     this._voidDeckCardsList = value;
   }
 
@@ -325,13 +327,13 @@ export class PlaygroundModel {
       if (this._playgroundService.createPlayground) {
         if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '1', messageFrom: 'peer' } as GameMidSegwayMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
         } else {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: '0', messageFrom: 'peer' } as GameMidSegwayMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: false, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
         }
       }
@@ -371,7 +373,8 @@ export class PlaygroundModel {
         // this._dialogRef?.close())
         if (metaData !== undefined) {
           this._playgroundService.ngZone.run(() => {
-            this._gameTossWinnerDetails = metaData.message ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+            this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
+            this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
             if (this._playgroundService.createPlayground) {
               this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
             } else {
@@ -490,29 +493,30 @@ export class PlaygroundModel {
       tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   }
 
+  // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'.
   private distributeDeckCards(_player?: PlaygroundTossOutcome): void {
     // const distributionOngoing = true;
 
     // const firstPlayerCardsList = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? this.p1CardsList : this.p2CardsList;
     // const secondPlayerCardsList = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? this.p2CardsList : this.p1CardsList;
 
-    const firstPlayerCardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
-    const secondPlayerCardsList: Map<string, CardDeckEnum> = new Map<string, CardDeckEnum>();
+    const firstPlayerCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+    const secondPlayerCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
 
     // if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
       // NOTE: Distributing Cards to Player 1 first and next to Player 2
 
     while(true) {
       const randomNumber = Math.floor(Math.random() * 53) + 1;
-      if (this.deckCardsList.has(CardDeckEnum[randomNumber])) {
+      if (this.deckCardsList.has(randomNumber)) {
         if (firstPlayerCardsList.size === 0) {
-          firstPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          firstPlayerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
         } else {
-          if (!firstPlayerCardsList.has(CardDeckEnum[randomNumber])) {
-            firstPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          if (!firstPlayerCardsList.has(randomNumber)) {
+            firstPlayerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
           }
         }
-        this.deckCardsList.delete(CardDeckEnum[randomNumber]);
+        this.deckCardsList.delete(randomNumber);
       }
 
       if (firstPlayerCardsList.size === 4) {
@@ -522,15 +526,15 @@ export class PlaygroundModel {
 
     while(true) {
       const randomNumber = Math.floor(Math.random() * 53) + 1;
-      if (this.deckCardsList.has(CardDeckEnum[randomNumber])) {
+      if (this.deckCardsList.has(randomNumber)) {
         if (secondPlayerCardsList.size === 0) {
-          secondPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          secondPlayerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
         } else {
-          if (!secondPlayerCardsList.has(CardDeckEnum[randomNumber]) && !firstPlayerCardsList.has(CardDeckEnum[randomNumber])) { // NOTE: Even if we exclude '&& !firstPlayerCardsList.has(CardDeckEnum[randomNumber])' this part, it would still work since, the 'this.deckCardsList' deletes the entry when distributing cards to 'firstPlayer'.
-            secondPlayerCardsList.set(CardDeckEnum[randomNumber], randomNumber);
+          if (!secondPlayerCardsList.has(randomNumber) && !firstPlayerCardsList.has(randomNumber)) { // NOTE: Even if we exclude '&& !firstPlayerCardsList.has(randomNumber)' this part, it would still work since, the 'this.deckCardsList' deletes the entry when distributing cards to 'firstPlayer'.
+            secondPlayerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
           }
         }
-        this.deckCardsList.delete(CardDeckEnum[randomNumber]);
+        this.deckCardsList.delete(randomNumber);
       }
 
 

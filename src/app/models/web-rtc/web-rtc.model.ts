@@ -385,8 +385,8 @@ export class WebRtcModel {
           break;
         }
         case PlaygroundGameStage.TOSS: {
-          const tossResult = Boolean(+parsedData.message);
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          // const tossResult = Boolean(+parsedData.message);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // NOTE - Commented for now, but this code works!
           // this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
           this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' } as GameMidSegwayMetadata);
