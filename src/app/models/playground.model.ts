@@ -68,6 +68,8 @@ export class PlaygroundModel {
     this._dialogService = injector.get( DialogService);
 
     this._subscription = this.commenceRound().subscribe();
+
+    this._gameTossWinnerDetails = this._playgroundService.createPlayground ? 'Starting Toss!' : 'Waiting for your partner to start the toss';
   }
 
   get dialogRef(): DynamicDialogRef | undefined {
@@ -351,7 +353,6 @@ export class PlaygroundModel {
     // }
 
     let toggleSwitch = false;
-    this._gameTossWinnerDetails = this._playgroundService.createPlayground ? 'Starting Toss!' : 'Waiting for your partner to start the toss';
 
     const interval$ = interval(500).pipe(
     (this._playgroundService.createPlayground ? take(10) : takeUntil((this._playgroundService.tossCompleted))),
@@ -359,7 +360,7 @@ export class PlaygroundModel {
     tap(() => {
       toggleSwitch = !toggleSwitch;
       // this._playgroundService.switch = !this._playgroundService.switch
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch, messageFrom: 'subject' } as GameMidSegwayMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch ? PlaygroundTossOutcome.PLAYER_1 : PlaygroundTossOutcome.PLAYER_2, messageFrom: 'subject' } as GameMidSegwayMetadata);
     }));
 
     const gameOrder$ = of(toggleSwitch).pipe(
@@ -373,16 +374,20 @@ export class PlaygroundModel {
         // this._dialogRef?.close())
         if (metaData !== undefined) {
           this._playgroundService.ngZone.run(() => {
-            this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
-            this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+            if (metaData.gameStage === PlaygroundGameStage.TOSS) {
+              this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
+              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+            }
+
             if (this._playgroundService.createPlayground) {
               this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
-            } else {
-              this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: metaData.message, messageFrom: 'peer' } as GameMidSegwayMetadata))
             }
+            // else {
+            //   this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: metaData.message, messageFrom: 'peer' } as GameMidSegwayMetadata))
+            // }
             // NOTE - Commented for now, but this code works!
             // if (metaData?.messageFrom === 'peer') {
-            //   this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
+            //   this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameS.TOStageS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
             // }
             console.log('gameTossWinnerDetails: ', this._gameTossWinnerDetails);
           });
@@ -461,15 +466,29 @@ export class PlaygroundModel {
   }
 
   public doDeckShuffling() {
-    this._gameStage.next(PlaygroundGameStage.PICK);
-    this.cardDeckPickerHeader = 'Distributing Cards...';
-
     return interval(1000).pipe(
-      take(4000),
+      take(7),
+      delay(1000),
       last(),
-      tap(() => this.cardDeckPickerHeader = 'Pick the suitable options!')
-    );
-    // return of();
+      tap(() => this.shuffleDeckHeader = 'Deck Shuffled'),
+      delay(1000),
+      tap(() => this.shuffleDeckHeader = 'Distributing Cards...'),
+      delay(1000),
+      tap(() => this.distributeDeckCards()),
+      delay(1000),
+      tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
+      tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE)));
+
+
+
+    // this._gameStage.next(PlaygroundGameStage.PICK);
+    // this.cardDeckPickerHeader = 'Distributing Cards...';
+
+    // return interval(1000).pipe(
+    //   take(4000),
+    //   last(),
+    //   tap(() => this.cardDeckPickerHeader = 'Pick the suitable options!')
+    // );
   }
 
   public initializeBetting(): void {
@@ -477,21 +496,29 @@ export class PlaygroundModel {
   }
 
   public beginDeckShuffling(): void {
-    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.isShuffleDeckInitiated = true;
-
-    interval(1000).pipe(
-      take(7),
-      delay(1000),
-      last(),
-      tap(() => this.shuffleDeckHeader = 'Deck Shuffled'),
-      delay(500),
-      tap(() => 'Distributing Cards...'),
-                      delay(1000),
-                      tap(() => this.distributeDeckCards()),
-      tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
+    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
   }
+
+  // public beginDeckShuffling(): void {
+  //   this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+  //   this._dialogService.getInstance(this._dialogRef!).hide();
+  //   this.isShuffleDeckInitiated = true;
+
+  //   interval(1000).pipe(
+  //     take(7),
+  //     delay(1000),
+  //     last(),
+  //     tap(() => this.shuffleDeckHeader = 'Deck Shuffled'),
+  //     delay(1000),
+  //     tap(() => this.shuffleDeckHeader = 'Distributing Cards...'),
+  //     delay(1000),
+  //     tap(() => this.distributeDeckCards()),
+  //     delay(1000),
+  //     tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
+  //     tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
+  // }
 
   // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'.
   private distributeDeckCards(_player?: PlaygroundTossOutcome): void {
