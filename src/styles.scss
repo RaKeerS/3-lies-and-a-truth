@@ -12,6 +12,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .app-container-flex {
   block-size: 100%;
   inline-size: 100%;

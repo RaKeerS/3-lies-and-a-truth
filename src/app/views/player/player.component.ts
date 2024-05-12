@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
@@ -10,5 +10,7 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
   styleUrl: './player.component.scss'
 })
 export class PlayerComponent {
-
+  @Input() playerName: string = 'Player 1';
+  @Input() increaseZIndexCards: boolean = false;
+  @Input() increaseZIndexPicker: boolean = false;
 }

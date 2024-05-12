@@ -1,7 +1,12 @@
 <div class="flex min-h-200p mb-5">
-  <p-card header="P2" class="header-Player inner w-full">
+  <p-card class="header-Player inner w-full">
+    <ng-template pTemplate="header">
+      <div class="player-name">
+        {{ playerName }}
+      </div>
+    </ng-template>
     <div class="flex flex-column w-full">
-      <div class="flex cards-container">
+      <div class="flex cards-container" [style.z-index]="increaseZIndexCards ? 1001 : 'auto'">
           @for (item of [0, 1, 2, 3]; track $index) {
             <!-- <p-card class="py-2.5 px-0.5 player-cards">
               <div class="avc">
@@ -40,7 +45,7 @@
           }
       </div>
       <div class="flex card-body justify-content-between w-full">
-        <div class="flex inline-size-25rem">
+        <div class="flex inline-size-25rem" [style.z-index]="increaseZIndexPicker ? 1001 : 'auto'">
           <p-card header="Pick or Choose!">
             <p class="m-0">
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque

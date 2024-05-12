@@ -53,6 +53,8 @@ export class PlaygroundModel {
   private _isShuffleDeckInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
+  private _increaseZIndexCards: boolean = false;
+  private _increaseZIndexPicker: boolean = false;
 
   private _deckCardsList: Map<CardDeckEnum, string> = CardDeckDictionary;
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -161,6 +163,24 @@ export class PlaygroundModel {
   }
   set cardDeckPickerHeader(value: string) {
     this._cardDeckPickerHeader = value;
+  }
+
+  get increaseZIndexCards(): boolean {
+    return this._increaseZIndexCards;
+  }
+  set increaseZIndexCards(value: boolean) {
+    this._increaseZIndexCards = value;
+  }
+
+  get increaseZIndexPicker(): boolean {
+    return this._increaseZIndexPicker;
+  }
+  set increaseZIndexPicker(value: boolean) {
+    this._increaseZIndexPicker = value;
+  }
+
+  get playerName(): string {
+    return this._playgroundService.playerName;
   }
 
   get p1CardsList(): Map<CardDeckEnum, string> {
@@ -284,9 +304,7 @@ export class PlaygroundModel {
   public pickOptions() {
     return this.gameStage$.pipe(
       filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.PICK),
-      tap(() => this.cardDeckPickerHeader = 'You can have a look at the cards assigned.'),
-      delay(4000),
-      tap(() => this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')
+      switchMap((stage: PlaygroundGameStage) => this.doOptionsSelection(stage))
     )
   }
 
@@ -326,7 +344,7 @@ export class PlaygroundModel {
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
   }
 
-  public doGameToss() {
+  private doGameToss() {
     // Toss between Player and Opponent automatically, just show their names as 'Player 1', 'Player 2' as buttons and highlight borders alternatively for like 5 secs and using randomizer just pick between the two Players.
     // Randomizer logic to get Players's order.
 
@@ -440,7 +458,7 @@ export class PlaygroundModel {
     );
   }
 
-  public doGameBetting() {
+  private doGameBetting() {
     this.playgroundTimer = 200;
     console.log()
     this.playgroundBetAmount = 10;
@@ -475,7 +493,7 @@ export class PlaygroundModel {
     )
   }
 
-  public doDeckShuffling() {
+  private doDeckShuffling() {
     return interval(1000).pipe(
       take(7),
       delay(1000),
@@ -498,6 +516,18 @@ export class PlaygroundModel {
     //   last(),
     //   tap(() => this.cardDeckPickerHeader = 'Pick the suitable options!')
     // );
+  }
+
+  private doOptionsSelection(stage: PlaygroundGameStage) {
+    return of(stage).pipe(
+      tap(() => this.cardDeckPickerHeader = 'You can have a look at the cards assigned.'),
+      delay(4000),
+      tap(() => (window.scrollTo(0, (document.body.scrollHeight - 1080)), this.increaseZIndexCards = true)),
+      delay(3000),
+      tap(() => this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!'),
+      delay(500),
+      tap(() => this.increaseZIndexPicker = true),
+    )
   }
 
   // ===========================================================================

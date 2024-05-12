@@ -227,7 +227,7 @@
 
       <app-opponent></app-opponent>
       <app-mid-zone></app-mid-zone>
-      <app-player></app-player>
+      <app-player [increaseZIndexCards]="playgroundModel.increaseZIndexCards" [increaseZIndexPicker]="playgroundModel.increaseZIndexPicker" [playerName]="playgroundModel.playerName"></app-player>
     </div>
     <div class="flex deck mb-5 pl-4">
       <!-- <p-card header="Deck">

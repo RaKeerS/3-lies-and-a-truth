@@ -222,6 +222,16 @@
       }
     }
 
+    .card-deck-pick {
+      .p-card-body {
+        align-items: center;
+
+        .p-card-title {
+          margin-bottom: 0;
+        }
+      }
+    }
+
   }
 }
 
@@ -265,7 +275,6 @@
 
 .card-deck-pick {
   animation: move-up 3s ease-in-out 0s 1 normal forwards;
-  animation: name duration timing-function delay iteration-count direction ;
 }
 
 @keyframes move-up {
