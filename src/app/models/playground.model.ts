@@ -286,7 +286,8 @@ export class PlaygroundModel {
       this.rules(),
       this.toss(),
       this.placeBets(),
-      this.deckShuffling());
+      this.deckShuffling(),
+      this.pickOptions());
   }
 
   public showPlaygroundGameRulesDialog(): void {
@@ -477,9 +478,8 @@ export class PlaygroundModel {
       tap(() => this.distributeDeckCards()),
       delay(1000),
       tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
-      tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE)));
-
-
+      delay(500),
+      tap(() => this._gameStage.next(PlaygroundGameStage.PICK)));
 
     // this._gameStage.next(PlaygroundGameStage.PICK);
     // this.cardDeckPickerHeader = 'Distributing Cards...';
@@ -489,6 +489,10 @@ export class PlaygroundModel {
     //   last(),
     //   tap(() => this.cardDeckPickerHeader = 'Pick the suitable options!')
     // );
+  }
+
+  public pickOptions() {
+    return of();
   }
 
   public initializeBetting(): void {
