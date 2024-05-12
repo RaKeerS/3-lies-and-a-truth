@@ -51,10 +51,12 @@ export class PlaygroundModel {
   private _subscription: Subscription;
 
   private _isShuffleDeckInitiated: boolean = false;
+  private _isOptionsPickerInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
   private _increaseZIndexCards: boolean = false;
   private _increaseZIndexPicker: boolean = false;
+  private _midSegwayMessages: string = '';
 
   private _deckCardsList: Map<CardDeckEnum, string> = CardDeckDictionary;
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -151,6 +153,13 @@ export class PlaygroundModel {
     this._isShuffleDeckInitiated = value;
   }
 
+  get isOptionsPickerInitiated(): boolean {
+    return this._isOptionsPickerInitiated;
+  }
+  set isOptionsPickerInitiated(value: boolean) {
+    this._isOptionsPickerInitiated = value;
+  }
+
   get shuffleDeckHeader(): string {
     return this._shuffleDeckHeader;
   }
@@ -177,6 +186,13 @@ export class PlaygroundModel {
   }
   set increaseZIndexPicker(value: boolean) {
     this._increaseZIndexPicker = value;
+  }
+
+  get midSegwayMessages(): string {
+    return this.midSegwayMessages;
+  }
+  set midSegwayMessages(value: string) {
+    this.midSegwayMessages = value;
   }
 
   get playerName(): string {
@@ -524,7 +540,7 @@ export class PlaygroundModel {
       delay(4000),
       tap(() => (window.scrollTo(0, (document.body.scrollHeight - 1080)), this.increaseZIndexCards = true)),
       delay(3000),
-      tap(() => this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!'),
+      tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!', this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
       delay(500),
       tap(() => this.increaseZIndexPicker = true),
     )
