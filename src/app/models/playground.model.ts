@@ -281,6 +281,15 @@ export class PlaygroundModel {
     );
   }
 
+  public pickOptions() {
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.PICK),
+      tap(() => this.cardDeckPickerHeader = 'You can have a look at the cards assigned.'),
+      delay(4000),
+      tap(() => this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')
+    )
+  }
+
   public commenceRound() {
     return merge(
       this.rules(),
@@ -491,9 +500,9 @@ export class PlaygroundModel {
     // );
   }
 
-  public pickOptions() {
-    return of();
-  }
+  // ===========================================================================
+  // Event Handlers for Button Clicks
+  // ===========================================================================
 
   public initializeBetting(): void {
     this._gameStage.next(PlaygroundGameStage.BET);
