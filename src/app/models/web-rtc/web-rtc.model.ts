@@ -398,6 +398,11 @@ export class WebRtcModel {
           break;
         }
 
+        case PlaygroundGameStage.SHUFFLE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          break;
+        }
+
         default: {
           break;
         }

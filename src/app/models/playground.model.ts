@@ -518,7 +518,13 @@ export class PlaygroundModel {
   }
 
   private doDeckShuffling() {
-    return interval(1000).pipe(
+
+    const waitBeforeShuffling$ = this.switch$.pipe(
+      filter((metaData?: GameMidSegwayMetadata) => metaData?.gameStage === PlaygroundGameStage.SHUFFLE),
+      tap(() => (this.isShuffleDeckInitiated = true, this._gameStage.next(PlaygroundGameStage.SHUFFLE)))
+    );
+
+    const shuffleDeck$ = interval(1000).pipe(
       take(7),
       delay(1000),
       last(),
@@ -531,6 +537,13 @@ export class PlaygroundModel {
       tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
       delay(500),
       tap(() => this._gameStage.next(PlaygroundGameStage.PICK)));
+
+    // const waitForPlayerBeforeShuffling$ = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$
+
+    return concat(
+      this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$,
+      shuffleDeck$
+    )
 
     // this._gameStage.next(PlaygroundGameStage.PICK);
     // this.cardDeckPickerHeader = 'Distributing Cards...';
@@ -568,9 +581,17 @@ export class PlaygroundModel {
 
   public beginDeckShuffling(): void {
     this._dialogService.getInstance(this._dialogRef!).hide();
-    this.isShuffleDeckInitiated = true;
     this.showBackdrop = true;
-    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+
+    if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
+      this.isShuffleDeckInitiated = true;
+      this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
+    } else {
+      this.isShuffleDeckInitiated = true;
+      this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
+    }
   }
 
   // public beginDeckShuffling(): void {
