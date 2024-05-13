@@ -1,9 +1,17 @@
 <div class="flex min-h-200p mb-5">
   <p-card class="header-Player inner w-full">
     <ng-template pTemplate="header">
-      <div class="player-name">
-        {{ playerName }}
-      </div>
+      @if (midSegwayMessages) {
+        <div class="mid-segway-messages" [style.z-index]="increaseZIndexCards ? 1001 : 'auto'">
+          {{ midSegwayMessages }}
+          <!-- Pick suitable options from the ones presented! -->
+        </div>
+      }
+      @else {
+        <div class="player-name">
+          {{ playerName }}
+        </div>
+      }
     </ng-template>
     <div class="flex flex-column w-full">
       <div class="flex cards-container" [style.z-index]="increaseZIndexCards ? 1001 : 'auto'">
@@ -21,7 +29,7 @@
               <div class="flip-card-inner">
                 <div class="px-0.5 flip-card-front">
                   <!-- <img src="img_avatar.png" alt="Avatar" style="width:300px;height:300px;"> -->
-                  <p-card class="player-cards">
+                  <p-card class="player-cards flex">
                     <!-- <div class="avc">
                       <p class="m-0">
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
@@ -10,5 +10,5 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
   styleUrl: './mid-zone.component.scss'
 })
 export class MidZoneComponent {
-  @Input() midSegwayMessages: string = '';
+
 }

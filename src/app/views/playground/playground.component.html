@@ -59,10 +59,11 @@
   </div> -->
 <!-- } -->
 
-@if (isShuffleDeckInitiated) {
+@if (playgroundModel.showBackdrop) {
   <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center align-items-center">
 
+      @if (isShuffleDeckInitiated) {
         @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE) {
           <div class="card-deck-shuffle top-0 fixed">
             <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
@@ -109,23 +110,18 @@
             </p-card>
           </div>
         }
+      }
 
-    </div>
-  </div>
-}
+      @if (playgroundModel.isOptionsPickerInitiated) {
+        @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
+          <div class="card-deck-pick fixed">
+            <p-card [header]="playgroundModel.cardDeckPickerHeader" class="flex flex-column p-3 mt-3">
+              <div class="card-wrapper">
 
-@if (playgroundModel.isOptionsPickerInitiated) {
-  <div class="backdrop mid-graphics">
-    <div class="backdrop-body flex justify-content-center align-items-center">
-
-      @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
-        <div class="card-deck-pick fixed">
-          <p-card [header]="playgroundModel.cardDeckPickerHeader" class="flex flex-column p-3 mt-3">
-            <div class="card-wrapper">
-
-            </div>
-          </p-card>
-        </div>
+              </div>
+            </p-card>
+          </div>
+        }
       }
 
     </div>
@@ -234,8 +230,8 @@
       </div> -->
 
       <app-opponent></app-opponent>
-      <app-mid-zone [midSegwayMessages]="playgroundModel.midSegwayMessages"></app-mid-zone>
-      <app-player [increaseZIndexCards]="playgroundModel.increaseZIndexCards" [increaseZIndexPicker]="playgroundModel.increaseZIndexPicker" [playerName]="playgroundModel.playerName"></app-player>
+      <app-mid-zone></app-mid-zone>
+      <app-player [increaseZIndexCards]="playgroundModel.increaseZIndexCards" [increaseZIndexPicker]="playgroundModel.increaseZIndexPicker" [playerName]="playgroundModel.playerName" [midSegwayMessages]="playgroundModel.midSegwayMessages" ></app-player>
     </div>
     <div class="flex deck mb-5 pl-4">
       <!-- <p-card header="Deck">

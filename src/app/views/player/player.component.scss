@@ -12,6 +12,19 @@
   }
 }
 
+.mid-segway-messages {
+  block-size: 6.5rem;
+  min-block-size: auto;
+  justify-content: center;
+  display: flex;
+  font-size: 1.5rem;
+  font-weight: 700;
+  vertical-align: middle;
+  align-items: center;
+  padding: 0;
+  scale: 1.2;
+}
+
 .inline-size-15rem {
   inline-size: 15rem;
 }

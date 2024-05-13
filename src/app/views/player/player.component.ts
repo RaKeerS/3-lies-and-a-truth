@@ -11,6 +11,7 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 })
 export class PlayerComponent {
   @Input() playerName: string = 'Player 1';
+  @Input() midSegwayMessages?: string;
   @Input() increaseZIndexCards: boolean = false;
   @Input() increaseZIndexPicker: boolean = false;
 }

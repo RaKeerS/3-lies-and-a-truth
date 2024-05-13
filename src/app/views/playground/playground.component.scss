@@ -53,7 +53,8 @@
 
         .p-card-header {
           display: flex;
-          padding: 3.25rem;
+          justify-content: center;
+          // padding: 3.25rem;
         }
 
         .p-card-footer {
@@ -212,19 +213,15 @@
         margin-top: 0.75rem;
       }
     }
+
     .card-deck-pick {
       .p-card-body {
+        align-items: center;
         block-size: 3.5rem;
         min-block-size: auto;
         padding: 0 2rem;
         justify-content: center;
         display: flex;
-      }
-    }
-
-    .card-deck-pick {
-      .p-card-body {
-        align-items: center;
 
         .p-card-title {
           margin-bottom: 0;

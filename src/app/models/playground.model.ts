@@ -50,6 +50,7 @@ export class PlaygroundModel {
 
   private _subscription: Subscription;
 
+  private _showBackdrop: boolean = false;
   private _isShuffleDeckInitiated: boolean = false;
   private _isOptionsPickerInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
@@ -153,6 +154,13 @@ export class PlaygroundModel {
     this._isShuffleDeckInitiated = value;
   }
 
+  get showBackdrop(): boolean {
+    return this._showBackdrop;
+  }
+  set showBackdrop(value: boolean) {
+    this._showBackdrop = value;
+  }
+
   get isOptionsPickerInitiated(): boolean {
     return this._isOptionsPickerInitiated;
   }
@@ -189,10 +197,10 @@ export class PlaygroundModel {
   }
 
   get midSegwayMessages(): string {
-    return this.midSegwayMessages;
+    return this._midSegwayMessages;
   }
   set midSegwayMessages(value: string) {
-    this.midSegwayMessages = value;
+    this._midSegwayMessages = value;
   }
 
   get playerName(): string {
@@ -536,11 +544,15 @@ export class PlaygroundModel {
 
   private doOptionsSelection(stage: PlaygroundGameStage) {
     return of(stage).pipe(
-      tap(() => this.cardDeckPickerHeader = 'You can have a look at the cards assigned.'),
+      tap(() => (this.isShuffleDeckInitiated = false, this.isOptionsPickerInitiated = true, this.cardDeckPickerHeader = 'You can have a look at the cards assigned.')),
       delay(4000),
-      tap(() => (window.scrollTo(0, (document.body.scrollHeight - 1080)), this.increaseZIndexCards = true)),
-      delay(3000),
-      tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!', this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
+      tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
+      delay(1000),
+      tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 1080)))),
+      delay(500),
+      tap(() => this.increaseZIndexCards = true),
+      delay(1000),
+      tap(() => (this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
       delay(500),
       tap(() => this.increaseZIndexPicker = true),
     )
@@ -557,6 +569,7 @@ export class PlaygroundModel {
   public beginDeckShuffling(): void {
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.isShuffleDeckInitiated = true;
+    this.showBackdrop = true;
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
   }
 
