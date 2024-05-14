@@ -1,7 +1,7 @@
 <p>playground works!</p>
 <!-- <app-playground-game-rules></app-playground-game-rules> -->
 
-{{ playgroundModel.gameToss }}
+<!-- {{ playgroundModel.gameToss }} -->
 <!-- @if (playgroundModel.gameToss) { -->
 
   <!-- <div class="card flex justify-content-center">
@@ -110,12 +110,12 @@
             </p-card>
           </div>
         }
-      }
-      @else {
-        <div class="card-deck-shuffle top-0 fixed">
-          <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
-          </p-card>
-        </div>
+        @else {
+          <div class="card-deck-shuffle top-0 fixed">
+            <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
+            </p-card>
+          </div>
+        }
       }
 
       @if (playgroundModel.isOptionsPickerInitiated) {

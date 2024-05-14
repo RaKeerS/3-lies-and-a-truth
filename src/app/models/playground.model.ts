@@ -32,7 +32,7 @@ export class PlaygroundModel {
   private _dialogService: DialogService
   private _dialogRef: DynamicDialogRef | undefined;
 
-  private _gameToss: boolean = true;
+  // private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
   private _playerTossWinner?: PlaygroundTossOutcome;
   private _playerOrder: Map<string, number> = new Map<string, number>();
@@ -97,12 +97,12 @@ export class PlaygroundModel {
     return this.gameStages.get(PlaygroundGameStage.BET);
   }
 
-  get gameToss(): boolean {
-    return this._gameToss;
-  }
-  set gameToss(value: boolean) {
-    this._gameToss = value;
-  }
+  // get gameToss(): boolean {
+  //   return this._gameToss;
+  // }
+  // set gameToss(value: boolean) {
+  //   this._gameToss = value;
+  // }
 
   get gameTossWinnerDetails(): string {
     return this._gameTossWinnerDetails;
@@ -382,12 +382,12 @@ export class PlaygroundModel {
         if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
           this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, tossMessage: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
         } else {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
           this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, tossMessage: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
         }
       }
@@ -412,7 +412,7 @@ export class PlaygroundModel {
     tap(() => {
       toggleSwitch = !toggleSwitch;
       // this._playgroundService.switch = !this._playgroundService.switch
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch ? PlaygroundTossOutcome.PLAYER_1 : PlaygroundTossOutcome.PLAYER_2, messageFrom: 'subject' } as GameMidSegwayMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch ? PlaygroundTossOutcome.PLAYER_1 : PlaygroundTossOutcome.PLAYER_2, tossMessage: toggleSwitch ? PlaygroundTossOutcome.PLAYER_1 : PlaygroundTossOutcome.PLAYER_2, messageFrom: 'subject' } as GameMidSegwayMetadata);
     }));
 
     const gameOrder$ = of(toggleSwitch).pipe(
@@ -540,8 +540,30 @@ export class PlaygroundModel {
 
     // const waitForPlayerBeforeShuffling$ = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$
 
+    const tossWinningPlayer = (): Observable<GameMidSegwayMetadata | undefined> => {
+      if (this._playgroundService.createPlayground) {
+        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
+          return of();
+        }
+      } else {
+        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2) {
+          return of();
+        }
+      }
+      this.shuffleDeckHeader = 'Waiting for your partner to begin...';
+      return waitBeforeShuffling$;
+
+      // if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
+      //   return of();
+      // } else if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
+      //   return of();
+      // } else {
+      //   return waitBeforeShuffling$;
+      // }
+    }
+
     return concat(
-      this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$,
+      tossWinningPlayer(),
       shuffleDeck$
     )
 
@@ -583,11 +605,13 @@ export class PlaygroundModel {
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
 
-    if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
+    if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
       this.isShuffleDeckInitiated = true;
       this._gameStage.next(PlaygroundGameStage.SHUFFLE);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
-    } else {
+    }
+
+    if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
       this.isShuffleDeckInitiated = true;
       this._gameStage.next(PlaygroundGameStage.SHUFFLE);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));

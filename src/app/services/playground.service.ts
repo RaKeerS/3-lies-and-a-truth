@@ -60,7 +60,7 @@ export class PlaygroundService {
   //   return signalInvitationTokenCreated);
   // }
 
-
+  // NOTE - Tells if the player has created or joined the playground [PlaygroundEnum.CREATE, PlaygroundEnum.JOIN] (Player 1/Player 2)
   get createPlayground(): boolean {
     return !!this._createPlayground;
   }
