@@ -51,6 +51,7 @@ export class PlaygroundModel {
   private _subscription: Subscription;
 
   private _showBackdrop: boolean = false;
+  private _isBettingCompleted: boolean = false;
   private _isShuffleDeckInitiated: boolean = false;
   private _isOptionsPickerInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
@@ -145,6 +146,13 @@ export class PlaygroundModel {
   }
   set playgroundBetAmount(value: number) {
     this._playgroundService.createPlayground ? this._playerOneBetAmount = value : this._playerTwoBetAmount = value;
+  }
+
+  get isBettingCompleted(): boolean {
+    return this._isBettingCompleted;
+  }
+  set isBettingCompleted(value: boolean) {
+    this._isBettingCompleted = value;
   }
 
   get isShuffleDeckInitiated(): boolean {
@@ -502,7 +510,7 @@ export class PlaygroundModel {
     // );
 
     const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
-      takeWhile(() => !this.isShuffleDeckInitiated),
+      takeWhile(() => !this.isBettingCompleted),
       tap(() => {
         this.playgroundBetAmount = !!this.playgroundBetAmount || this.playgroundBetAmount < 10 ? 10 : this.playgroundBetAmount;
         this.beginDeckShuffling();
@@ -519,9 +527,39 @@ export class PlaygroundModel {
 
   private doDeckShuffling() {
 
+    const tossWinningPlayer = (): ConstrainBoolean => {
+      if (this._playgroundService.createPlayground) {
+        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
+          return true;
+        }
+      } else {
+        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2) {
+          return true;
+        }
+      }
+      this.shuffleDeckHeader = 'Waiting for your partner to begin...';
+      return false;
+
+      // if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
+      //   return of();
+      // } else if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
+      //   return of();
+      // } else {
+      //   return waitBeforeShuffling$;
+      // }
+    }
+
+    let metaDataMessage, beginShuffle;
     const waitBeforeShuffling$ = this.switch$.pipe(
       filter((metaData?: GameMidSegwayMetadata) => metaData?.gameStage === PlaygroundGameStage.SHUFFLE),
-      tap(() => (this.isShuffleDeckInitiated = true, this._gameStage.next(PlaygroundGameStage.SHUFFLE)))
+      tap((metaData?: GameMidSegwayMetadata) => (metaDataMessage = metaData?.message, beginShuffle = metaData?.beginShuffle)),
+      metaDataMessage === PlaygroundGameStage.SHUFFLE && tossWinningPlayer() ? tap(() => {}) : takeUntil(of(beginShuffle === true)),
+      // tap((metaData?: GameMidSegwayMetadata) => {
+      //   if (metaData?.message === PlaygroundGameStage.SHUFFLE && tossWinningPlayer()) {
+      //     this.isShuffleDeckInitiated = true;
+      //   }
+      // })
+      // tap(() => (this.isShuffleDeckInitiated = true, this._gameStage.next(PlaygroundGameStage.SHUFFLE)))
     );
 
     const shuffleDeck$ = interval(1000).pipe(
@@ -540,30 +578,8 @@ export class PlaygroundModel {
 
     // const waitForPlayerBeforeShuffling$ = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$
 
-    const tossWinningPlayer = (): Observable<GameMidSegwayMetadata | undefined> => {
-      if (this._playgroundService.createPlayground) {
-        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
-          return of();
-        }
-      } else {
-        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2) {
-          return of();
-        }
-      }
-      this.shuffleDeckHeader = 'Waiting for your partner to begin...';
-      return waitBeforeShuffling$;
-
-      // if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
-      //   return of();
-      // } else if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
-      //   return of();
-      // } else {
-      //   return waitBeforeShuffling$;
-      // }
-    }
-
     return concat(
-      tossWinningPlayer(),
+      waitBeforeShuffling$,
       shuffleDeck$
     )
 
@@ -602,19 +618,21 @@ export class PlaygroundModel {
   }
 
   public beginDeckShuffling(): void {
+    this.isBettingCompleted = true;
+    this.isShuffleDeckInitiated = true;
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
+    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+    // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
 
     if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
-      this.isShuffleDeckInitiated = true;
-      this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
-    }
-
-    if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
-      this.isShuffleDeckInitiated = true;
-      this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+    } else if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
+    } else {
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
     }
   }
 

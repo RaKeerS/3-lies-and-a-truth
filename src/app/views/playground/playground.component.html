@@ -110,13 +110,14 @@
             </p-card>
           </div>
         }
-        @else {
-          <div class="card-deck-shuffle top-0 fixed">
-            <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
-            </p-card>
-          </div>
-        }
       }
+      <!-- Commenting below code for now! -->
+      <!-- @else {
+        <div class="card-deck-shuffle top-0 fixed">
+          <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
+          </p-card>
+        </div>
+      } -->
 
       @if (playgroundModel.isOptionsPickerInitiated) {
         @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {

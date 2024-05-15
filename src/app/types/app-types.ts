@@ -31,4 +31,5 @@ export type GameMidSegwayMetadata = {
   messageFrom: 'peer' | 'subject';
   message: any;
   tossMessage?: PlaygroundTossOutcome;
+  beginShuffle?: boolean;
 }
