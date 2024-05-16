@@ -214,6 +214,20 @@
       }
     }
 
+    .card-deck-shuffle-pending {
+
+      .p-card-body {
+        align-content: center;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .p-card-title {
+          margin: 0;
+        }
+      }
+    }
+
     .card-deck-pick {
       .p-card-body {
         align-items: center;
@@ -321,6 +335,10 @@
       list-style: none;
     }
   }
+}
+
+.card-deck-shuffle-pending {
+  inline-size: 40rem;
 }
 
 .card-list-item {

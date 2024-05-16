@@ -63,7 +63,7 @@
   <div class="backdrop mid-graphics">
     <div class="backdrop-body flex justify-content-center align-items-center">
 
-      @if (isShuffleDeckInitiated) {
+      @if (isShuffleDeckInitiated && !playgroundModel.isShufflePending) {
         @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE) {
           <div class="card-deck-shuffle top-0 fixed">
             <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
@@ -111,13 +111,12 @@
           </div>
         }
       }
-      <!-- Commenting below code for now! -->
-      <!-- @else {
-        <div class="card-deck-shuffle top-0 fixed">
+      @if (playgroundModel.isShufflePending && !isShuffleDeckInitiated) {
+        <div class="card-deck-shuffle-pending fixed">
           <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
           </p-card>
         </div>
-      } -->
+      }
 
       @if (playgroundModel.isOptionsPickerInitiated) {
         @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {

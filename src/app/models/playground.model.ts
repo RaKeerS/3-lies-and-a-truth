@@ -53,6 +53,7 @@ export class PlaygroundModel {
   private _showBackdrop: boolean = false;
   private _isBettingCompleted: boolean = false;
   private _isShuffleDeckInitiated: boolean = false;
+  private _isShufflePending: boolean = false;
   private _isOptionsPickerInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
@@ -160,6 +161,13 @@ export class PlaygroundModel {
   }
   set isShuffleDeckInitiated(value: boolean) {
     this._isShuffleDeckInitiated = value;
+  }
+
+  get isShufflePending(): boolean {
+    return this._isShufflePending;
+  }
+  set isShufflePending(value: boolean) {
+    this._isShufflePending = value;
   }
 
   get showBackdrop(): boolean {
@@ -328,7 +336,7 @@ export class PlaygroundModel {
   private deckShuffling() {
     return this.gameStage$.pipe(
       filter((stage) => stage === PlaygroundGameStage.SHUFFLE),
-      filter(() => this.isShuffleDeckInitiated === true),
+      // filter(() => this.isShuffleDeckInitiated === true),
       switchMap(() => this.doDeckShuffling())
     );
   }
@@ -527,7 +535,7 @@ export class PlaygroundModel {
 
   private doDeckShuffling() {
 
-    const tossWinningPlayer = (): ConstrainBoolean => {
+    const tossWinningPlayer = (): boolean => {
       if (this._playgroundService.createPlayground) {
         if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
           return true;
@@ -552,8 +560,20 @@ export class PlaygroundModel {
     let metaDataMessage, beginShuffle;
     const waitBeforeShuffling$ = this.switch$.pipe(
       filter((metaData?: GameMidSegwayMetadata) => metaData?.gameStage === PlaygroundGameStage.SHUFFLE),
-      tap((metaData?: GameMidSegwayMetadata) => (metaDataMessage = metaData?.message, beginShuffle = metaData?.beginShuffle)),
-      metaDataMessage === PlaygroundGameStage.SHUFFLE && tossWinningPlayer() ? tap(() => {}) : takeUntil(of(beginShuffle === true)),
+      takeWhile((metaData?: GameMidSegwayMetadata) => {
+        if (metaData?.beginShuffle) {
+          this.isShuffleDeckInitiated = true;
+          this.isShufflePending = false;
+          this.shuffleDeckHeader = 'Commencing Deck Shuffling...';
+          delay(1000);
+          this.shuffleDeckHeader = 'Shuffling Deck, Please Wait...';
+        }
+        return !metaData?.beginShuffle;
+      }),
+      tap(() => (this.isShuffleDeckInitiated = false, this.isShufflePending = true, this.shuffleDeckHeader = 'Waiting for your partner to join...'))
+      // tap((metaData?: GameMidSegwayMetadata) => (metaDataMessage = metaData?.message, beginShuffle = metaData?.beginShuffle)),
+      // filter((metaData?: GameMidSegwayMetadata) =>  metaData?.message === PlaygroundGameStage.SHUFFLE && tossWinningPlayer()) ? tap((data) => { console.log('data: ', data) }) : takeUntil(of(beginShuffle === true)),
+      // metaDataMessage === PlaygroundGameStage.SHUFFLE && tossWinningPlayer() ? tap(() => {}) : takeUntil(of(beginShuffle === true)),
       // tap((metaData?: GameMidSegwayMetadata) => {
       //   if (metaData?.message === PlaygroundGameStage.SHUFFLE && tossWinningPlayer()) {
       //     this.isShuffleDeckInitiated = true;
@@ -562,6 +582,8 @@ export class PlaygroundModel {
       // tap(() => (this.isShuffleDeckInitiated = true, this._gameStage.next(PlaygroundGameStage.SHUFFLE)))
     );
 
+    // const shuffleDeck$ = of(this.isShuffleDeckInitiated = true).pipe(
+    //   delay(8000)
     const shuffleDeck$ = interval(1000).pipe(
       take(7),
       delay(1000),
@@ -620,19 +642,20 @@ export class PlaygroundModel {
   public beginDeckShuffling(): void {
     this.isBettingCompleted = true;
     this.isShuffleDeckInitiated = true;
+    this.isShufflePending = false;
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
     // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
 
     if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'subject' } as GameMidSegwayMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
     } else if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'subject' } as GameMidSegwayMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
     } else {
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', beginShuffle: false, messageFrom: 'subject' } as GameMidSegwayMetadata);
     }
   }
 
