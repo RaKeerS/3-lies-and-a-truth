@@ -13,7 +13,7 @@ export enum PlaygroundGameStage {
   TOSS = 1,
   BET = 2,
   SHUFFLE = 3,
-  PICK = 4,
+  DISTRIBUTE = 4,
   CHOOSE = 5,
   EVALUATE = 6
 }

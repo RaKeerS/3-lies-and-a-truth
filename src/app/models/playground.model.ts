@@ -35,6 +35,7 @@ export class PlaygroundModel {
   // private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
   private _playerTossWinner?: PlaygroundTossOutcome;
+  private _isDeckShufflerPlayer?: boolean;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
   private _playgroundService: PlaygroundService;
@@ -154,6 +155,13 @@ export class PlaygroundModel {
   }
   set isBettingCompleted(value: boolean) {
     this._isBettingCompleted = value;
+  }
+
+  get isDeckShufflerPlayer(): boolean {
+    return this.isDeckShufflerPlayer;
+  }
+  set isDeckShufflerPlayer(value: boolean) {
+    this._isDeckShufflerPlayer = value;
   }
 
   get isShuffleDeckInitiated(): boolean {
@@ -343,7 +351,7 @@ export class PlaygroundModel {
 
   public pickOptions() {
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.PICK),
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.DISTRIBUTE),
       switchMap((stage: PlaygroundGameStage) => this.doOptionsSelection(stage))
     )
   }
@@ -592,11 +600,11 @@ export class PlaygroundModel {
       delay(1000),
       tap(() => this.shuffleDeckHeader = 'Distributing Cards...'),
       delay(1000),
-      tap(() => this.distributeDeckCards()),
+      tap(() => this.isDeckShufflerPlayer ? this.distributeDeckCards() : of()),
       delay(1000),
       tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
       delay(500),
-      tap(() => this._gameStage.next(PlaygroundGameStage.PICK)));
+      tap(() => this._gameStage.next(PlaygroundGameStage.DISTRIBUTE)));
 
     // const waitForPlayerBeforeShuffling$ = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$
 
@@ -646,6 +654,8 @@ export class PlaygroundModel {
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+
+    this.isDeckShufflerPlayer = true;
     // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
 
     if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
@@ -655,6 +665,7 @@ export class PlaygroundModel {
       this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
     } else {
+      this.isDeckShufflerPlayer = false;
       this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', beginShuffle: false, messageFrom: 'subject' } as GameMidSegwayMetadata);
     }
   }
@@ -730,6 +741,7 @@ export class PlaygroundModel {
 
     this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
 
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: { p1CardsList: this.p1CardsList, p2CardsList: this.p2CardsList }, messageFrom: 'peer' } as GameMidSegwayMetadata))
     // } else {
 
     // }

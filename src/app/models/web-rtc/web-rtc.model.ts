@@ -403,6 +403,11 @@ export class WebRtcModel {
           break;
         }
 
+        case PlaygroundGameStage.DISTRIBUTE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: message, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          break;
+        }
+
         default: {
           break;
         }

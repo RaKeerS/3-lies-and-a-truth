@@ -119,7 +119,7 @@
       }
 
       @if (playgroundModel.isOptionsPickerInitiated) {
-        @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
+        @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.DISTRIBUTE) {
           <div class="card-deck-pick fixed">
             <p-card [header]="playgroundModel.cardDeckPickerHeader" class="flex flex-column p-3 mt-3">
               <div class="card-wrapper">
