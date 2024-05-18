@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Injector, Input, OnDestroy, Output } from '@angular/core';
 import { delay, of, Subscription, tap } from 'rxjs';
 
-import { PlaygroundEnum } from '../../enums/playground.enum';
+import { PlaygroundGameEnum } from '../../enums/playground.enum';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { PlaygroundService } from '../../services/playground.service';
 
@@ -31,7 +31,7 @@ export class GameConnectorComponent implements OnDestroy {
   @Output() showPlaygroundDialogChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   // @Input() showPlaygroundDialog: boolean = false;
 
-  playgroundOptions: any[] = [{ label: 'Create Playground', value: PlaygroundEnum.CREATE }, { label: 'Join Playground', value: PlaygroundEnum.JOIN }];
+  playgroundOptions: any[] = [{ label: 'Create Playground', value: PlaygroundGameEnum.CREATE }, { label: 'Join Playground', value: PlaygroundGameEnum.JOIN }];
   optionSelected: number = 1;
 
   // tokenHeaderMessageToDisplay1 = this.optionSelected === 1 ? 'Send this Token to whom you wish to Connect with' : 'Paste the Token received from your partner';

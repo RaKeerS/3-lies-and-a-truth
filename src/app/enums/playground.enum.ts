@@ -1,9 +1,9 @@
-export enum PlaygroundEnum {
+export enum PlaygroundGameEnum {
   JOIN = 0,
   CREATE = 1
 }
 
-export enum PlaygroundTossOutcome {
+export enum PlaygroundGameTossOutcome {
   PLAYER_1 = 1,
   PLAYER_2 = 2
 }
@@ -18,8 +18,8 @@ export enum PlaygroundGameStage {
   EVALUATE = 6
 }
 
-export enum PlaygroundGameTossStage {
-  PHASE_0,
-  PHASE_1,
-  PHASE_2
+export enum PlaygroundGameStagePhase {
+  INITIAL,
+  INTERMEDIATE,
+  COMPLETED
 }

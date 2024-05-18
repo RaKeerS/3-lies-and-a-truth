@@ -1,14 +1,14 @@
-// export class WebRtcModel {
-// import * as wrtc from './../../../../node_modules/electron-webrtc/browser';
-// const wrtc = require('./../../../../node_modules/electron-webrtc/index')
 import { NgZone } from '@angular/core';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
-import { PlaygroundGameStage, PlaygroundGameTossStage } from '../../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameStagePhase } from '../../enums/playground.enum';
 import { PlaygroundService } from '../../services/playground.service';
 import { GameMidSegwayMetadata } from '../../types/app-types';
 
+// export class WebRtcModel {
+// import * as wrtc from './../../../../node_modules/electron-webrtc/browser';
+// const wrtc = require('./../../../../node_modules/electron-webrtc/index')
 
 
 //   // // Set up an asynchronous communication channel that will be
@@ -389,7 +389,7 @@ export class WebRtcModel {
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: parsedData.message, tossMessage: +parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // NOTE - Commented for now, but this code works!
           // this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
-          this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // NOTE - Commented for now, but this code works! (if block only)
           // if (!this._playgroundService.createPlayground) {
           //   this.sendMessageWebRtc(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'peer' } as GameMidSegwayMetadata))
@@ -404,7 +404,7 @@ export class WebRtcModel {
         }
 
         case PlaygroundGameStage.DISTRIBUTE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: message, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: message, distributeDeckStage: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 

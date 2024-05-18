@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { PlaygroundGameStage, PlaygroundTossOutcome } from '../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameStagePhase, PlaygroundGameTossOutcome } from '../enums/playground.enum';
 
 export const APP_CONTAINER_FLEX_CLASS = 'class.app-container-flex';
 
@@ -30,6 +30,7 @@ export type GameMidSegwayMetadata = {
   gameStage: PlaygroundGameStage;
   messageFrom: 'peer' | 'subject';
   message: any;
-  tossMessage?: PlaygroundTossOutcome;
+  tossMessage?: PlaygroundGameTossOutcome;
   beginShuffle?: boolean;
+  distributeDeckStage?: PlaygroundGameStagePhase;
 }

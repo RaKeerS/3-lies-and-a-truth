@@ -21,7 +21,7 @@ import {
 
 import { CardDeckDictionary } from '../constants/card-deck.dictionary';
 import { CardDeckEnum } from '../enums/card-deck.enum';
-import { PlaygroundGameStage, PlaygroundGameTossStage, PlaygroundTossOutcome } from '../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameStagePhase, PlaygroundGameTossOutcome } from '../enums/playground.enum';
 import { PlaygroundService } from '../services/playground.service';
 import { GameMidSegwayMetadata } from '../types/app-types';
 import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
@@ -34,7 +34,7 @@ export class PlaygroundModel {
 
   // private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
-  private _playerTossWinner?: PlaygroundTossOutcome;
+  private _playerTossWinner?: PlaygroundGameTossOutcome;
   private _isDeckShufflerPlayer?: boolean;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
@@ -67,7 +67,7 @@ export class PlaygroundModel {
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
 
-  public PlaygroundTossOutcome = PlaygroundTossOutcome;
+  public PlaygroundTossOutcome = PlaygroundGameTossOutcome;
 
 
   constructor(injector: Injector) {
@@ -115,10 +115,10 @@ export class PlaygroundModel {
     return this._playerOrder;
   }
 
-  get playerTossWinner(): PlaygroundTossOutcome | undefined {
+  get playerTossWinner(): PlaygroundGameTossOutcome | undefined {
     return this._playerTossWinner;
   }
-  set playerTossWinner(value: PlaygroundTossOutcome) {
+  set playerTossWinner(value: PlaygroundGameTossOutcome) {
     this._playerTossWinner = value;
   }
 
@@ -158,7 +158,7 @@ export class PlaygroundModel {
   }
 
   get isDeckShufflerPlayer(): boolean {
-    return this.isDeckShufflerPlayer;
+    return !!this._isDeckShufflerPlayer;
   }
   set isDeckShufflerPlayer(value: boolean) {
     this._isDeckShufflerPlayer = value;
@@ -352,7 +352,7 @@ export class PlaygroundModel {
   public pickOptions() {
     return this.gameStage$.pipe(
       filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.DISTRIBUTE),
-      switchMap((stage: PlaygroundGameStage) => this.doOptionsSelection(stage))
+      switchMap((stage: PlaygroundGameStage) => this.doDeckDistribution(stage))
     )
   }
 
@@ -403,15 +403,15 @@ export class PlaygroundModel {
     const setPlayerOrder = (tossOutcome: number) => {
       this.playerTossWinner = tossOutcome;
       if (this._playgroundService.createPlayground) {
-        if(tossOutcome === PlaygroundTossOutcome.PLAYER_1) {
+        if(tossOutcome === PlaygroundGameTossOutcome.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, tossMessage: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, tossMessage: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
         } else {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundTossOutcome, tossMessage: this.playerTossWinner as PlaygroundTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'peer' } as GameMidSegwayMetadata));
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, tossMessage: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
         }
       }
@@ -436,7 +436,7 @@ export class PlaygroundModel {
     tap(() => {
       toggleSwitch = !toggleSwitch;
       // this._playgroundService.switch = !this._playgroundService.switch
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch ? PlaygroundTossOutcome.PLAYER_1 : PlaygroundTossOutcome.PLAYER_2, tossMessage: toggleSwitch ? PlaygroundTossOutcome.PLAYER_1 : PlaygroundTossOutcome.PLAYER_2, messageFrom: 'subject' } as GameMidSegwayMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch ? PlaygroundGameTossOutcome.PLAYER_1 : PlaygroundGameTossOutcome.PLAYER_2, tossMessage: toggleSwitch ? PlaygroundGameTossOutcome.PLAYER_1 : PlaygroundGameTossOutcome.PLAYER_2, messageFrom: 'subject' } as GameMidSegwayMetadata);
     }));
 
     const gameOrder$ = of(toggleSwitch).pipe(
@@ -452,11 +452,11 @@ export class PlaygroundModel {
           this._playgroundService.ngZone.run(() => {
             if (metaData.gameStage === PlaygroundGameStage.TOSS) {
               this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
-              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
             }
 
             if (this._playgroundService.createPlayground) {
-              this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_1, messageFrom: 'subject' });
+              this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' });
             }
             // else {
             //   this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: metaData.message, messageFrom: 'peer' } as GameMidSegwayMetadata))
@@ -545,11 +545,11 @@ export class PlaygroundModel {
 
     const tossWinningPlayer = (): boolean => {
       if (this._playgroundService.createPlayground) {
-        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1) {
+        if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1) {
           return true;
         }
       } else {
-        if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2) {
+        if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_2) {
           return true;
         }
       }
@@ -623,7 +623,7 @@ export class PlaygroundModel {
     // );
   }
 
-  private doOptionsSelection(stage: PlaygroundGameStage) {
+  private doDeckDistribution(stage: PlaygroundGameStage) {
     return of(stage).pipe(
       tap(() => (this.isShuffleDeckInitiated = false, this.isOptionsPickerInitiated = true, this.cardDeckPickerHeader = 'You can have a look at the cards assigned.')),
       delay(4000),
@@ -658,10 +658,10 @@ export class PlaygroundModel {
     this.isDeckShufflerPlayer = true;
     // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
 
-    if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
+    if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
       this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
-    } else if (this.playerTossWinner === PlaygroundTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
+    } else if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
       this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegwayMetadata));
     } else {
@@ -690,7 +690,7 @@ export class PlaygroundModel {
   // }
 
   // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'.
-  private distributeDeckCards(_player?: PlaygroundTossOutcome): void {
+  private distributeDeckCards(_player?: PlaygroundGameTossOutcome): void {
     // const distributionOngoing = true;
 
     // const firstPlayerCardsList = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? this.p1CardsList : this.p2CardsList;
@@ -739,9 +739,9 @@ export class PlaygroundModel {
       }
     }
 
-    this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
+    this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
 
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: { p1CardsList: this.p1CardsList, p2CardsList: this.p2CardsList }, messageFrom: 'peer' } as GameMidSegwayMetadata))
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()) }, messageFrom: 'peer' } as GameMidSegwayMetadata))
     // } else {
 
     // }
