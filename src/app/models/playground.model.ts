@@ -84,6 +84,11 @@ export class PlaygroundModel {
     return this._dialogRef;
   }
 
+  get playerCardsList(): Map<CardDeckEnum, string> {
+    // NOTE: Player1 is always the one who creates the Playground. Player 2 is always the one who joins the playground. Deck Shuffler Player (i.e. the one who Shuffles and Distributes the Deck) is the one who wins the toss.
+    return this._playgroundService.createPlayground ? this.p1CardsList : this.p2CardsList;
+  }
+
   get gameStage$(): Observable<PlaygroundGameStage> {
     return this._gameStage.asObservable();
   }
@@ -110,6 +115,7 @@ export class PlaygroundModel {
   get gameTossWinnerDetails(): string {
     return this._gameTossWinnerDetails;
   }
+
 
   get playerOrder(): Map<string, number> {
     return this._playerOrder;
@@ -615,7 +621,13 @@ export class PlaygroundModel {
       delay(1000),
       tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
       delay(500),
-      tap(() => (this._gameStage.next(PlaygroundGameStage.DISTRIBUTE), this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStage.TOSS, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata))));
+      tap(() => {
+        this._gameStage.next(PlaygroundGameStage.DISTRIBUTE);
+
+        if (this.isDeckShufflerPlayer) {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: PlaygroundGameStage.DISTRIBUTE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+        }
+      }));
 
     // const waitForPlayerBeforeShuffling$ = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$
 
