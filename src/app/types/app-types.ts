@@ -32,5 +32,5 @@ export type GameMidSegwayMetadata = {
   message: any;
   tossMessage?: PlaygroundGameTossOutcome;
   beginShuffle?: boolean;
-  distributeDeckStage?: PlaygroundGameStagePhase;
+  gameStagePhase?: PlaygroundGameStagePhase;
 }

@@ -404,7 +404,7 @@ export class WebRtcModel {
         }
 
         case PlaygroundGameStage.DISTRIBUTE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: message, distributeDeckStage: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 

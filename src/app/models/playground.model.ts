@@ -270,7 +270,7 @@ export class PlaygroundModel {
 
 
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
-    this.gameStages.set(PlaygroundGameStage.TOSS, true);
+    // this.gameStages.set(PlaygroundGameStage.TOSS, true);
     this._gameStage.next(PlaygroundGameStage.TOSS);
 
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
@@ -317,14 +317,10 @@ export class PlaygroundModel {
   private rules() {
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
 
-    return this.switch$.pipe(
-    // takeLast(1),
-    filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES)),
-    tap((metadata?: GameMidSegwayMetadata) => {
-      if (metadata?.gameStage === PlaygroundGameStage.RULES) {
-        this._gameTossWinnerDetails = 'Starting Toss!';
-      }
-    }));
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.RULES),
+      switchMap(() => this.doGameRulesRevelation())
+    )
   }
 
   private toss() {
@@ -390,6 +386,17 @@ export class PlaygroundModel {
 
     console.log('DialogRef: ', this._dialogRef);
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
+  }
+
+  private doGameRulesRevelation() {
+    return this.switch$.pipe(
+      // takeLast(1),
+      filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES)),
+      tap((metadata?: GameMidSegwayMetadata) => {
+        if (metadata?.gameStage === PlaygroundGameStage.RULES) {
+          this._gameTossWinnerDetails = 'Starting Toss!';
+        }
+      }));
   }
 
   private doGameToss() {
@@ -534,11 +541,15 @@ export class PlaygroundModel {
       })
     )
 
-    return concat(
-      interval$,
-      // bettingConclusion$,
-      bettingCompleted$
-    )
+    return this.switch$.pipe(
+      filter((metaData?: GameMidSegwayMetadata) => metaData?.gameStage === PlaygroundGameStage.BET),
+      switchMap(() =>
+        concat(
+          interval$,
+            // bettingConclusion$,
+          bettingCompleted$
+        ))
+    );
   }
 
   private doDeckShuffling() {
@@ -604,7 +615,7 @@ export class PlaygroundModel {
       delay(1000),
       tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
       delay(500),
-      tap(() => this._gameStage.next(PlaygroundGameStage.DISTRIBUTE)));
+      tap(() => (this._gameStage.next(PlaygroundGameStage.DISTRIBUTE), this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStage.TOSS, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata))));
 
     // const waitForPlayerBeforeShuffling$ = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? of() : waitBeforeShuffling$
 
@@ -623,20 +634,41 @@ export class PlaygroundModel {
     // );
   }
 
-  private doDeckDistribution(stage: PlaygroundGameStage) {
-    return of(stage).pipe(
-      tap(() => (this.isShuffleDeckInitiated = false, this.isOptionsPickerInitiated = true, this.cardDeckPickerHeader = 'You can have a look at the cards assigned.')),
-      delay(4000),
-      tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
-      delay(1000),
-      tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 1080)))),
-      delay(500),
-      tap(() => this.increaseZIndexCards = true),
-      delay(1000),
-      tap(() => (this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
-      delay(500),
-      tap(() => this.increaseZIndexPicker = true),
-    )
+  private doDeckDistribution(_stage: PlaygroundGameStage) {
+
+    // const assignDistributedCards = (metaData?: GameMidSegwayMetadata) => {
+    // }
+
+    return this.switch$.pipe(
+      filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.DISTRIBUTE)),
+      switchMap((metaData?: GameMidSegwayMetadata) => {
+        if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+          return of(metaData).pipe(
+            tap((metaData) => {
+              if (metaData.message && !this.isDeckShufflerPlayer) {
+                this.p1CardsList = new Map(metaData.message.p1CardsList);
+                this.p2CardsList = new Map(metaData.message.p2CardsList);
+              }
+            }),
+            tap(() => (this.isShuffleDeckInitiated = false, this.isOptionsPickerInitiated = true, this.cardDeckPickerHeader = 'You can have a look at the cards assigned.')),
+            delay(4000),
+            tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
+            delay(1000),
+            tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 1080)))),
+            delay(500),
+            tap(() => this.increaseZIndexCards = true),
+            delay(1000),
+            tap(() => (this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
+            delay(500),
+            tap(() => this.increaseZIndexPicker = true),
+          );
+        } else if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+          return of();
+        } else {
+          return of();
+        }
+      })
+    );
   }
 
   // ===========================================================================
@@ -645,6 +677,7 @@ export class PlaygroundModel {
 
   public initializeBetting(): void {
     this._gameStage.next(PlaygroundGameStage.BET);
+    this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.BET, message: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
   }
 
   public beginDeckShuffling(): void {
