@@ -53,3 +53,16 @@ export enum CardDeckEnum {
   'QUEEN_OF_SPADES',
   'JOKER'
 }
+
+export enum CardDeckTypes {
+  'CLUBS' = 1,
+  'DIAMONDS',
+  'HEARTS',
+  'SPADES'
+}
+
+export enum CardDeckCourtTypes {
+  'JACK' = 1,
+  'KING',
+  'QUEEN'
+}

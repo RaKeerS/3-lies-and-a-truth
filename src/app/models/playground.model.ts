@@ -66,6 +66,7 @@ export class PlaygroundModel {
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _playerPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
 
   public PlaygroundTossOutcome = PlaygroundGameTossOutcome;
 
@@ -251,6 +252,13 @@ export class PlaygroundModel {
     this._p2CardsList = value;
   }
 
+  get playerPickList(): Map<CardDeckEnum, string> {
+    return this._playerPickList;
+  }
+  set playerPickList(value: Map<CardDeckEnum, string>) {
+    this._playerPickList = value;
+  }
+
   get deckCardsList(): Map<CardDeckEnum, string> {
     return this._deckCardsList;
   }
@@ -351,11 +359,19 @@ export class PlaygroundModel {
     );
   }
 
-  public pickOptions() {
+  public distributeCards() {
     return this.gameStage$.pipe(
       filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.DISTRIBUTE),
       switchMap((stage: PlaygroundGameStage) => this.doDeckDistribution(stage))
     )
+  }
+
+  public pickOptions() {
+    return of();
+    // return this.gameStage$.pipe(
+    //   filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.DISTRIBUTE),
+    //   switchMap((stage: PlaygroundGameStage) => this.doDeckDistribution(stage))
+    // )
   }
 
   public commenceRound() {
@@ -364,6 +380,7 @@ export class PlaygroundModel {
       this.toss(),
       this.placeBets(),
       this.deckShuffling(),
+      this.distributeCards(),
       this.pickOptions());
   }
 
@@ -662,6 +679,8 @@ export class PlaygroundModel {
                 this.p2CardsList = new Map(metaData.message.p2CardsList);
               }
             }),
+            // NOTE - Create Options PickList for the Player.
+            tap(() => this.createPicklistForPlayer()),
             tap(() => (this.isShuffleDeckInitiated = false, this.isOptionsPickerInitiated = true, this.cardDeckPickerHeader = 'You can have a look at the cards assigned.')),
             delay(4000),
             tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
@@ -734,7 +753,7 @@ export class PlaygroundModel {
   //     tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   // }
 
-  // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'.
+  // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'. - [Done Implementing]
   private distributeDeckCards(_player?: PlaygroundGameTossOutcome): void {
     // const distributionOngoing = true;
 
@@ -790,6 +809,36 @@ export class PlaygroundModel {
     // } else {
 
     // }
+  }
+
+  private createPicklistForPlayer(): void {
+    const playerPicklist: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+
+    while(true) {
+      const randomNumber = Math.floor(Math.random() * 53) + 1;
+      if (this.deckCardsList.has(randomNumber) || this.voidDeckCardsList.has(randomNumber)) {
+        if (!this.p1CardsList.has(randomNumber) && !this.p2CardsList.has(randomNumber)) {
+          if (playerPicklist.size === 0) {
+            playerPicklist.set(randomNumber, CardDeckEnum[randomNumber]);
+          } else {
+            if (!playerPicklist.has(randomNumber)) {
+              playerPicklist.set(randomNumber, CardDeckEnum[randomNumber]);
+            }
+          }
+        }
+      }
+
+      if (playerPicklist.size === 3) {
+        const random = Math.floor(Math.random() * 4);
+        const key = Array.from(this.playerCardsList.keys())[random];
+        playerPicklist.set(key, this.playerCardsList.get(key) ?? CardDeckEnum[randomNumber]);
+        break;
+      }
+    }
+
+    this.playerPickList = playerPicklist;
+    console.log('PlayerCardsList: ', this.playerCardsList);
+    console.log('PlayerPickList: ', this.playerPickList);
   }
 
   public unsubscribeAll(): void {
