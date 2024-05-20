@@ -9,6 +9,17 @@
         }
       }
     }
+
+    .flip-card-back {
+      .player-cards {
+        .p-card {
+          border-radius: 10px;
+          .p-card-body {
+            border-radius: 10px;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -84,7 +95,6 @@
   color: white;
   transform: rotateY(180deg);
 }
-
 
 .cards-container {
   height: 26.5rem;
