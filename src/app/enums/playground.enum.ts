@@ -10,12 +10,13 @@ export enum PlaygroundGameTossOutcome {
 
 export enum PlaygroundGameStage {
   RULES = 0,
-  TOSS = 1,
-  BET = 2,
-  SHUFFLE = 3,
-  DISTRIBUTE = 4,
-  CHOOSE = 5,
-  EVALUATE = 6
+  TOSS,
+  BET,
+  SHUFFLE,
+  DISTRIBUTE,
+  PICK,
+  CHOOSE,
+  EVALUATE
 }
 
 export enum PlaygroundGameStagePhase {

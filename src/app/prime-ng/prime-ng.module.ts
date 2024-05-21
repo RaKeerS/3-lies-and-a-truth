@@ -10,6 +10,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputOtpModule } from 'primeng/inputotp';
+import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { KeyFilterModule } from 'primeng/keyfilter';
@@ -38,7 +39,8 @@ import { TooltipModule } from 'primeng/tooltip';
     ToastModule,
     TooltipModule,
     KeyFilterModule,
-    InputOtpModule
+    InputOtpModule,
+    InputSwitchModule
   ]
 })
 export class PrimeNgModule { }

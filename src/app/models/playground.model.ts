@@ -67,6 +67,8 @@ export class PlaygroundModel {
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _playerPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _flipCards: boolean = false;
+  private _toggleBetweenLiesOrTruth: boolean = false;
 
   public PlaygroundTossOutcome = PlaygroundGameTossOutcome;
 
@@ -257,6 +259,20 @@ export class PlaygroundModel {
   }
   set playerPickList(value: Map<CardDeckEnum, string>) {
     this._playerPickList = value;
+  }
+
+  get flipCards(): boolean {
+    return this._flipCards;
+  }
+  set flipCards(value: boolean) {
+    this._flipCards = value;
+  }
+
+  get toggleBetweenLiesOrTruth(): boolean {
+    return this._toggleBetweenLiesOrTruth;
+  }
+  set toggleBetweenLiesOrTruth(value: boolean) {
+    this._toggleBetweenLiesOrTruth = value;
   }
 
   get deckCardsList(): Map<CardDeckEnum, string> {
@@ -836,7 +852,7 @@ export class PlaygroundModel {
       }
     }
 
-    this.playerPickList = playerPicklist;
+    this.playerPickList = new Map([...playerPicklist.entries()].sort());
     console.log('PlayerCardsList: ', this.playerCardsList);
     console.log('PlayerPickList: ', this.playerPickList);
   }

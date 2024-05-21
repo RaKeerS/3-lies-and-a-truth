@@ -1,21 +1,21 @@
 <div class="flex min-h-200p mb-5">
   <p-card class="header-Player inner w-full">
     <ng-template pTemplate="header">
-      @if (midSegwayMessages) {
-        <div class="mid-segway-messages" [style.z-index]="increaseZIndexCards ? 1001 : 'auto'">
-          {{ midSegwayMessages }}
+      @if (playgroundModel.midSegwayMessages) {
+        <div class="mid-segway-messages" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
+          {{ playgroundModel.midSegwayMessages }}
           <!-- Pick suitable options from the ones presented! -->
         </div>
       }
       @else {
         <div class="player-name">
-          {{ playerName }}
+          {{ playgroundModel.playerName }}
         </div>
       }
     </ng-template>
     <div class="flex flex-column w-full">
-      <div class="flex cards-container" [style.z-index]="increaseZIndexCards ? 1001 : 'auto'">
-          @for (item of playerCardsList?.values(); track $index) {
+      <div class="flex cards-container" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
+          @for (item of playgroundModel.playerCardsList.values(); track $index) {
             <!-- <p-card class="py-2.5 px-0.5 player-cards">
               <div class="avc">
                 <p class="m-0">
@@ -55,13 +55,58 @@
           }
       </div>
       <div class="flex card-body justify-content-between w-full">
-        <div class="flex inline-size-25rem" [style.z-index]="increaseZIndexPicker ? 1001 : 'auto'">
-          <p-card header="Pick or Choose!">
-            <p class="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-              quas!
-            </p>
-          </p-card>
+        <div class="flex inline-size-25rem" [style.z-index]="playgroundModel.increaseZIndexPicker ? 1001 : 'auto'">
+          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
+            <p-card header="Pick">
+              <div class="m-0">
+               <span>
+                <label for="flipCards">Flip Cards: </label>
+                <p-inputSwitch id="flipCards" [(ngModel)]="playgroundModel.flipCards" />
+               </span>
+               <span>
+                @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+                  <label for="flipCards">Pick 3 Lies: </label>
+                }
+                @else {
+                  <label for="flipCards">Pick 1 Truth: </label>
+                }
+                <p-inputSwitch id="flipCards" [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth" [disabled]="true" />
+               </span>
+              </div>
+              <p-divider align="center" type="solid" class="w-full">
+                <p class="text-color-secondary block"> Please pick appropriate option(s) </p>
+              </p-divider>
+
+              <ul class="pick-list">
+                @for (item of playgroundModel.playerPickList.values(); track $index) {
+                  {{ item }}
+                }
+              </ul>
+            </p-card>
+          }
+          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE) {
+            <p-card header="Pick">
+              <div class="m-0">
+               <span>
+                <label for="flipCards">Flip Cards: </label>
+                <p-inputSwitch id="flipCards" [(ngModel)]="playgroundModel.flipCards" />
+               </span>
+               <span>
+                @if (playgroundModel.toggleBetweenLiesOrTruth) {
+                  <label for="flipCards">Pick 3 Lies: </label>
+                }
+                @else {
+                  <label for="flipCards">Pick 1 Truth: </label>
+                }
+                <p-inputSwitch id="flipCards" [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth" />
+               </span>
+              </div>
+              <p-divider align="center" type="solid" class="w-full">
+                <p class="text-color-secondary block"> Please pick appropriate option(s) </p>
+              </p-divider>
+
+            </p-card>
+          }
         </div>
         <div class="flex inline-size-25rem">
           <p-card header="Bounty">
