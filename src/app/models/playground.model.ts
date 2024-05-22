@@ -66,7 +66,10 @@ export class PlaygroundModel {
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
-  private _playerPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _playerFalsyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _playerFalsySelectedList: any[] = [];
+  private _playerTruthyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _playerTruthySelectedList: any[] = [];
   private _flipCards: boolean = false;
   private _toggleBetweenLiesOrTruth: boolean = false;
 
@@ -254,11 +257,32 @@ export class PlaygroundModel {
     this._p2CardsList = value;
   }
 
-  get playerPickList(): Map<CardDeckEnum, string> {
-    return this._playerPickList;
+  get playerFalsyPickList(): Map<CardDeckEnum, string> {
+    return this._playerFalsyPickList;
   }
-  set playerPickList(value: Map<CardDeckEnum, string>) {
-    this._playerPickList = value;
+  set playerFalsyPickList(value: Map<CardDeckEnum, string>) {
+    this._playerFalsyPickList = value;
+  }
+
+  get playerFalsySelectedList(): any[] {
+    return this._playerFalsySelectedList;
+  }
+  set playerFalsySelectedList(value: any[]) {
+    this._playerFalsySelectedList = value;
+  }
+
+  get playerTruthyPickList(): Map<CardDeckEnum, string> {
+    return this._playerTruthyPickList;
+  }
+  set playerTruthyPickList(value: Map<CardDeckEnum, string>) {
+    this._playerTruthyPickList = value;
+  }
+
+  get playerTruthySelectedList(): any[] {
+    return this._playerTruthySelectedList;
+  }
+  set playerTruthySelectedList(value: any[]) {
+    this._playerTruthySelectedList = value;
   }
 
   get flipCards(): boolean {
@@ -708,6 +732,7 @@ export class PlaygroundModel {
             tap(() => (this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
             delay(500),
             tap(() => this.increaseZIndexPicker = true),
+            tap(() => (this._gameStage.next(PlaygroundGameStage.PICK), this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata))),
           );
         } else if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
           return of();
@@ -844,17 +869,19 @@ export class PlaygroundModel {
         }
       }
 
-      if (playerPicklist.size === 3) {
-        const random = Math.floor(Math.random() * 4);
-        const key = Array.from(this.playerCardsList.keys())[random];
-        playerPicklist.set(key, this.playerCardsList.get(key) ?? CardDeckEnum[randomNumber]);
+      if (playerPicklist.size === 4) {
+        // const random = Math.floor(Math.random() * 4);
+        // const key = Array.from(this.playerCardsList.keys())[random];
+        // playerPicklist.set(key, this.playerCardsList.get(key) ?? CardDeckEnum[randomNumber]);
         break;
       }
     }
 
-    this.playerPickList = new Map([...playerPicklist.entries()].sort());
+    this.playerFalsyPickList = playerPicklist;
+    this.playerTruthyPickList = this.playerCardsList;
     console.log('PlayerCardsList: ', this.playerCardsList);
-    console.log('PlayerPickList: ', this.playerPickList);
+    console.log('PlayerFalsyPickList: ', this.playerFalsyPickList);
+    console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
   }
 
   public unsubscribeAll(): void {

@@ -24,7 +24,15 @@ export class PlayerComponent {
   public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
 
   public convertString(word: string): string {
-    const convertedWord = word.replace('_', ' ');
-    return `${convertedWord}`
+    const convertedWord = word.replaceAll('_', ' ').toLowerCase();
+    return `I have ${convertedWord}`;
+  }
+
+  public handleCheckboxChange(): void {
+    if(this.playgroundModel.playerFalsySelectedList.length === 4) {
+      this.playgroundModel.playerFalsySelectedList.reverse();
+      this.playgroundModel.playerFalsySelectedList.pop();
+      // this.playgroundModel.playerFalsySelectedList.reverse();
+    }
   }
 }

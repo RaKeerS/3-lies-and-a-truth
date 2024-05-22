@@ -20,6 +20,14 @@
         }
       }
     }
+
+    .header-Picker {
+
+      .p-card-content {
+        flex-direction: column;
+        padding: 0.5rem 0;
+      }
+    }
   }
 }
 
@@ -34,6 +42,15 @@
   align-items: center;
   padding: 0;
   scale: 1.2;
+}
+
+.header-Picker {
+
+  .card-divider {
+    display: flex;
+    height: 5rem;
+    padding-bottom: 1rem;
+  }
 }
 
 .inline-size-15rem {

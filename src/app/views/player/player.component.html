@@ -26,7 +26,7 @@
             </p-card> -->
 
             <div class="flip-card">
-              <div class="flip-card-inner">
+              <div class="flip-card-inner" [style.transform]="playgroundModel.flipCards ? 'rotateY(180deg)' : ''">
                 <div class="px-0.5 flip-card-front">
                   <!-- <img src="img_avatar.png" alt="Avatar" style="width:300px;height:300px;"> -->
                   <!-- <p-card class="player-cards flex"> -->
@@ -57,31 +57,65 @@
       <div class="flex card-body justify-content-between w-full">
         <div class="flex inline-size-25rem" [style.z-index]="playgroundModel.increaseZIndexPicker ? 1001 : 'auto'">
           @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
-            <p-card header="Pick">
-              <div class="m-0">
-               <span>
-                <label for="flipCards">Flip Cards: </label>
-                <p-inputSwitch id="flipCards" [(ngModel)]="playgroundModel.flipCards" />
-               </span>
-               <span>
-                @if (!playgroundModel.toggleBetweenLiesOrTruth) {
-                  <label for="flipCards">Pick 3 Lies: </label>
+            <p-card [header]="playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 3 Lies' : 'Pick 1 Truth'" class="header-Picker">
+              <div class="m-0 flex">
+                <div class="flex">
+                  <label class="flex align-items-center" for="flipCards">Flip Cards: </label>
+                    <p-inputSwitch id="flipCards" class="flex p-2" [(ngModel)]="playgroundModel.flipCards" />
+                  </div>
+                <div class="flex">
+                <p-toggleButton
+                  [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth"
+                  [disabled]="false"
+                  onLabel="Toggle to Truth"
+                  offLabel="Toggle to Lies" />
+                <!-- @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+                  <label class="flex align-items-center" for="3LiesOrTruth">Pick 3 Lies: </label>
                 }
                 @else {
-                  <label for="flipCards">Pick 1 Truth: </label>
-                }
-                <p-inputSwitch id="flipCards" [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth" [disabled]="true" />
-               </span>
+                  <label class="flex align-items-center" for="3LiesOrTruth">Pick 1 Truth: </label>
+                } -->
+                <!-- <p-inputSwitch id="3LiesOrTruth" class="flex p-2" [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth" [disabled]="true" /> -->
+               </div>
               </div>
-              <p-divider align="center" type="solid" class="w-full">
+              <p-divider align="center" type="solid" class="w-full card-divider">
                 <p class="text-color-secondary block"> Please pick appropriate option(s) </p>
               </p-divider>
 
-              <ul class="pick-list">
-                @for (item of playgroundModel.playerPickList.values(); track $index) {
-                  {{ item }}
+              <div class="pick-list flex flex-column gap-3">
+                @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+                  @for (item of playgroundModel.playerFalsyPickList | keyvalue; track $index) {
+                    <p-checkbox
+                      [(ngModel)]="playgroundModel.playerFalsySelectedList"
+                      (onChange)="handleCheckboxChange()"
+                      [label]="convertString(item.value)"
+                      name="group"
+                      [value]="item.key" />
+                    <!-- {{ convertString(item) }} -->
+                  }
                 }
-              </ul>
+                @else {
+                  @for (item of playgroundModel.playerTruthyPickList | keyvalue; track $index) {
+                    <p-radioButton
+                      [inputId]="item.key.toString()"
+                      name="category"
+                      [value]="item.key"
+                      [label]="convertString(item.value)"
+                      [(ngModel)]="playgroundModel.playerTruthySelectedList" />
+                    <!-- <label [for]="item.toString()" class="ml-2">
+                      {{ convertString(item.value)}}
+                    </label> -->
+                    <!-- {{ convertString(item) }} -->
+                  }
+                }
+              </div>
+
+              <div class="flex w-full justify-content-end mt-6">
+                @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+
+                }
+                <p-button type="button" severity="warning" label="Submit Choices" icon="pi pi-arrow-right" iconPos="right" (click)="playgroundModel.beginDeckShuffling()"></p-button>
+              </div>
             </p-card>
           }
           @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE) {
