@@ -30,6 +30,7 @@ export type GameMidSegwayMetadata = {
   gameStage: PlaygroundGameStage;
   messageFrom: 'peer' | 'subject';
   message: any;
+  betAmount?: number,
   tossMessage?: PlaygroundGameTossOutcome;
   beginShuffle?: boolean;
   gameStagePhase?: PlaygroundGameStagePhase;

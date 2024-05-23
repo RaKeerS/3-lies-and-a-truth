@@ -381,7 +381,7 @@ export class WebRtcModel {
     if (parsedData?.gameStage !== undefined && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
         case PlaygroundGameStage.RULES: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
         case PlaygroundGameStage.TOSS: {
@@ -395,6 +395,11 @@ export class WebRtcModel {
           //   this.sendMessageWebRtc(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'peer' } as GameMidSegwayMetadata))
           // }
           // this._playgroundService.tossCompleted.complete();
+          break;
+        }
+
+        case PlaygroundGameStage.BET: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.BET, message: parsedData.message, betAmount: +parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 

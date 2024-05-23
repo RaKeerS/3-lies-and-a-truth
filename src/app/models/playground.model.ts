@@ -443,7 +443,7 @@ export class PlaygroundModel {
 
     this._subscription = this._dialogRef.onClose.subscribe((data: any) => {
       this.showPlaygroundGameInitiationDialog();
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.RULES, message: '', messageFrom: 'peer' } as GameMidSegwayMetadata))
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, messageFrom: 'peer' } as GameMidSegwayMetadata))
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
     });
 
@@ -606,6 +606,7 @@ export class PlaygroundModel {
 
     return this.switch$.pipe(
       filter((metaData?: GameMidSegwayMetadata) => metaData?.gameStage === PlaygroundGameStage.BET),
+      tap((metaData?: GameMidSegwayMetadata) => (this.playgroundBetAmount = metaData?.betAmount ?? this.playgroundBetAmount, console.log('playgroundBetAmount: ', this.playgroundBetAmount, 'metaDataBetAmount: ', metaData?.betAmount))),
       switchMap(() =>
         concat(
           interval$,
@@ -758,6 +759,7 @@ export class PlaygroundModel {
     this.isShufflePending = false;
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.BET, message: this.playgroundBetAmount, messageFrom: 'peer' } as GameMidSegwayMetadata))
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
 
     this.isDeckShufflerPlayer = true;
