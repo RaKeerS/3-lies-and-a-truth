@@ -77,12 +77,12 @@
 
         <span class="p-float-label">
           <!-- <input pInputText pKeyFilter="int" /> -->
-          <p-inputNumber inputId="betAmount" [min]="10" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [(ngModel)]="playgroundModel.playgroundBetAmount"></p-inputNumber>
+          <p-inputNumber inputId="betAmount" [min]="10" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [(ngModel)]="playgroundModel.playgroundCreatorBetAmount"></p-inputNumber>
           <label for="playerName"> Enter Bet Amount (Minimum amount will be 10) </label>
         </span>
 
         <div class="flex w-full justify-content-end mt-6">
-          <p-button type="button" severity="warning" label="Make Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playgroundBetAmount" (click)="playgroundModel.beginDeckShuffling()"></p-button>
+          <p-button type="button" severity="warning" label="Make Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playgroundCreatorBetAmount || playgroundModel.playgroundCreatorBetAmount < 10" (click)="playgroundModel.beginDeckShuffling()"></p-button>
         </div>
 
       </div>

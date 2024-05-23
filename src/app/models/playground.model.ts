@@ -155,11 +155,18 @@ export class PlaygroundModel {
     this._playgroundTimer = value;
   }
 
-  get playgroundBetAmount(): number {
+  get playgroundCreatorBetAmount(): number {
     return this._playgroundService.createPlayground ? this._playerOneBetAmount : this._playerTwoBetAmount
   }
-  set playgroundBetAmount(value: number) {
+  set playgroundCreatorBetAmount(value: number) {
     this._playgroundService.createPlayground ? this._playerOneBetAmount = value : this._playerTwoBetAmount = value;
+  }
+
+  get playgroundJoinerBetAmount(): number {
+    return this._playgroundService.createPlayground ?  this._playerTwoBetAmount : this._playerOneBetAmount;
+  }
+  set playgroundJoinerBetAmount(value: number) {
+    this._playgroundService.createPlayground ? this._playerTwoBetAmount = value : this._playerOneBetAmount = value;
   }
 
   get isBettingCompleted(): boolean {
@@ -579,7 +586,7 @@ export class PlaygroundModel {
   private doGameBetting() {
     this.playgroundTimer = 200;
     console.log()
-    this.playgroundBetAmount = 10;
+    this.playgroundCreatorBetAmount = 10;
 
     const interval$ = interval(1000).pipe(
       takeWhile(() => +this.playgroundTimer !== 0),
@@ -598,7 +605,7 @@ export class PlaygroundModel {
     const bettingCompleted$ = of(+this.playgroundTimer === 0).pipe(
       takeWhile(() => !this.isBettingCompleted),
       tap(() => {
-        this.playgroundBetAmount = !!this.playgroundBetAmount || this.playgroundBetAmount < 10 ? 10 : this.playgroundBetAmount;
+        this.playgroundCreatorBetAmount = !!this.playgroundCreatorBetAmount || this.playgroundCreatorBetAmount < 10 ? 10 : this.playgroundCreatorBetAmount;
         this.beginDeckShuffling();
         console.log('Timeout!');
       })
@@ -606,7 +613,7 @@ export class PlaygroundModel {
 
     return this.switch$.pipe(
       filter((metaData?: GameMidSegwayMetadata) => metaData?.gameStage === PlaygroundGameStage.BET),
-      tap((metaData?: GameMidSegwayMetadata) => (this.playgroundBetAmount = metaData?.betAmount ?? this.playgroundBetAmount, console.log('playgroundBetAmount: ', this.playgroundBetAmount, 'metaDataBetAmount: ', metaData?.betAmount))),
+      tap((metaData?: GameMidSegwayMetadata) => (this.playgroundJoinerBetAmount = metaData?.betAmount ?? this.playgroundJoinerBetAmount, console.log('playgroundBetAmount: ', this.playgroundJoinerBetAmount, 'metaDataBetAmount: ', metaData?.betAmount))),
       switchMap(() =>
         concat(
           interval$,
@@ -726,7 +733,7 @@ export class PlaygroundModel {
             delay(4000),
             tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
             delay(1000),
-            tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 1080)))),
+            tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 1020)))),
             delay(500),
             tap(() => this.increaseZIndexCards = true),
             delay(1000),
@@ -759,7 +766,7 @@ export class PlaygroundModel {
     this.isShufflePending = false;
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.BET, message: this.playgroundBetAmount, messageFrom: 'peer' } as GameMidSegwayMetadata))
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.BET, message: this.playgroundCreatorBetAmount, messageFrom: 'peer' } as GameMidSegwayMetadata))
     this._gameStage.next(PlaygroundGameStage.SHUFFLE);
 
     this.isDeckShufflerPlayer = true;

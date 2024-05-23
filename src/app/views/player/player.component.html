@@ -57,25 +57,25 @@
       <div class="flex card-body justify-content-between w-full">
         <div class="flex inline-size-25rem" [style.z-index]="playgroundModel.increaseZIndexPicker ? 1001 : 'auto'">
           @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
-            <p-card [header]="playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 3 Lies' : 'Pick 1 Truth'" class="header-Picker">
-              <div class="m-0 flex">
-                <div class="flex">
+            <p-card [header]="playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 3 Lies' : 'Pick 1 Truth'" class="header-Picker w-full">
+              <div class="m-0 flex w-full">
+                <div class="flex w-full">
                   <label class="flex align-items-center" for="flipCards">Flip Cards: </label>
                     <p-inputSwitch id="flipCards" class="flex p-2" [(ngModel)]="playgroundModel.flipCards" />
                   </div>
-                <div class="flex">
-                <p-toggleButton
-                  [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth"
-                  [disabled]="false"
-                  onLabel="Toggle to Truth"
-                  offLabel="Toggle to Lies" />
-                <!-- @if (!playgroundModel.toggleBetweenLiesOrTruth) {
-                  <label class="flex align-items-center" for="3LiesOrTruth">Pick 3 Lies: </label>
-                }
-                @else {
-                  <label class="flex align-items-center" for="3LiesOrTruth">Pick 1 Truth: </label>
-                } -->
-                <!-- <p-inputSwitch id="3LiesOrTruth" class="flex p-2" [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth" [disabled]="true" /> -->
+                <div class="flex w-full justify-content-end">
+                  <p-toggleButton
+                    [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth"
+                    [disabled]="false"
+                    onLabel="Toggle to Truth"
+                    offLabel="Toggle to Lies" />
+                  <!-- @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+                    <label class="flex align-items-center" for="3LiesOrTruth">Pick 3 Lies: </label>
+                  }
+                  @else {
+                    <label class="flex align-items-center" for="3LiesOrTruth">Pick 1 Truth: </label>
+                  } -->
+                  <!-- <p-inputSwitch id="3LiesOrTruth" class="flex p-2" [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth" [disabled]="true" /> -->
                </div>
               </div>
               <p-divider align="center" type="solid" class="w-full card-divider">
@@ -142,12 +142,30 @@
             </p-card>
           }
         </div>
-        <div class="flex inline-size-25rem">
-          <p-card header="Bounty">
-            <p class="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-              quas!
-            </p>
+        <div class="flex inline-size-25rem" [style.z-index]="playgroundModel.increaseZIndexPicker ? 1001 : 'auto'">
+          <p-card header="Bounty" class="header-Bounty w-full">
+
+            <div class="m-0 flex w-full">
+              <div class="flex w-full flex-column">
+                <p-divider align="center" type="solid" class="w-full card-divider">
+                  <p class="text-color-secondary block"> Your bounty amount: </p>
+                </p-divider>
+
+                <div class="text-center text-xl font-semibold">
+                  {{ playgroundModel.playgroundCreatorBetAmount }}
+                </div>
+
+                <p-divider align="center" type="solid" class="w-full card-divider">
+                  <p class="text-color-secondary block"> Partners's bounty amount: </p>
+                </p-divider>
+
+                <div class="text-center mt-3 mb-3 text-xl font-semibold">
+                  {{ playgroundModel.playgroundJoinerBetAmount }}
+                </div>
+
+              </div>
+            </div>
+
           </p-card>
         </div>
       </div>
