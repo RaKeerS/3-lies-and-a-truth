@@ -82,6 +82,7 @@ export class PlaygroundModel {
     this._dialogService = injector.get( DialogService);
 
     this._subscription = this.commenceRound().subscribe();
+    // this.initiateRounds();
 
     this._gameTossWinnerDetails = this._playgroundService.createPlayground ? 'Starting Toss!' : 'Waiting for your partner to start the toss';
   }
@@ -421,6 +422,30 @@ export class PlaygroundModel {
     // )
   }
 
+  private setPlaygroundTimer(startTime: number) {
+    this.playgroundTimer = startTime;
+
+    return interval(1000).pipe(
+      takeWhile(() => +this.playgroundTimer !== 0),
+      tap(() => {
+        this.playgroundTimer = +this.playgroundTimer - 1;
+        if (+this.playgroundTimer % 100 === 99) {
+          this.playgroundTimer = +this.playgroundTimer - 40;
+        }
+      })
+    );
+  }
+
+  private initiateRounds(): void {
+    this._gameStage.next(PlaygroundGameStage.RULES);
+    this._gameStage.next(PlaygroundGameStage.TOSS);
+    this._gameStage.next(PlaygroundGameStage.BET);
+    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+    this._gameStage.next(PlaygroundGameStage.DISTRIBUTE);
+    this._gameStage.next(PlaygroundGameStage.PICK);
+    this._gameStage.next(PlaygroundGameStage.CHOOSE);
+  }
+
   public commenceRound() {
     return merge(
       this.rules(),
@@ -450,7 +475,11 @@ export class PlaygroundModel {
 
     this._subscription = this._dialogRef.onClose.subscribe((data: any) => {
       this.showPlaygroundGameInitiationDialog();
+
+      if (this._playgroundService.createPlayground) {
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, messageFrom: 'peer' } as GameMidSegwayMetadata))
+      }
+
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
     });
 
@@ -584,19 +613,9 @@ export class PlaygroundModel {
   }
 
   private doGameBetting() {
-    this.playgroundTimer = 200;
-    console.log()
     this.playgroundCreatorBetAmount = 10;
 
-    const interval$ = interval(1000).pipe(
-      takeWhile(() => +this.playgroundTimer !== 0),
-      tap(() => {
-        this.playgroundTimer = +this.playgroundTimer - 1;
-        if (+this.playgroundTimer % 100 === 99) {
-          this.playgroundTimer = +this.playgroundTimer - 40;
-        }
-      })
-    );
+    const interval$ = this.setPlaygroundTimer(200);
 
     // const bettingConclusion$ = interval$.pipe(
     //   tap((data) => console.log('Inside Interval: ', data))
