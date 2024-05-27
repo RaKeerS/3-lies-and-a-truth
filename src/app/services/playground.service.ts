@@ -1,7 +1,7 @@
 import { Injectable, Injector, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { BehaviorSubject, concat, interval, Observable, of, ReplaySubject, Subscription, take, tap } from 'rxjs';
+import { concat, interval, Observable, of, ReplaySubject, Subscription, take, tap } from 'rxjs';
 
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 import { GameMidSegwayMetadata } from '../types/app-types';
@@ -37,7 +37,7 @@ export class PlaygroundService {
 
   private _webRtc: WebRtcModel;
 
-  private _switch: BehaviorSubject<GameMidSegwayMetadata | undefined> = new BehaviorSubject<GameMidSegwayMetadata | undefined>(undefined);
+  private _switch: ReplaySubject<GameMidSegwayMetadata | undefined> = new ReplaySubject<GameMidSegwayMetadata | undefined>(8);
   private _tossCompleted: ReplaySubject<GameMidSegwayMetadata> = new ReplaySubject<GameMidSegwayMetadata>(1);
 
   private _redirectCounter: number = 5;
@@ -105,7 +105,7 @@ export class PlaygroundService {
     return this._redirectCounter;
   }
 
-  get switch(): BehaviorSubject<GameMidSegwayMetadata | undefined> {
+  get switch(): ReplaySubject<GameMidSegwayMetadata | undefined> {
     return this._switch;
   }
 

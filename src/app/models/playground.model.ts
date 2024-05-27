@@ -752,7 +752,7 @@ export class PlaygroundModel {
             delay(4000),
             tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
             delay(1000),
-            tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 500)))),
+            tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 700)))),
             delay(500),
             tap(() => this.increaseZIndexCards = true),
             delay(1000),
