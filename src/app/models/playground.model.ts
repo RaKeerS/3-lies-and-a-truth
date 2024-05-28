@@ -912,6 +912,15 @@ export class PlaygroundModel {
     console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
   }
 
+  public submitOptions(): void {
+    if (this.playerFalsySelectedList.length === 3 && this.playerTruthySelectedList.length > 0) {
+      // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
+      console.log('Success!!!!');
+    } else {
+      this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
+    }
+  }
+
   public unsubscribeAll(): void {
     this._subscription.unsubscribe();
   }
