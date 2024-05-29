@@ -125,10 +125,10 @@
 
               <div class="flex w-full justify-content-end mt-6">
                 @if (playgroundModel.toggleBetweenLiesOrTruth) {
-                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.playerFalsySelectedList.length < 3" (click)="playgroundModel.submitOptions()"></p-button>
+                  <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playerTruthySelectedList" (click)="playgroundModel.submitOptions()"></p-button>
                 }
                 @else {
-                  <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.playerTruthySelectedList.length === 0" (click)="playgroundModel.submitOptions()"></p-button>
+                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.playerFalsySelectedList.length < 3" (click)="playgroundModel.submitOptions()"></p-button>
                 }
               </div>
             </p-card>

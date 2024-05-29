@@ -69,7 +69,7 @@ export class PlaygroundModel {
   private _playerFalsyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _playerFalsySelectedList: any[] = [];
   private _playerTruthyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
-  private _playerTruthySelectedList: any[] = [];
+  private _playerTruthySelectedList?: CardDeckEnum;
   private _flipCards: boolean = false;
   private _toggleBetweenLiesOrTruth: boolean = false;
 
@@ -286,10 +286,10 @@ export class PlaygroundModel {
     this._playerTruthyPickList = value;
   }
 
-  get playerTruthySelectedList(): any[] {
+  get playerTruthySelectedList(): CardDeckEnum | undefined {
     return this._playerTruthySelectedList;
   }
-  set playerTruthySelectedList(value: any[]) {
+  set playerTruthySelectedList(value: CardDeckEnum) {
     this._playerTruthySelectedList = value;
   }
 
@@ -913,7 +913,7 @@ export class PlaygroundModel {
   }
 
   public submitOptions(): void {
-    if (this.playerFalsySelectedList.length === 3 && this.playerTruthySelectedList.length > 0) {
+    if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
       // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
       console.log('Success!!!!');
     } else {
