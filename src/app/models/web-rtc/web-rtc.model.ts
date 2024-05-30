@@ -413,6 +413,11 @@ export class WebRtcModel {
           break;
         }
 
+        case PlaygroundGameStage.PICK: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          break;
+        }
+
         default: {
           break;
         }

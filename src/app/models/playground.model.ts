@@ -759,7 +759,14 @@ export class PlaygroundModel {
             tap(() => (this.midSegwayMessages = 'Pick suitable options from the ones presented!')),
             delay(500),
             tap(() => this.increaseZIndexPicker = true),
-            tap(() => (this._gameStage.next(PlaygroundGameStage.PICK), this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata))),
+            tap(() => {
+              if (this.isDeckShufflerPlayer) {
+                this._gameStage.next(PlaygroundGameStage.PICK);
+                this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+              } else {
+                this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
+              }
+            }),
           );
         } else if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
           return of();
@@ -916,6 +923,11 @@ export class PlaygroundModel {
     if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
       // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
       console.log('Success!!!!');
+      // if (this.isDeckShufflerPlayer) {
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.PICK,
+        message: { playerFalsyPickList: Array.from(this.playerFalsyPickList.entries()), playerFalsySelectedList: this.playerFalsySelectedList, playerTruthyPickList: Array.from(this.playerTruthyPickList.entries()), playerTruthySelectedList: this.playerTruthySelectedList },
+        gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'peer' } as GameMidSegwayMetadata))
+      // }
     } else {
       this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
     }
