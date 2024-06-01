@@ -132,27 +132,50 @@
   </div>
 }
 
-@if (!playgroundModel.waitingZone) {
-  <div class="flex justify-content-center align-items-center h-2rem">
-    <div class="flex flex-column align-items-center">
-      <div class="font-bold text-2xl mb-4"> Timer </div>
-      <p-inputOtp [(ngModel)]="playgroundModel.playgroundTimer" [length]="4" style="gap: 0; justify-content: center;">
-        <ng-template pTemplate="input" let-token let-events="events" let-index="index">
-          <input pInputText type="text" [maxLength]="1" [disabled]="true" (input)="events.input($event)" (keydown)="events.keydown($event)" [attr.value]="token" class="custom-timer" />
-          <div *ngIf="index === 2" class="px-3">
-            <!-- <i class="pi pi-minus"></i> -->
-            <span style='font-size: 1rem'>&#58;</span>
-          </div>
-          <!-- playgroundTimer: {{ playgroundModel.playgroundTimer }} -->
-        </ng-template>
-      </p-inputOtp>
+@if (!playgroundModel.enableWaitingZone) {
+  <div class="playground-timer-backdrop mid-graphics">
+    <div class="backdrop-body flex justify-content-center align-items-center h-8rem">
+      <div class="field p-fluid m-0">
+        <div class="p-field p-col-12">
+          <div class="flex flex-column align-items-center">
+            <p-card class="flex flex-column">
+              <div class="font-bold text-2xl mb-4"> Timer </div>
+              <p-inputOtp [(ngModel)]="playgroundModel.playgroundTimer" [length]="4" style="gap: 0; justify-content: center; width: 20rem;">
+                <ng-template pTemplate="input" let-token let-events="events" let-index="index">
+                  <input pInputText type="text" [maxLength]="1" [disabled]="true" (input)="events.input($event)" (keydown)="events.keydown($event)" [attr.value]="token" class="custom-timer" />
+                  <div *ngIf="index === 2" class="px-3">
+                    <!-- <i class="pi pi-minus"></i> -->
+                    <span style='font-size: 1rem'>&#58;</span>
+                  </div>
+                  <!-- playgroundTimer: {{ playgroundModel.playgroundTimer }} -->
+                </ng-template>
+              </p-inputOtp>
+            </p-card>
+            <!-- <div class="flex justify-content-between mt-5 align-self-stretch">
+                <p-button label="Resend Code" [link]="true" class="p-0"></p-button>
+                <p-button label="Submit Code"></p-button>
+            </div> -->
+        </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="playground-waiting-zone flex justify-content-center align-items-center w-full h-5rem">
-    <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
-    </p-card>
-  </div>
+
+  @if (!playgroundModel.showWaitingHeader) {
+    <div class="playground-waiting-zone-backdrop mid-graphics">
+      <div class="backdrop-body flex justify-content-center align-items-center">
+        <div class="playground-waiting-zone flex justify-content-center align-items-center w-full">
+          <p-card [header]="playgroundModel.waitingZoneHeader" class="flex flex-column p-3 w-80vw">
+          <!-- <p-card class="flex flex-column p-3 w-80vw">
+            <div class="flex playground-waiting-zone-header">
+              {{ playgroundModel.waitingZoneHeader }}
+            </div> -->
+          </p-card>
+        </div>
+      </div>
+    </div>
+  }
 }
 
 <p-card header="Title" class="outer root-card flex">

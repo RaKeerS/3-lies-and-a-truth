@@ -58,11 +58,12 @@ export class PlaygroundModel {
   private _isOptionsPickerInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
-  private _waitingZoneHeader: string = '';
+  private _waitingZoneHeader: string = 'Oi main bolra hun!';
   private _increaseZIndexCards: boolean = false;
   private _increaseZIndexPicker: boolean = false;
   private _midSegwayMessages: string = '';
-  private _waitingZone: boolean = false;
+  private _enableWaitingZone: boolean = false;
+  private _showWaitingHeader: boolean = false;
 
   private _deckCardsList: Map<CardDeckEnum, string> = CardDeckDictionary;
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -330,11 +331,18 @@ export class PlaygroundModel {
     this._voidDeckCardsList = value;
   }
 
-  get waitingZone(): boolean {
-    return this._waitingZone;
+  get enableWaitingZone(): boolean {
+    return this._enableWaitingZone;
   }
-  set waitingZone(value: boolean) {
-    this._waitingZone = value;
+  set enableWaitingZone(value: boolean) {
+    this._enableWaitingZone = value;
+  }
+
+  get showWaitingHeader(): boolean {
+    return this._showWaitingHeader;
+  }
+  set showWaitingHeader(value: boolean) {
+    this._showWaitingHeader = value;
   }
 
   // NOTE: This observable is present in the Service since, it is used to contain/send Game's mid segment metadata, which is similar to the async updates of values/data

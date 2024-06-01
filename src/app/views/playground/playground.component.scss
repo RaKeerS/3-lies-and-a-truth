@@ -28,6 +28,8 @@
 //   }
 // }
 
+$min-block-size: 24rem;
+
 ::ng-deep {
   .layout-main-container {
     padding: 0% !important;
@@ -65,7 +67,7 @@
     }
 
     .p-card-body {
-      min-block-size: 24rem;
+      min-block-size: $min-block-size;
       // box-shadow: 0 1px 1px 2px rgba(0, 0, 0, 0.2), 0 1px 1px 2px rgba(0, 0, 0, 0.14), 0 1px 1px 2px rgba(0, 0, 0, 0.12);
     }
 
@@ -243,6 +245,41 @@
       }
     }
 
+    .playground-waiting-zone {
+      .p-card-body {
+        min-block-size: $min-block-size - 14;
+
+        .p-card-title {
+          height: $min-block-size - 17;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 0;
+        }
+
+        .p-card-content{
+          padding: 0;
+        }
+      }
+    }
+
+    .playground-timer-backdrop {
+      min-block-size: 2rem;
+      padding: 0;
+
+      .p-card-body {
+        min-block-size: 2rem;
+        padding: 0 !important;
+
+        .p-card-content {
+          // height: 8rem;
+          padding: 0.75rem;
+        }
+      }
+
+
+    }
+
   }
 }
 
@@ -258,6 +295,17 @@
   background-color: #030303db;
 }
 
+.playground-waiting-zone-backdrop {
+  @extend .backdrop;
+  block-size: 25vh;
+  top: 50vh;
+}
+
+.playground-timer-backdrop {
+  @extend .backdrop;
+  block-size: 8rem;
+}
+
 .top-30 {
   top: 30%;
 }
@@ -266,8 +314,12 @@
   top: 40%;
 }
 
-.w-50\% {
-  width: 50%;
+.w-50\%, .inline-size-50\% {
+  inline-size: 50%;
+}
+
+.w-80vw, .inline-size-80vw {
+  inline-size: 80vw;
 }
 
 .button-highlight {
