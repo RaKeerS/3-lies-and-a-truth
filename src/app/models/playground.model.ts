@@ -784,7 +784,12 @@ export class PlaygroundModel {
             delay(4000),
             tap(() => (this.cardDeckPickerHeader = 'Pick suitable options from the ones presented!')),
             delay(1000),
-            tap(() => (this.isOptionsPickerInitiated = false, this.midSegwayMessages = 'You can have a look at the cards assigned.', window.scrollTo(0, (document.body.scrollHeight - 700)))),
+            tap(() => {
+              this.isOptionsPickerInitiated = false;
+              this.showMidSegwayMessages = true;
+              this.midSegwayMessages = 'You can have a look at the cards assigned.';
+              this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
+            }),
             delay(500),
             tap(() => this.increaseZIndexCards = true),
             delay(1000),
@@ -794,6 +799,7 @@ export class PlaygroundModel {
             tap(() => {
               if (this.isDeckShufflerPlayer) {
                 this._gameStage.next(PlaygroundGameStage.PICK);
+                this.setPlaygroundTimer(200);
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
               } else {
                 this._gameStage.next(PlaygroundGameStage.CHOOSE);
@@ -804,6 +810,27 @@ export class PlaygroundModel {
                 this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
               }
             }),
+            delay(1800),
+            tap(() => {
+              this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
+              interval(5000).pipe(
+                takeWhile(() => +this.playgroundTimer !== 0),
+                tap((count) => {
+                  if (count % 2 === 0) {
+                    if (this.isDeckShufflerPlayer) {
+                      this.midSegwayMessages = 'Pick suitable options from the ones presented!';
+                    } else {
+                      this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
+                      this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+                    }
+                  } else {
+                    this.midSegwayMessages = 'You will be redirected to next game phase when the timer runs out.';
+                  }
+                })
+              ).subscribe()
+            }),
+            delay(1800),
+            tap(() => this.showWaitingHeader = false)
           );
         } else if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
           return of();
