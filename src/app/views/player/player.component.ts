@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundGameStage, PlaygroundGameStagePhase } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
@@ -22,6 +22,7 @@ export class PlayerComponent {
   @Input() playgroundModel!: PlaygroundModel;
 
   public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
+  public PlaygroundGameStagePhase: typeof PlaygroundGameStagePhase = PlaygroundGameStagePhase;
 
   public convertString(word: string): string {
     const convertedWord = word.replaceAll('_', ' ').toLowerCase();

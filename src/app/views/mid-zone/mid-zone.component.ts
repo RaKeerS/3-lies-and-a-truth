@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
+import { PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
 @Component({
@@ -10,5 +12,7 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
   styleUrl: './mid-zone.component.scss'
 })
 export class MidZoneComponent {
+  @Input() playgroundModel!: PlaygroundModel;
 
+  public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
 }

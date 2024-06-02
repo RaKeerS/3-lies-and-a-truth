@@ -280,9 +280,9 @@
       </div> -->
 
       <app-opponent></app-opponent>
-      <app-mid-zone></app-mid-zone>
+      <app-mid-zone [playgroundModel]="playgroundModel"></app-mid-zone>
       <!-- <app-player [increaseZIndexCards]="playgroundModel.increaseZIndexCards" [increaseZIndexPicker]="playgroundModel.increaseZIndexPicker" [playerName]="playgroundModel.playerName" [playerCardsList]="playgroundModel.playerCardsList" [flipCards]="playgroundModel.flipCards" [midSegwayMessages]="playgroundModel.midSegwayMessages" ></app-player> -->
-      <app-player [playgroundModel]="playgroundModel" ></app-player>
+      <app-player [playgroundModel]="playgroundModel"></app-player>
     </div>
     <div class="flex deck mb-5 pl-4">
       <!-- <p-card header="Deck">

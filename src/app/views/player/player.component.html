@@ -1,23 +1,13 @@
 <div class="flex min-h-200p mb-5">
   <p-card class="header-Player inner w-full">
     <ng-template pTemplate="header">
-      @if (playgroundModel.midSegwayMessages) {
+      <!-- <div class="player-name" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
+        {{ playgroundModel.playerName }}
+      </div> -->
+
+      @if (playgroundModel.showMidSegwayMessages) {
         <div class="mid-segway-messages" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
           {{ playgroundModel.midSegwayMessages }}
-          <!-- Pick suitable options from the ones presented! -->
-
-          <!-- <div class="flex flex-column align-items-center">
-            <div class="font-bold text-2xl mb-4"> Timer </div>
-            <p-inputOtp [(ngModel)]="playgroundModel.playgroundTimer" [length]="4" style="gap: 0; justify-content: center;">
-              <ng-template pTemplate="input" let-token let-events="events" let-index="index">
-                <input pInputText type="text" [maxLength]="1" [disabled]="true" (input)="events.input($event)" (keydown)="events.keydown($event)" [attr.value]="token" class="custom-timer" />
-                <div *ngIf="index === 2" class="px-3">
-                  <span style='font-size: 1rem'>&#58;</span>
-                </div>
-              </ng-template>
-            </p-inputOtp>
-          </div> -->
-
         </div>
       }
       @else {
@@ -133,7 +123,7 @@
               </div>
             </p-card>
           }
-          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE) {
+          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE && (playgroundModel.switch$ | async)?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
             <p-card header="Pick">
               <div class="m-0">
                <span>

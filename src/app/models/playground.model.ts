@@ -62,6 +62,7 @@ export class PlaygroundModel {
   private _increaseZIndexCards: boolean = false;
   private _increaseZIndexPicker: boolean = false;
   private _midSegwayMessages: string = '';
+  private _showMidSegwayMessages: boolean = false;
   private _enableWaitingZone: boolean = false;
   private _showWaitingHeader: boolean = false;
 
@@ -255,6 +256,13 @@ export class PlaygroundModel {
   }
   set midSegwayMessages(value: string) {
     this._midSegwayMessages = value;
+  }
+
+  get showMidSegwayMessages(): boolean {
+    return this._showMidSegwayMessages;
+  }
+  set showMidSegwayMessages(value: boolean) {
+    this._showMidSegwayMessages = value;
   }
 
   get playerName(): string {
@@ -798,14 +806,22 @@ export class PlaygroundModel {
             tap(() => this.increaseZIndexPicker = true),
             tap(() => {
               if (this.isDeckShufflerPlayer) {
-                this._gameStage.next(PlaygroundGameStage.PICK);
-                this.setPlaygroundTimer(200);
-                this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
-              } else {
-                this._gameStage.next(PlaygroundGameStage.CHOOSE);
+                this.showMidSegwayMessages = false;
                 this.enableWaitingZone = true;
                 this.showWaitingHeader = true;
+
                 this.setPlaygroundTimer(200);
+                this._gameStage.next(PlaygroundGameStage.PICK);
+                this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+              } else {
+                this.showMidSegwayMessages = true;
+                this.showBackdrop = false;
+                this.enableWaitingZone = true;
+                this.showWaitingHeader = true;
+
+                this.setPlaygroundTimer(200);
+                this._gameStage.next(PlaygroundGameStage.CHOOSE);
+
                 this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
                 this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
               }
