@@ -58,7 +58,7 @@ export class PlaygroundModel {
   private _isOptionsPickerInitiated: boolean = false;
   private _shuffleDeckHeader: string = 'Shuffling Deck, Please Wait...';
   private _cardDeckPickerHeader: string = '';
-  private _waitingZoneHeader: string = 'Oi main bolra hun!';
+  private _waitingZoneHeader: string = '';
   private _increaseZIndexCards: boolean = false;
   private _increaseZIndexPicker: boolean = false;
   private _midSegwayMessages: string = '';
@@ -446,6 +446,13 @@ export class PlaygroundModel {
     // )
   }
 
+  private chooseOptions() {
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.CHOOSE),
+      switchMap(() => this.doCardsChoice())
+    )
+  }
+
   private setPlaygroundTimer(startTime: number) {
     this.playgroundTimer = startTime;
 
@@ -477,7 +484,8 @@ export class PlaygroundModel {
       this.placeBets(),
       this.deckShuffling(),
       this.distributeCards(),
-      this.pickOptions());
+      this.pickOptions(),
+      this.chooseOptions());
   }
 
   public showPlaygroundGameRulesDialog(): void {
@@ -788,6 +796,11 @@ export class PlaygroundModel {
                 this._gameStage.next(PlaygroundGameStage.PICK);
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
               } else {
+                this._gameStage.next(PlaygroundGameStage.CHOOSE);
+                this.enableWaitingZone = true;
+                this.showWaitingHeader = true;
+                this.setPlaygroundTimer(200);
+                this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
                 this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
               }
             }),
@@ -799,6 +812,15 @@ export class PlaygroundModel {
         }
       })
     );
+  }
+
+  private doCardsChoice() {
+    return this.switch$.pipe(
+      filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.CHOOSE)),
+      switchMap((metaData?: GameMidSegwayMetadata) => {
+        console.log('CHOOSE GameStage: ', metaData?.message);
+        return of();
+      }));
   }
 
   // ===========================================================================

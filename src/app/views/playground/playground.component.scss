@@ -298,12 +298,14 @@ $min-block-size: 24rem;
 .playground-waiting-zone-backdrop {
   @extend .backdrop;
   block-size: 25vh;
-  top: 50vh;
+  top: 42vh;
+  z-index: 1002;
 }
 
 .playground-timer-backdrop {
   @extend .backdrop;
   block-size: 8rem;
+  z-index: 1002;
 }
 
 .top-30 {
