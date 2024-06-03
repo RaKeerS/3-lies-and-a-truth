@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Injector, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -27,8 +27,19 @@ export class AppComponent implements OnDestroy {
   playgroundId?: number;
   token: string = '';
 
+  private _playgroundService: PlaygroundService;
+
+  constructor(injector: Injector) {
+    this._playgroundService = injector.get(PlaygroundService);
+  }
+
   ngOnDestroy(): void {
     // this._playgroundService.terminateWebRtcConnection();
+    // this.showPlaygroundDialog = false;
+  }
+
+  get isConnected(): boolean {
+    return this._playgroundService.isConnected;
   }
 
   // ngAfterViewInit(): void {

@@ -9,7 +9,8 @@ export enum PlaygroundGameTossOutcome {
 }
 
 export enum PlaygroundGameStage {
-  RULES = 0,
+  CONNECTION = 0,
+  RULES,
   TOSS,
   BET,
   SHUFFLE,
