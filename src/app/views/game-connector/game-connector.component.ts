@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injector, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Injector, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { delay, filter, of, Subscription, tap } from 'rxjs';
 
 import { PlaygroundGameEnum, PlaygroundGameStage } from '../../enums/playground.enum';
@@ -15,7 +15,7 @@ import { GameMidSegwayMetadata } from '../../types/app-types';
   styleUrl: './game-connector.component.scss'
 })
 
-export class GameConnectorComponent implements OnDestroy {
+export class GameConnectorComponent implements OnInit, OnDestroy {
   private _showPlaygroundDialog: boolean = false;
   private _playgroundService: PlaygroundService;
 
@@ -53,8 +53,11 @@ export class GameConnectorComponent implements OnDestroy {
   //   this._signalInvitationTokenCreated = value
   // }
 
-  ngOnDestroy(): void {
+  ngOnInit(): void {
     this.playgroundService.playerName = '';
+  }
+
+  ngOnDestroy(): void {
     this.playgroundService.signalInvitationToken = '';
     this._subscription?.unsubscribe();
   }

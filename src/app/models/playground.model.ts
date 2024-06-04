@@ -63,6 +63,7 @@ export class PlaygroundModel {
   private _increaseZIndexPicker: boolean = false;
   private _midSegwayMessages: string = '';
   private _showMidSegwayMessages: boolean = false;
+  private _showPlayerSegwayMessages: boolean = false;
   private _enableWaitingZone: boolean = false;
   private _showWaitingHeader: boolean = false;
 
@@ -265,6 +266,13 @@ export class PlaygroundModel {
     this._showMidSegwayMessages = value;
   }
 
+  get showPlayerSegwayMessages(): boolean {
+    return this._showPlayerSegwayMessages;
+  }
+  set showPlayerSegwayMessages(value: boolean) {
+    this._showPlayerSegwayMessages = value;
+  }
+
   get playerName(): string {
     return this._playgroundService.playerName;
   }
@@ -447,7 +455,10 @@ export class PlaygroundModel {
   }
 
   public pickOptions() {
-    return of();
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.PICK),
+      switchMap(() => this.doOptionsPicking())
+    )
     // return this.gameStage$.pipe(
     //   filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.DISTRIBUTE),
     //   switchMap((stage: PlaygroundGameStage) => this.doDeckDistribution(stage))
@@ -796,7 +807,8 @@ export class PlaygroundModel {
               this.isOptionsPickerInitiated = false;
               this.showMidSegwayMessages = true;
               this.midSegwayMessages = 'You can have a look at the cards assigned.';
-              this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
+              window.scrollTo(0, (document.body.scrollHeight - 1250));
+              // this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
             }),
             delay(500),
             tap(() => this.increaseZIndexCards = true),
@@ -805,21 +817,25 @@ export class PlaygroundModel {
             delay(500),
             tap(() => this.increaseZIndexPicker = true),
             tap(() => {
+              this._gameStage.next(PlaygroundGameStage.PICK);
+
               if (this.isDeckShufflerPlayer) {
                 this.showMidSegwayMessages = false;
+                this.showPlayerSegwayMessages = true;
                 this.enableWaitingZone = true;
-                this.showWaitingHeader = true;
+                this.showWaitingHeader = false;
 
                 this.setPlaygroundTimer(200);
-                this._gameStage.next(PlaygroundGameStage.PICK);
+                this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.PICK, message: 200, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegwayMetadata))
+
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
               } else {
                 this.showMidSegwayMessages = true;
+                this.showPlayerSegwayMessages = false;
                 this.showBackdrop = false;
                 this.enableWaitingZone = true;
                 this.showWaitingHeader = true;
 
-                this.setPlaygroundTimer(200);
                 this._gameStage.next(PlaygroundGameStage.CHOOSE);
 
                 this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
@@ -855,6 +871,19 @@ export class PlaygroundModel {
         }
       })
     );
+  }
+
+  private doOptionsPicking() {
+    return this.switch$.pipe(
+      filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.PICK)),
+      switchMap((metaData?: GameMidSegwayMetadata) => {
+        const metaDataMessage = metaData?.message as GameMidSegwayMetadata;
+        if (metaDataMessage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+          this.setPlaygroundTimer(metaDataMessage.message);
+        }
+        console.log('CHOOSE GameStage: ', metaData?.message);
+        return of();
+      }));
   }
 
   private doCardsChoice() {

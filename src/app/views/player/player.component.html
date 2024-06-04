@@ -5,7 +5,7 @@
         {{ playgroundModel.playerName }}
       </div> -->
 
-      @if (playgroundModel.showMidSegwayMessages) {
+      @if (playgroundModel.showPlayerSegwayMessages) {
         <div class="mid-segway-messages" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
           {{ playgroundModel.midSegwayMessages }}
         </div>

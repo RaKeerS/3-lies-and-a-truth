@@ -377,7 +377,8 @@ export class WebRtcModel {
   }
 
   private handleMessages(message: string): void {
-    const parsedData: { gameStage: PlaygroundGameStage, message: string } = JSON.parse(message);
+    // const parsedData: { gameStage: PlaygroundGameStage, message: string } = JSON.parse(message);
+    const parsedData: GameMidSegwayMetadata = JSON.parse(message);
     if (parsedData?.gameStage !== undefined && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
         case PlaygroundGameStage.RULES: {
@@ -414,7 +415,17 @@ export class WebRtcModel {
         }
 
         case PlaygroundGameStage.PICK: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          switch (parsedData.gameStagePhase) {
+            case PlaygroundGameStagePhase.INITIAL: {
+              this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+              break;
+            }
+
+            case PlaygroundGameStagePhase.INTERMEDIATE: {
+              this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+              break;
+            }
+          }
           break;
         }
 
