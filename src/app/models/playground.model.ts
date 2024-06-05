@@ -90,6 +90,8 @@ export class PlaygroundModel {
     // this.initiateRounds();
 
     this._gameTossWinnerDetails = this._playgroundService.createPlayground ? 'Starting Toss!' : 'Waiting for your partner to start the toss';
+
+    this._gameStage.next(PlaygroundGameStage.OTHER);
   }
 
   get dialogRef(): DynamicDialogRef | undefined {
@@ -402,6 +404,15 @@ export class PlaygroundModel {
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
   }
 
+  private timer() {
+    // this.gameStages.set(PlaygroundGameStage.TOSS, true);
+
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.OTHER),
+      switchMap(() => this.doCommencePlaygroundTimer())
+    )
+  }
+
 
   private placeBets(): Observable<number | boolean> {
     // This method should return the graphic(Place Bets Modal or Image/Gif) to be shown on screen and not the bet amounts of players.
@@ -498,6 +509,7 @@ export class PlaygroundModel {
 
   public commenceRound() {
     return merge(
+      this.timer(),
       this.rules(),
       this.toss(),
       this.placeBets(),
@@ -536,6 +548,17 @@ export class PlaygroundModel {
 
     console.log('DialogRef: ', this._dialogRef);
     console.log('DialogRef getInstance: ', this._dialogService.getInstance(this._dialogRef));
+  }
+
+  private doCommencePlaygroundTimer() {
+    return this.switch$.pipe(
+      // takeLast(1),
+      filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.OTHER)),
+      tap((metadata?: GameMidSegwayMetadata) => {
+        if (metadata?.gameStagePhase === PlaygroundGameStagePhase.TIMER) {
+          this.setPlaygroundTimer(metadata.message);
+        }
+      }));
   }
 
   private doGameRulesRevelation() {
@@ -807,7 +830,7 @@ export class PlaygroundModel {
               this.isOptionsPickerInitiated = false;
               this.showMidSegwayMessages = true;
               this.midSegwayMessages = 'You can have a look at the cards assigned.';
-              window.scrollTo(0, (document.body.scrollHeight - 1250));
+              window.scrollTo(0, (document.body.scrollHeight - 1480));
               // this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
             }),
             delay(500),
@@ -826,7 +849,7 @@ export class PlaygroundModel {
                 this.showWaitingHeader = false;
 
                 this.setPlaygroundTimer(200);
-                this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.PICK, message: 200, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegwayMetadata))
+                this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.playgroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegwayMetadata))
 
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
               } else {
@@ -877,10 +900,10 @@ export class PlaygroundModel {
     return this.switch$.pipe(
       filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.PICK)),
       switchMap((metaData?: GameMidSegwayMetadata) => {
-        const metaDataMessage = metaData?.message as GameMidSegwayMetadata;
-        if (metaDataMessage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
-          this.setPlaygroundTimer(metaDataMessage.message);
-        }
+        // const metaDataMessage = metaData?.message as GameMidSegwayMetadata;
+        // if (metaDataMessage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+        //   this.setPlaygroundTimer(metaDataMessage.message);
+        // }
         console.log('CHOOSE GameStage: ', metaData?.message);
         return of();
       }));
@@ -905,6 +928,7 @@ export class PlaygroundModel {
   }
 
   public beginDeckShuffling(): void {
+    this.playgroundTimer = 0;
     this.isBettingCompleted = true;
     this.isShuffleDeckInitiated = true;
     this.isShufflePending = false;

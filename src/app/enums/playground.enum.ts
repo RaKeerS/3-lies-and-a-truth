@@ -17,10 +17,12 @@ export enum PlaygroundGameStage {
   DISTRIBUTE,
   PICK,
   CHOOSE,
-  EVALUATE
+  EVALUATE,
+  OTHER
 }
 
 export enum PlaygroundGameStagePhase {
+  TIMER,
   INITIAL,
   INTERMEDIATE,
   COMPLETED

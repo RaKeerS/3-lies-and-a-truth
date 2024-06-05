@@ -381,13 +381,18 @@ export class WebRtcModel {
     const parsedData: GameMidSegwayMetadata = JSON.parse(message);
     if (parsedData?.gameStage !== undefined && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
+        case PlaygroundGameStage.OTHER: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          break;
+        }
+
         case PlaygroundGameStage.RULES: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
         case PlaygroundGameStage.TOSS: {
           // const tossResult = Boolean(+parsedData.message);
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: parsedData.message, tossMessage: +parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, tossMessage: +parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
           // NOTE - Commented for now, but this code works!
           // this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
           this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' } as GameMidSegwayMetadata);
@@ -400,12 +405,12 @@ export class WebRtcModel {
         }
 
         case PlaygroundGameStage.BET: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.BET, message: parsedData.message, betAmount: +parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.BET, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, betAmount: +parsedData.message, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 
         case PlaygroundGameStage.SHUFFLE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, beginShuffle: true, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 
@@ -422,7 +427,7 @@ export class WebRtcModel {
             }
 
             case PlaygroundGameStagePhase.INTERMEDIATE: {
-              this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+              // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
               break;
             }
           }
