@@ -43,6 +43,7 @@ export class PlaygroundModel {
   private _playerOneBetAmount: number = 10;
   private _playerTwoBetAmount: number = 10;
   private _playgroundTimer: number = 0o0;
+  private _globalPlaygroundTimer: number = 0o0;
 
   private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
 
@@ -161,6 +162,13 @@ export class PlaygroundModel {
   }
   set playgroundTimer(value: number) {
     this._playgroundTimer = value;
+  }
+
+  get globalPlaygroundTimer(): string {
+    return String(this._globalPlaygroundTimer).padStart(4, '0');
+  }
+  set globalPlaygroundTimer(value: number) {
+    this._globalPlaygroundTimer = value;
   }
 
   get playgroundCreatorBetAmount(): number {
@@ -483,6 +491,20 @@ export class PlaygroundModel {
     )
   }
 
+  private setGlobalPlaygroundTimer(startTime: number) {
+    this.globalPlaygroundTimer = startTime;
+
+    return interval(1000).pipe(
+      takeWhile(() => +this.globalPlaygroundTimer !== 0),
+      tap(() => {
+        this.globalPlaygroundTimer = +this.globalPlaygroundTimer - 1;
+        if (+this.globalPlaygroundTimer % 100 === 99) {
+          this.globalPlaygroundTimer = +this.globalPlaygroundTimer - 40;
+        }
+      })
+    );
+  }
+
   private setPlaygroundTimer(startTime: number) {
     this.playgroundTimer = startTime;
 
@@ -556,7 +578,7 @@ export class PlaygroundModel {
       filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.OTHER)),
       tap((metadata?: GameMidSegwayMetadata) => {
         if (metadata?.gameStagePhase === PlaygroundGameStagePhase.TIMER) {
-          this.setPlaygroundTimer(metadata.message);
+          this.setGlobalPlaygroundTimer(metadata.message).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
         }
       }));
   }
@@ -848,8 +870,8 @@ export class PlaygroundModel {
                 this.enableWaitingZone = true;
                 this.showWaitingHeader = false;
 
-                this.setPlaygroundTimer(200);
-                this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.playgroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegwayMetadata))
+                this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
+                this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegwayMetadata))
 
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
               } else {
@@ -1056,9 +1078,15 @@ export class PlaygroundModel {
 
     this.playerFalsyPickList = playerPicklist;
     this.playerTruthyPickList = this.playerCardsList;
+
+    this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
+    this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
+
     console.log('PlayerCardsList: ', this.playerCardsList);
     console.log('PlayerFalsyPickList: ', this.playerFalsyPickList);
+    console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
     console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
+    console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
   }
 
   public submitOptions(): void {

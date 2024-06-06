@@ -140,7 +140,7 @@
           <div class="flex flex-column align-items-center">
             <p-card class="flex flex-column">
               <div class="font-bold text-2xl mb-4 flex justify-content-center"> Timer </div>
-              <p-inputOtp [(ngModel)]="playgroundModel.playgroundTimer" [length]="4" style="gap: 0; justify-content: center; width: 20rem;">
+              <p-inputOtp [(ngModel)]="playgroundModel.globalPlaygroundTimer" [length]="4" style="gap: 0; justify-content: center; width: 20rem;">
                 <ng-template pTemplate="input" let-token let-events="events" let-index="index">
                   <input pInputText type="text" [maxLength]="1" [disabled]="true" (input)="events.input($event)" (keydown)="events.keydown($event)" [attr.value]="token" class="custom-timer" />
                   <div *ngIf="index === 2" class="px-3">
