@@ -72,6 +72,7 @@ export class PlaygroundModel {
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _opponentPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _playerFalsyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _playerFalsySelectedList: any[] = [];
   private _playerTruthyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -299,6 +300,13 @@ export class PlaygroundModel {
   }
   set p2CardsList(value: Map<CardDeckEnum, string>) {
     this._p2CardsList = value;
+  }
+
+  get opponentPickList(): Map<CardDeckEnum, string> {
+    return this._opponentPickList;
+  }
+  set opponentPickList(value: Map<CardDeckEnum, string>) {
+    this._opponentPickList = value;
   }
 
   get playerFalsyPickList(): Map<CardDeckEnum, string> {
@@ -852,7 +860,7 @@ export class PlaygroundModel {
               this.isOptionsPickerInitiated = false;
               this.showMidSegwayMessages = true;
               this.midSegwayMessages = 'You can have a look at the cards assigned.';
-              window.scrollTo(0, (document.body.scrollHeight - 1480));
+              window.scrollTo(0, (document.body.scrollHeight - 1380));
               // this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
             }),
             delay(500),
@@ -1089,9 +1097,48 @@ export class PlaygroundModel {
     console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
   }
 
+  private buildUp3LiesAndATruth(nerfMe: boolean) {
+    // this.opponentPickList =  this.playerFalsyPickList;
+    // const randomNumber = Math.floor(Math.random() * 4) + 1;
+    // const key = Array.from(this.playerFalsyPickList.keys())[randomNumber]
+
+    let randomNumber = 0, index = 0;
+
+    randomNumber = nerfMe ? (Math.floor(Math.random() * 4) + 1) : 3;
+
+    while(true) {
+      if (index === randomNumber) {
+        this.opponentPickList.set(this.playerTruthySelectedList!, this.playerTruthyPickList.get(this.playerTruthySelectedList!)!);
+      }
+
+      this.opponentPickList.set(this.playerFalsySelectedList[index], this.playerFalsyPickList.get(this.playerFalsySelectedList[index])!);
+
+      if (this.opponentPickList.size === 4) {
+        break;
+      }
+
+      index++;
+    }
+
+
+
+    for (let index = 0; index < this.playerFalsySelectedList.length; index++) {
+
+
+    }
+
+    // this.playerFalsySelectedList.forEach(key => {
+    //   this.opponentPickList.set(key, this.playerFalsyPickList.get(key)!);
+    // });
+  }
+
   public submitOptions(): void {
     if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
       // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
+
+      this.buildUp3LiesAndATruth(true);
+
+      console.log('opponentPickList: ', this.opponentPickList);
       console.log('Success!!!!');
       // if (this.isDeckShufflerPlayer) {
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.PICK,
