@@ -14,6 +14,7 @@ import {
   Subscription,
   switchMap,
   take,
+  takeLast,
   takeUntil,
   takeWhile,
   tap,
@@ -586,7 +587,24 @@ export class PlaygroundModel {
       filter((metaData?: GameMidSegwayMetadata) => (metaData?.gameStage === PlaygroundGameStage.OTHER)),
       tap((metadata?: GameMidSegwayMetadata) => {
         if (metadata?.gameStagePhase === PlaygroundGameStagePhase.TIMER) {
-          this.setGlobalPlaygroundTimer(metadata.message).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
+          // this.setGlobalPlaygroundTimer(metadata.message).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
+
+          this.setGlobalPlaygroundTimer(metadata.message).pipe(
+            takeLast(1),
+            tap(() => {
+              // If nothing is selected by DeckShufflerWinner Player then choose from initial values as default
+              if (this.playerFalsySelectedList.length < 3) {
+                this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
+              }
+
+              if (!!this.playerTruthySelectedList) {
+                this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
+              }
+
+              console.log('doCommencePlaygroundTimer playerFalsySelectedList: ', this.playerFalsySelectedList);
+              console.log('doCommencePlaygroundTimer playerTruthySelectedList: ', this.playerTruthySelectedList);
+            })
+          ).subscribe();
         }
       }));
   }
@@ -878,7 +896,24 @@ export class PlaygroundModel {
                 this.enableWaitingZone = true;
                 this.showWaitingHeader = false;
 
-                this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
+                // this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
+                this.setGlobalPlaygroundTimer(200).pipe(
+                  takeLast(1),
+                  tap(() => {
+                    // If nothing is selected by DeckShufflerWinner Player then choose from initial values as default
+                    if (this.playerFalsySelectedList.length < 3) {
+                      this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
+                    }
+
+                    if (!!this.playerTruthySelectedList) {
+                      this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
+                    }
+
+                    console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
+                    console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
+                  })
+                ).subscribe();
+
                 this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegwayMetadata))
 
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
@@ -899,7 +934,7 @@ export class PlaygroundModel {
             tap(() => {
               this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
               interval(5000).pipe(
-                takeWhile(() => +this.playgroundTimer !== 0),
+                takeWhile(() => +this.globalPlaygroundTimer !== 0),
                 tap((count) => {
                   if (count % 2 === 0) {
                     if (this.isDeckShufflerPlayer) {
@@ -934,7 +969,7 @@ export class PlaygroundModel {
         // if (metaDataMessage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
         //   this.setPlaygroundTimer(metaDataMessage.message);
         // }
-        console.log('CHOOSE GameStage: ', metaData?.message);
+        console.log('PICK GameStage: ', metaData?.message);
         return of();
       }));
   }
@@ -1087,14 +1122,9 @@ export class PlaygroundModel {
     this.playerFalsyPickList = playerPicklist;
     this.playerTruthyPickList = this.playerCardsList;
 
-    this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
-    this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
-
     console.log('PlayerCardsList: ', this.playerCardsList);
     console.log('PlayerFalsyPickList: ', this.playerFalsyPickList);
-    console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
     console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
-    console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
   }
 
   private buildUp3LiesAndATruth(nerfMe: boolean) {
@@ -1104,7 +1134,7 @@ export class PlaygroundModel {
 
     let randomNumber = 0, index = 0;
 
-    randomNumber = nerfMe ? (Math.floor(Math.random() * 4) + 1) : 3;
+    randomNumber = nerfMe ? (Math.floor(Math.random() * 3) + 1) : 3;
 
     while(true) {
       if (index === randomNumber) {
