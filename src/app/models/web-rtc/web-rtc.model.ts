@@ -427,10 +427,15 @@ export class WebRtcModel {
             }
 
             case PlaygroundGameStagePhase.INTERMEDIATE: {
-              // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+              // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'subject' } as GameMidSegwayMetadata);
               break;
             }
           }
+          break;
+        }
+
+        case PlaygroundGameStage.CHOOSE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 

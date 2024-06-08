@@ -905,7 +905,7 @@ export class PlaygroundModel {
                       this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
                     }
 
-                    if (!!this.playerTruthySelectedList) {
+                    if (!this.playerTruthySelectedList) {
                       this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
                     }
 
@@ -1165,14 +1165,19 @@ export class PlaygroundModel {
   public submitOptions(): void {
     if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
       // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
-
+      this.globalPlaygroundTimer = 0;
       this.buildUp3LiesAndATruth(true);
+
+      this._gameStage.next(PlaygroundGameStage.CHOOSE);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
 
       console.log('opponentPickList: ', this.opponentPickList);
       console.log('Success!!!!');
       // if (this.isDeckShufflerPlayer) {
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.PICK,
-        message: { playerFalsyPickList: Array.from(this.playerFalsyPickList.entries()), playerFalsySelectedList: this.playerFalsySelectedList, playerTruthyPickList: Array.from(this.playerTruthyPickList.entries()), playerTruthySelectedList: this.playerTruthySelectedList },
+      // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.CHOOSE,
+        message: { playerFalsyPickList: Array.from(this.playerFalsyPickList.entries()), playerFalsySelectedList: this.playerFalsySelectedList, playerTruthyPickList: Array.from(this.playerTruthyPickList.entries()), playerTruthySelectedList: this.playerTruthySelectedList, opponentPickList: this.opponentPickList },
         gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'peer' } as GameMidSegwayMetadata))
       // }
     } else {
