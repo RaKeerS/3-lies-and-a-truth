@@ -38,7 +38,7 @@ export class PlaygroundService {
 
   private _webRtc: WebRtcModel;
 
-  private _switch: ReplaySubject<GameMidSegwayMetadata | undefined> = new ReplaySubject<GameMidSegwayMetadata | undefined>(8);
+  private _switch: ReplaySubject<GameMidSegwayMetadata | undefined> = new ReplaySubject<GameMidSegwayMetadata | undefined>(10);
   private _tossCompleted: ReplaySubject<GameMidSegwayMetadata> = new ReplaySubject<GameMidSegwayMetadata>(1);
 
   private _redirectCounter: number = 5;

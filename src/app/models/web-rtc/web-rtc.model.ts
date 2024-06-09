@@ -420,22 +420,23 @@ export class WebRtcModel {
         }
 
         case PlaygroundGameStage.PICK: {
-          switch (parsedData.gameStagePhase) {
-            case PlaygroundGameStagePhase.INITIAL: {
-              this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
-              break;
-            }
+          // switch (parsedData.gameStagePhase) {
+          //   case PlaygroundGameStagePhase.INITIAL: {
+          //     this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          //     break;
+          //   }
 
-            case PlaygroundGameStagePhase.INTERMEDIATE: {
-              // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'subject' } as GameMidSegwayMetadata);
-              break;
-            }
-          }
+          //   case PlaygroundGameStagePhase.INTERMEDIATE: {
+          //     // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          //     break;
+          //   }
+          // }
           break;
         }
 
+        // NOTE: The Player in Pick Mode would send Choose to partner with Initial, then on Submitting choices via. Submit button will again send Choose to partner but with Intermediate gamephase.
         case PlaygroundGameStage.CHOOSE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'subject' } as GameMidSegwayMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: parsedData.gameStagePhase, messageFrom: 'subject' } as GameMidSegwayMetadata);
           break;
         }
 
