@@ -941,28 +941,29 @@ export class PlaygroundModel {
 
             console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
             console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
-          })
-        )
+          }));
 
         // return of();
       }),
       delay(1800),
       switchMap(() => {
-        this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
-        return interval(5000).pipe(
-          takeWhile(() => +this.globalPlaygroundTimer !== 0),
-          tap((count) => {
-            if (count % 2 === 0) {
-              if (this.isDeckShufflerPlayer) {
-                this.midSegwayMessages = 'Pick suitable options from the ones presented!';
-              } else {
-                this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
-                this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
-              }
-            } else {
-              this.midSegwayMessages = 'You will be redirected to next game phase when the timer runs out.';
-            }
-          }))
+        // this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
+        return this.showMessagesOnRegularIntervals(PlaygroundGameStage.PICK);
+
+        // interval(5000).pipe(
+        //   takeWhile(() => +this.globalPlaygroundTimer !== 0),
+        //   tap((count) => {
+        //     if (count % 2 === 0) {
+        //       // if (this.isDeckShufflerPlayer) {
+        //         this.midSegwayMessages = 'Pick suitable options from the ones presented!';
+        //       // } else {
+        //       //   this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
+        //       //   this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+        //       // }
+        //     } else {
+        //       this.midSegwayMessages = 'You will be redirected to next game phase when the timer runs out.';
+        //     }
+        //   }))
       }),
       delay(1800),
       tap(() => this.showWaitingHeader = false));
@@ -986,20 +987,22 @@ export class PlaygroundModel {
       delay(1800),
       switchMap(() => {
         this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
-        return interval(5000).pipe(
-          takeWhile(() => +this.globalPlaygroundTimer !== 0),
-          tap((count) => {
-            if (count % 2 === 0) {
-              if (this.isDeckShufflerPlayer) {
-                this.midSegwayMessages = 'Pick suitable options from the ones presented!';
-              } else {
-                this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
-                this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
-              }
-            } else {
-              this.midSegwayMessages = 'You will be redirected to next game phase when the timer runs out.';
-            }
-          }))
+        return this.showMessagesOnRegularIntervals(PlaygroundGameStage.CHOOSE);
+
+        // interval(5000).pipe(
+        //   takeWhile(() => +this.globalPlaygroundTimer !== 0),
+        //   tap((count) => {
+        //     if (count % 2 === 0) {
+        //       // if (this.isDeckShufflerPlayer) {
+        //       //   this.midSegwayMessages = 'Pick suitable options from the ones presented!';
+        //       // } else {
+        //         this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
+        //         this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+        //       // }
+        //     } else {
+        //       this.midSegwayMessages = 'You will be redirected to next game phase when the timer runs out.';
+        //     }
+        //   }))
       }),
       delay(1800),
       tap(() => this.showWaitingHeader = false));
@@ -1172,16 +1175,26 @@ export class PlaygroundModel {
       index++;
     }
 
-
-
-    for (let index = 0; index < this.playerFalsySelectedList.length; index++) {
-
-
-    }
-
     // this.playerFalsySelectedList.forEach(key => {
     //   this.opponentPickList.set(key, this.playerFalsyPickList.get(key)!);
     // });
+  }
+
+  private showMessagesOnRegularIntervals(gameStage: PlaygroundGameStage): Observable<number> {
+    return interval(5000).pipe(
+      takeWhile(() => +this.globalPlaygroundTimer !== 0),
+      tap((count) => {
+        if (count % 2 === 0) {
+          if (gameStage === PlaygroundGameStage.PICK) {
+            this.midSegwayMessages = 'Pick suitable options from the ones presented!';
+          } else if (gameStage === PlaygroundGameStage.CHOOSE)  {
+            this.midSegwayMessages = 'Waiting for your partner to finish picking options...';
+            this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+          }
+        } else {
+          this.midSegwayMessages = 'You will be redirected to next game phase when the timer runs out.';
+        }
+      }));
   }
 
   public submitOptions(): void {
@@ -1190,14 +1203,28 @@ export class PlaygroundModel {
       this.globalPlaygroundTimer = 0;
       this.buildUp3LiesAndATruth(true);
 
-      this._gameStage.next(PlaygroundGameStage.CHOOSE);
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+      // TODO: Here instead of the picker player stating that the next gamestage would be 'CHOOSE', we wait instead.
+      // i.e. we call the - 'this.showWaitingHeader', set it to true and set waiting message onto - 'this.waitingZoneHeader', and 'this.midSegwayMessages', and reset timer, and sendPlaygroundMessage again to reset timer for partner
+      // Next, when the partner chooses the options and hits submit, we call evaluate game phase (show message via. 'this.waitingZoneHeader') and immediately notify results via. toaster and 'this.waitingZoneHeader'.
+      // After this, we call 'Pick' gamestage onto the self and sendPlayground message to partner for 'Choose' gamestage
+
+      // this._gameStage.next(PlaygroundGameStage.CHOOSE);
+      // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
+
+      this.globalPlaygroundTimer = 200;
+
+      // TODO: Kal idhar logic bana
+      this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
+        takeLast(1)).subscribe()
+
+      this.showMessagesOnRegularIntervals(PlaygroundGameStage.PICK).subscribe();
 
       console.log('opponentPickList: ', this.opponentPickList);
       console.log('Success!!!!');
       // if (this.isDeckShufflerPlayer) {
       // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
 
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegwayMetadata))
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.CHOOSE,
         message: { playerFalsyPickList: Array.from(this.playerFalsyPickList.entries()), playerFalsySelectedList: this.playerFalsySelectedList, playerTruthyPickList: Array.from(this.playerTruthyPickList.entries()), playerTruthySelectedList: this.playerTruthySelectedList, opponentPickList: this.opponentPickList },
         gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegwayMetadata))
