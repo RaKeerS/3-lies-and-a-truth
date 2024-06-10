@@ -5,9 +5,9 @@
         {{ playgroundModel.playerName }}
       </div> -->
 
-      @if (playgroundModel.showPlayerSegwayMessages) {
+      @if (playgroundModel.showPlayerSegueMessages) {
         <div class="mid-segway-messages" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
-          {{ playgroundModel.midSegwayMessages }}
+          {{ playgroundModel.midSegueMessages }}
         </div>
       }
       @else {

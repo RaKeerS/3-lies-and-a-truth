@@ -23,6 +23,7 @@ export enum PlaygroundGameStage {
 
 export enum PlaygroundGameStagePhase {
   TIMER,
+  MIDSEGUEMESSAGES,
   INITIAL,
   INTERMEDIATE,
   COMPLETED

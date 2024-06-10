@@ -5,7 +5,7 @@ import { concat, interval, Observable, of, ReplaySubject, Subscription, take, ta
 
 import { PlaygroundGameStage, PlaygroundGameStagePhase } from '../enums/playground.enum';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
-import { GameMidSegwayMetadata } from '../types/app-types';
+import { GameMidSegueMetadata } from '../types/app-types';
 
 @Injectable({
   providedIn: 'root'
@@ -38,8 +38,8 @@ export class PlaygroundService {
 
   private _webRtc: WebRtcModel;
 
-  private _switch: ReplaySubject<GameMidSegwayMetadata | undefined> = new ReplaySubject<GameMidSegwayMetadata | undefined>(10);
-  private _tossCompleted: ReplaySubject<GameMidSegwayMetadata> = new ReplaySubject<GameMidSegwayMetadata>(1);
+  private _switch: ReplaySubject<GameMidSegueMetadata | undefined> = new ReplaySubject<GameMidSegueMetadata | undefined>(10);
+  private _tossCompleted: ReplaySubject<GameMidSegueMetadata> = new ReplaySubject<GameMidSegueMetadata>(1);
 
   private _redirectCounter: number = 5;
 
@@ -106,19 +106,19 @@ export class PlaygroundService {
     return this._redirectCounter;
   }
 
-  get switch(): ReplaySubject<GameMidSegwayMetadata | undefined> {
+  get switch(): ReplaySubject<GameMidSegueMetadata | undefined> {
     return this._switch;
   }
 
-  get switch$(): Observable<GameMidSegwayMetadata | undefined> {
+  get switch$(): Observable<GameMidSegueMetadata | undefined> {
     return this._switch.asObservable();
   }
 
-  get tossCompleted(): ReplaySubject<GameMidSegwayMetadata>  {
+  get tossCompleted(): ReplaySubject<GameMidSegueMetadata>  {
     return this._tossCompleted;
   }
 
-  get tossCompleted$(): Observable<GameMidSegwayMetadata>  {
+  get tossCompleted$(): Observable<GameMidSegueMetadata>  {
     return this._tossCompleted.asObservable();
   }
 
@@ -191,7 +191,7 @@ export class PlaygroundService {
           take(5),
           tap(() => this._redirectCounter--)),
         of(this.redirectCounter === 0).pipe(
-          tap(() => (subscription.unsubscribe(), this.switch.next({ gameStage: PlaygroundGameStage.CONNECTION, message: PlaygroundGameStage.CONNECTION, gameStagePhase: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' } as GameMidSegwayMetadata), this.navigateToPlayground())))
+          tap(() => (subscription.unsubscribe(), this.switch.next({ gameStage: PlaygroundGameStage.CONNECTION, message: PlaygroundGameStage.CONNECTION, gameStagePhase: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' } as GameMidSegueMetadata), this.navigateToPlayground())))
       ).subscribe()
     }
   }

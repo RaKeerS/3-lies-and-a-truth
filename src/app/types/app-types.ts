@@ -26,7 +26,7 @@ export type GameMetadata = {
   playgroundMetadata: PlayGroundMetadata;
 }
 
-export type GameMidSegwayMetadata = {
+export type GameMidSegueMetadata = {
   gameStage: PlaygroundGameStage;
   messageFrom: 'peer' | 'subject';
   message: any;

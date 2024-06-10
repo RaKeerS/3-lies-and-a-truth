@@ -1,6 +1,6 @@
 <div class="flex min-h-200p mb-5">
   <!-- @if (1 === 1+1) { -->
-  @if (!playgroundModel.midSegwayMessages) {
+  @if (!playgroundModel.midSegueMessages) {
     <p-card header="Mid-Zone" class="header-Mid-Zone inner">
       <div class="flex flex-column">
         <div class="flex mid-segment col-12 flex-wrap h-30rem">
@@ -19,9 +19,9 @@
     </p-card>
   } @else {
     <p-card header="Mid-Zone" class="segway">
-      @if (playgroundModel.showMidSegwayMessages) {
+      @if (playgroundModel.showMidSegueMessages) {
         <div class="mid-segway-messages" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
-          {{ playgroundModel.midSegwayMessages }}
+          {{ playgroundModel.midSegueMessages }}
         </div>
       }
       <!-- <p class="m-0">
