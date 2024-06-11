@@ -60,7 +60,7 @@
       <div class="flex card-body justify-content-between w-full">
         <div class="flex inline-size-25rem" [style.z-index]="playgroundModel.increaseZIndexPicker ? 1001 : 'auto'">
           @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
-            <p-card [header]="playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 1 Truth' : 'Pick 3 Lies'" class="header-Picker w-full">
+            <p-card [header]="!playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 1 Truth' : 'Pick 3 Lies'" class="header-Picker w-full">
               <div class="m-0 flex w-full">
                 <div class="flex w-full">
                   <label class="flex align-items-center" for="flipCards">Flip Cards: </label>
@@ -86,7 +86,7 @@
               </p-divider>
 
               <div class="pick-list flex flex-column gap-3">
-                @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+                @if (playgroundModel.toggleBetweenLiesOrTruth) {
                   @for (item of playgroundModel.playerFalsyPickList | keyvalue; track $index) {
                     <p-checkbox
                       [(ngModel)]="playgroundModel.playerFalsySelectedList"
@@ -114,11 +114,11 @@
               </div>
 
               <div class="flex w-full justify-content-end mt-6">
-                @if (playgroundModel.toggleBetweenLiesOrTruth) {
-                  <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playerTruthySelectedList" (click)="playgroundModel.submitOptions()"></p-button>
+                @if (!playgroundModel.toggleBetweenLiesOrTruth) {
+                  <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playerTruthySelectedList || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions()"></p-button>
                 }
                 @else {
-                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.playerFalsySelectedList.length < 3" (click)="playgroundModel.submitOptions()"></p-button>
+                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.playerFalsySelectedList.length < 3 || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions()"></p-button>
                 }
               </div>
             </p-card>

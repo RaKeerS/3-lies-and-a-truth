@@ -68,6 +68,7 @@ export class PlaygroundModel {
   private _showPlayerSegueMessages: boolean = false;
   private _enableWaitingZone: boolean = false;
   private _showWaitingHeader: boolean = false;
+  private _enableSubmitOptionsButton: boolean = true;
 
   private _deckCardsList: Map<CardDeckEnum, string> = CardDeckDictionary;
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -380,6 +381,13 @@ export class PlaygroundModel {
     this._showWaitingHeader = value;
   }
 
+  get enableSubmitOptionsButton(): boolean {
+    return this._enableSubmitOptionsButton;
+  }
+  set enableSubmitOptionsButton(value: boolean) {
+    this._enableSubmitOptionsButton = value;
+  }
+
   // NOTE: This observable is present in the Service since, it is used to contain/send Game's mid segment metadata, which is similar to the async updates of values/data
   get switch$(): Observable<GameMidSegueMetadata | undefined> {
     return this._playgroundService.switch$;
@@ -593,7 +601,13 @@ export class PlaygroundModel {
             break;
           }
           case PlaygroundGameStagePhase.MIDSEGUEMESSAGES: {
-            this.showMessagesOnRegularIntervals(metadata.gameStage).subscribe();
+            this.showWaitingHeader = true;
+            this.showMessagesOnRegularIntervals(metadata).subscribe((data) => {
+              console.log('data: ', data)
+              // this.showWaitingHeader = false;
+              // this.midSegueMessages = '';
+              // this.waitingZoneHeader = '';
+            });
             break;
           }
           default: {
@@ -944,6 +958,8 @@ export class PlaygroundModel {
         return this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
           takeLast(1),
           tap(() => {
+            this.enableSubmitOptionsButton = false;
+
             // If nothing is selected by DeckShufflerWinner Player then choose from initial values as default
             if (this.playerFalsySelectedList.length < 3) {
               this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
@@ -955,47 +971,66 @@ export class PlaygroundModel {
 
             console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
             console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
+
+            this.midSegueMessages = 'Waiting for your partner to finish choosing from your submitted options...';
+            this.waitingZoneHeader = 'Waiting for your partner to finish choosing from your submitted options...';
+
+            this.notifyAndWaitForPartnerToChoose();
           }));
 
         // return of();
-      }),
-      delay(1800),
-      tap(() => {
-        // this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
+      }));
+      // delay(1800),
+      // tap(() => {
+      //   // this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
 
-        // NOTE: Below line works
-        // return this.showMessagesOnRegularIntervals(PlaygroundGameStage.PICK);
+      //   // NOTE: Below line works
+      //   // return this.showMessagesOnRegularIntervals(PlaygroundGameStage.PICK);
 
-        this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.OTHER, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+      //   this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.OTHER, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
 
-      }),
-      delay(1800),
-      tap(() => this.showWaitingHeader = false));
+      // }),
+      // delay(1800),
+      // tap(() => this.showWaitingHeader = false));
   }
 
   private doCardsChoice() {
     return this.switch$.pipe(
       filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.CHOOSE)),
       tap((metaData?: GameMidSegueMetadata) => {
-        console.log('CHOOSE GameStage: ', metaData?.message);
+        switch (metaData?.gameStagePhase) {
+          case PlaygroundGameStagePhase.INITIAL: {
+            console.log('CHOOSE GameStage: ', metaData?.message);
 
-        this.showMidSegueMessages = true;
-        this.showPlayerSegueMessages = false;
-        this.showBackdrop = false;
-        this.enableWaitingZone = true;
-        this.showWaitingHeader = true;
+            this.showMidSegueMessages = true;
+            this.showPlayerSegueMessages = false;
+            this.showBackdrop = false;
+            this.enableWaitingZone = true;
+            this.showWaitingHeader = true;
 
-        this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
-        this.midSegueMessages = 'Waiting for your partner to finish picking options...';
+            this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+            this.midSegueMessages = 'Waiting for your partner to finish picking options...';
+          }
+            break;
+
+          case PlaygroundGameStagePhase.INTERMEDIATE: {
+
+          }
+          break;
+        }
+
       }),
       delay(1800),
-      tap(() => {
-        this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
+      tap((metaData?: GameMidSegueMetadata) => {
+        if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+          this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
 
-        // NOTE: Below line works
-        // return this.showMessagesOnRegularIntervals(PlaygroundGameStage.CHOOSE);
+          // NOTE: Below line works
+          // return this.showMessagesOnRegularIntervals(PlaygroundGameStage.CHOOSE);
 
-        this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.OTHER, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+        }
+
 
         // interval(5000).pipe(
         //   takeWhile(() => +this.globalPlaygroundTimer !== 0),
@@ -1013,7 +1048,11 @@ export class PlaygroundModel {
         //   }))
       }),
       delay(1800),
-      tap(() => this.showWaitingHeader = false));
+      tap((metaData?: GameMidSegueMetadata) => {
+        if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+          this.showWaitingHeader = false;
+        }
+      }));
   }
 
   // ===========================================================================
@@ -1188,29 +1227,7 @@ export class PlaygroundModel {
     // });
   }
 
-  private showMessagesOnRegularIntervals(gameStage: PlaygroundGameStage): Observable<number> {
-    return interval(5000).pipe(
-      takeWhile(() => +this.globalPlaygroundTimer !== 0),
-      tap((count) => {
-        if (count % 2 === 0) {
-          if (gameStage === PlaygroundGameStage.PICK) {
-            this.midSegueMessages = 'Pick suitable options from the ones presented!';
-          } else if (gameStage === PlaygroundGameStage.CHOOSE)  {
-            this.midSegueMessages = 'Waiting for your partner to finish picking options...';
-            this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
-          }
-        } else {
-          this.midSegueMessages = 'You will be redirected to next game phase when the timer runs out.';
-        }
-      }));
-  }
-
-  public submitOptions(): void {
-    if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
-      // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
-      this.globalPlaygroundTimer = 0;
-      this.buildUp3LiesAndATruth(true);
-
+  private notifyAndWaitForPartnerToChoose() {
       // TODO: Here instead of the picker player stating that the next gamestage would be 'CHOOSE', we wait instead.
       // i.e. we call the - 'this.showWaitingHeader', set it to true and set waiting message onto - 'this.waitingZoneHeader', and 'this.midSegwayMessages', and reset timer, and sendPlaygroundMessage again to reset timer for partner
       // Next, when the partner chooses the options and hits submit, we call evaluate game phase (show message via. 'this.waitingZoneHeader') and immediately notify results via. toaster and 'this.waitingZoneHeader'.
@@ -1220,13 +1237,15 @@ export class PlaygroundModel {
       // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
 
       this.globalPlaygroundTimer = 200;
+      this.midSegueMessages = 'Waiting for your partner to finish choosing from your submitted options...';
+      this.waitingZoneHeader = 'Waiting for your partner to finish choosing from your submitted options...';
 
       // TODO: Kal idhar logic bana - Haan, kardia bhai!
       // this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
       //   takeLast(1)).subscribe()
 
       this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata);
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.OTHER, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
 
       // this.showMessagesOnRegularIntervals(PlaygroundGameStage.PICK).subscribe();
 
@@ -1240,6 +1259,38 @@ export class PlaygroundModel {
         message: { playerFalsyPickList: Array.from(this.playerFalsyPickList.entries()), playerFalsySelectedList: this.playerFalsySelectedList, playerTruthyPickList: Array.from(this.playerTruthyPickList.entries()), playerTruthySelectedList: this.playerTruthySelectedList, opponentPickList: this.opponentPickList },
         gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata))
       // }
+  }
+
+  private showMessagesOnRegularIntervals(gameStage: GameMidSegueMetadata): Observable<number> {
+    return interval(5000).pipe(
+      takeWhile(() => +this.globalPlaygroundTimer !== 0),
+      tap((count) => {
+        if (count % 2 === 0) {
+          if (gameStage.message === PlaygroundGameStage.PICK) {
+            this.midSegueMessages = 'Pick suitable options from the ones presented!';
+          } else if (gameStage.message === PlaygroundGameStage.CHOOSE)  {
+            if (gameStage.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+              this.midSegueMessages = 'Waiting for your partner to finish picking options...';
+              this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+            } else if (gameStage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+              this.midSegueMessages = 'Waiting for your partner to finish choosing from your submitted options...';
+              this.waitingZoneHeader = 'Waiting for your partner to finish choosing from your submitted options...';
+            }
+          }
+        } else {
+          this.midSegueMessages = 'You will be redirected to next game phase when the timer runs out.';
+          this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.';
+        }
+      }));
+  }
+
+  public submitOptions(): void {
+    if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
+      // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
+      this.enableSubmitOptionsButton = false;
+      this.globalPlaygroundTimer = 0;
+      this.buildUp3LiesAndATruth(true);
+      this.notifyAndWaitForPartnerToChoose();
     } else {
       this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
     }
