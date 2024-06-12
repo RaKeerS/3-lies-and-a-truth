@@ -29,11 +29,20 @@ export class PlayerComponent {
     return `I have ${convertedWord}`;
   }
 
-  public handleCheckboxChange(): void {
-    if(this.playgroundModel.playerFalsySelectedList.length === 4) {
-      this.playgroundModel.playerFalsySelectedList.reverse();
-      this.playgroundModel.playerFalsySelectedList.pop();
-      // this.playgroundModel.playerFalsySelectedList.reverse();
+  public handleCheckboxChange(gameStage: PlaygroundGameStage): void {
+    if (gameStage === PlaygroundGameStage.PICK) {
+      if(this.playgroundModel.playerFalsySelectedList.length === 4) {
+        this.playgroundModel.playerFalsySelectedList.reverse();
+        this.playgroundModel.playerFalsySelectedList.pop();
+        // this.playgroundModel.playerFalsySelectedList.reverse();
+      }
+    } else if (gameStage === PlaygroundGameStage.CHOOSE) {
+      if((this.playgroundModel.opponentFalsySelectedList as any[]).length === 4) {
+        (this.playgroundModel.opponentFalsySelectedList as any[]).reverse();
+        (this.playgroundModel.opponentFalsySelectedList as any[]).pop();
+        // this.playgroundModel.playerFalsySelectedList.reverse();
+      }
     }
+
   }
 }

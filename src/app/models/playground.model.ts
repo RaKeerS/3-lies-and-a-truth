@@ -75,6 +75,7 @@ export class PlaygroundModel {
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _opponentPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
+  private _opponentSelectedList?: any;
   private _playerFalsyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _playerFalsySelectedList: any[] = [];
   private _playerTruthyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -309,6 +310,20 @@ export class PlaygroundModel {
   }
   set opponentPickList(value: Map<CardDeckEnum, string>) {
     this._opponentPickList = value;
+  }
+
+  get opponentFalsySelectedList(): any[] {
+    return this._opponentSelectedList as any[];
+  }
+  set opponentFalsySelectedList(value: any[]) {
+    this._opponentSelectedList = value;
+  }
+
+  get opponentTruthySelectedList(): CardDeckEnum {
+    return this._opponentSelectedList as CardDeckEnum;
+  }
+  set opponentTruthySelectedList(value: CardDeckEnum) {
+    this._opponentSelectedList = value;
   }
 
   get playerFalsyPickList(): Map<CardDeckEnum, string> {
@@ -602,12 +617,15 @@ export class PlaygroundModel {
           }
           case PlaygroundGameStagePhase.MIDSEGUEMESSAGES: {
             this.showWaitingHeader = true;
-            this.showMessagesOnRegularIntervals(metadata).subscribe((data) => {
-              console.log('data: ', data)
-              // this.showWaitingHeader = false;
-              // this.midSegueMessages = '';
-              // this.waitingZoneHeader = '';
-            });
+            this.showMessagesOnRegularIntervals(metadata).pipe(
+              takeLast(1),
+              tap((data) => {
+                console.log('Heree: ', data);
+                this.showWaitingHeader = false;
+                this.midSegueMessages = '';
+                this.waitingZoneHeader = '';
+              })
+            ).subscribe();
             break;
           }
           default: {
@@ -969,6 +987,8 @@ export class PlaygroundModel {
               this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
             }
 
+            this.buildUp3LiesAndATruth(true);
+
             console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
             console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
 
@@ -1014,7 +1034,9 @@ export class PlaygroundModel {
             break;
 
           case PlaygroundGameStagePhase.INTERMEDIATE: {
-
+            if (metaData.message) {
+              this.opponentPickList = new Map(metaData.message.opponentPickList);
+            }
           }
           break;
         }
@@ -1199,12 +1221,13 @@ export class PlaygroundModel {
     console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
   }
 
-  private buildUp3LiesAndATruth(nerfMe: boolean) {
+  private buildUp3LiesAndATruth(nerfMe: boolean = false) {
     // this.opponentPickList =  this.playerFalsyPickList;
     // const randomNumber = Math.floor(Math.random() * 4) + 1;
     // const key = Array.from(this.playerFalsyPickList.keys())[randomNumber]
 
     let randomNumber = 0, index = 0;
+    this.opponentPickList.clear();
 
     randomNumber = nerfMe ? (Math.floor(Math.random() * 3) + 1) : 3;
 
@@ -1213,10 +1236,11 @@ export class PlaygroundModel {
         this.opponentPickList.set(this.playerTruthySelectedList!, this.playerTruthyPickList.get(this.playerTruthySelectedList!)!);
       }
 
-      this.opponentPickList.set(this.playerFalsySelectedList[index], this.playerFalsyPickList.get(this.playerFalsySelectedList[index])!);
-
       if (this.opponentPickList.size === 4) {
         break;
+      } else {
+          this.opponentPickList.set(this.playerFalsySelectedList[index], this.playerFalsyPickList.get(this.playerFalsySelectedList[index])!);
+
       }
 
       index++;
@@ -1256,7 +1280,7 @@ export class PlaygroundModel {
 
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.CHOOSE,
-        message: { playerFalsyPickList: Array.from(this.playerFalsyPickList.entries()), playerFalsySelectedList: this.playerFalsySelectedList, playerTruthyPickList: Array.from(this.playerTruthyPickList.entries()), playerTruthySelectedList: this.playerTruthySelectedList, opponentPickList: this.opponentPickList },
+        message: { opponentFalsyPickList: Array.from(this.playerFalsyPickList.entries()), opponentFalsySelectedList: this.playerFalsySelectedList, opponentTruthyPickList: Array.from(this.playerTruthyPickList.entries()), opponentTruthySelectedList: this.playerTruthySelectedList, opponentPickList: Array.from(this.opponentPickList.entries()) },
         gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata))
       // }
   }
@@ -1284,16 +1308,21 @@ export class PlaygroundModel {
       }));
   }
 
-  public submitOptions(): void {
-    if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
-      // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
-      this.enableSubmitOptionsButton = false;
-      this.globalPlaygroundTimer = 0;
-      this.buildUp3LiesAndATruth(true);
-      this.notifyAndWaitForPartnerToChoose();
-    } else {
-      this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
+  public submitOptions(gameStage: PlaygroundGameStage): void {
+    if (gameStage === PlaygroundGameStage.PICK) {
+      if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
+        // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
+        this.enableSubmitOptionsButton = false;
+        this.globalPlaygroundTimer = 0;
+        this.buildUp3LiesAndATruth(true);
+        this.notifyAndWaitForPartnerToChoose();
+      } else {
+        this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
+      }
+    } else if (gameStage === PlaygroundGameStage.CHOOSE) {
+      console.log('Shabbash Bete!! Bery Good!!!!');
     }
+
   }
 
   public unsubscribeAll(): void {
