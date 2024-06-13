@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { PlaygroundGameStage, PlaygroundGameStagePhase } from '../../enums/playground.enum';
+import { PlaygroundGameStageEnum, PlaygroundGameStagePhaseEnum } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
@@ -21,22 +21,22 @@ export class PlayerComponent {
 
   @Input() playgroundModel!: PlaygroundModel;
 
-  public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
-  public PlaygroundGameStagePhase: typeof PlaygroundGameStagePhase = PlaygroundGameStagePhase;
+  public PlaygroundGameStage: typeof PlaygroundGameStageEnum = PlaygroundGameStageEnum;
+  public PlaygroundGameStagePhase: typeof PlaygroundGameStagePhaseEnum = PlaygroundGameStagePhaseEnum;
 
   public convertString(word: string): string {
     const convertedWord = word.replaceAll('_', ' ').toLowerCase();
     return `I have ${convertedWord}`;
   }
 
-  public handleCheckboxChange(gameStage: PlaygroundGameStage): void {
-    if (gameStage === PlaygroundGameStage.PICK) {
+  public handleCheckboxChange(gameStage: PlaygroundGameStageEnum): void {
+    if (gameStage === PlaygroundGameStageEnum.PICK) {
       if(this.playgroundModel.playerFalsySelectedList.length === 4) {
         this.playgroundModel.playerFalsySelectedList.reverse();
         this.playgroundModel.playerFalsySelectedList.pop();
         // this.playgroundModel.playerFalsySelectedList.reverse();
       }
-    } else if (gameStage === PlaygroundGameStage.CHOOSE) {
+    } else if (gameStage === PlaygroundGameStageEnum.CHOOSE) {
       if((this.playgroundModel.opponentFalsySelectedList as any[]).length === 4) {
         (this.playgroundModel.opponentFalsySelectedList as any[]).reverse();
         (this.playgroundModel.opponentFalsySelectedList as any[]).pop();

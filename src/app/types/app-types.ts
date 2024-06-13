@@ -1,6 +1,10 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { PlaygroundGameStage, PlaygroundGameStagePhase, PlaygroundGameTossOutcome } from '../enums/playground.enum';
+import {
+  PlaygroundGameStageEnum,
+  PlaygroundGameStagePhaseEnum,
+  PlaygroundGameTossOutcomeEnum,
+} from '../enums/playground.enum';
 
 export const APP_CONTAINER_FLEX_CLASS = 'class.app-container-flex';
 
@@ -27,11 +31,11 @@ export type GameMetadata = {
 }
 
 export type GameMidSegueMetadata = {
-  gameStage: PlaygroundGameStage;
+  gameStage: PlaygroundGameStageEnum;
   messageFrom: 'peer' | 'subject';
   message: any;
   betAmount?: number,
-  tossMessage?: PlaygroundGameTossOutcome;
+  tossMessage?: PlaygroundGameTossOutcomeEnum;
   beginShuffle?: boolean;
-  gameStagePhase?: PlaygroundGameStagePhase;
+  gameStagePhase?: PlaygroundGameStagePhaseEnum;
 }

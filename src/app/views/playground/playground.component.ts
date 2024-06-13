@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
 
-import { PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundGameStageEnum } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { APP_CONTAINER_FLEX_CLASS } from '../../types/app-types';
@@ -26,7 +26,7 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
   @ViewChild('cardDeckShuffleList') cardList?: ElementRef;
 
-  public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
+  public PlaygroundGameStage: typeof PlaygroundGameStageEnum = PlaygroundGameStageEnum;
 
   @HostBinding(APP_CONTAINER_FLEX_CLASS)
   protected readonly containerFlex = true;

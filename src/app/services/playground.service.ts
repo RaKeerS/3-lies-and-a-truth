@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { concat, interval, Observable, of, ReplaySubject, Subscription, take, tap } from 'rxjs';
 
-import { PlaygroundGameStage, PlaygroundGameStagePhase } from '../enums/playground.enum';
+import { PlaygroundGameStageEnum, PlaygroundGameStagePhaseEnum } from '../enums/playground.enum';
 import { WebRtcModel } from '../models/web-rtc/web-rtc.model';
 import { GameMidSegueMetadata } from '../types/app-types';
 
@@ -191,7 +191,7 @@ export class PlaygroundService {
           take(5),
           tap(() => this._redirectCounter--)),
         of(this.redirectCounter === 0).pipe(
-          tap(() => (subscription.unsubscribe(), this.switch.next({ gameStage: PlaygroundGameStage.CONNECTION, message: PlaygroundGameStage.CONNECTION, gameStagePhase: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' } as GameMidSegueMetadata), this.navigateToPlayground())))
+          tap(() => (subscription.unsubscribe(), this.switch.next({ gameStage: PlaygroundGameStageEnum.CONNECTION, message: PlaygroundGameStageEnum.CONNECTION, gameStagePhase: PlaygroundGameStagePhaseEnum.COMPLETED, messageFrom: 'subject' } as GameMidSegueMetadata), this.navigateToPlayground())))
       ).subscribe()
     }
   }

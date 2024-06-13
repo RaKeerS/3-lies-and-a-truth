@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Injector, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { delay, filter, of, Subscription, tap } from 'rxjs';
 
-import { PlaygroundGameEnum, PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundGameEnum, PlaygroundGameStageEnum } from '../../enums/playground.enum';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { PlaygroundService } from '../../services/playground.service';
 import { GameMidSegueMetadata } from '../../types/app-types';
@@ -41,7 +41,7 @@ export class GameConnectorComponent implements OnInit, OnDestroy {
   constructor(injector: Injector) {
     this._playgroundService = injector.get(PlaygroundService);
     this._subscription = this._playgroundService.switch$.pipe(
-      filter((metaData?: GameMidSegueMetadata) => metaData?.gameStage === PlaygroundGameStage.CONNECTION),
+      filter((metaData?: GameMidSegueMetadata) => metaData?.gameStage === PlaygroundGameStageEnum.CONNECTION),
       tap(() => this.closeDialog())).subscribe();
 
     // this._webRtc = new WebRtcModel();

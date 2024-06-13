@@ -3,12 +3,23 @@ export enum PlaygroundGameEnum {
   CREATE = 1
 }
 
-export enum PlaygroundGameTossOutcome {
+export enum PlaygroundPlayersEnum {
   PLAYER_1 = 1,
   PLAYER_2 = 2
 }
 
-export enum PlaygroundGameStage {
+
+export enum PlaygroundGameTossOutcomeEnum {
+  PLAYER_1 = 1,
+  PLAYER_2 = 2
+}
+
+export enum PlaygroundGameStageWinnerEnum {
+  PLAYER_1 = 1,
+  PLAYER_2 = 2
+}
+
+export enum PlaygroundGameStageEnum {
   CONNECTION = 0,
   RULES,
   TOSS,
@@ -21,7 +32,7 @@ export enum PlaygroundGameStage {
   OTHER
 }
 
-export enum PlaygroundGameStagePhase {
+export enum PlaygroundGameStagePhaseEnum {
   TIMER,
   MIDSEGUEMESSAGES,
   INITIAL,

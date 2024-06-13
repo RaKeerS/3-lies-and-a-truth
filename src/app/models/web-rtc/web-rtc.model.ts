@@ -2,7 +2,7 @@ import { NgZone } from '@angular/core';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import SimplePeer from 'simple-peer';
 
-import { PlaygroundGameStage, PlaygroundGameStagePhase } from '../../enums/playground.enum';
+import { PlaygroundGameStageEnum, PlaygroundGameStagePhaseEnum } from '../../enums/playground.enum';
 import { PlaygroundService } from '../../services/playground.service';
 import { GameMidSegueMetadata } from '../../types/app-types';
 
@@ -381,21 +381,21 @@ export class WebRtcModel {
     const parsedData: GameMidSegueMetadata = JSON.parse(message);
     if (parsedData?.gameStage !== undefined && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
-        case PlaygroundGameStage.OTHER: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'subject' } as GameMidSegueMetadata);
+        case PlaygroundGameStageEnum.OTHER: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
 
-        case PlaygroundGameStage.RULES: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
+        case PlaygroundGameStageEnum.RULES: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.RULES, message: PlaygroundGameStageEnum.RULES, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
-        case PlaygroundGameStage.TOSS: {
+        case PlaygroundGameStageEnum.TOSS: {
           // const tossResult = Boolean(+parsedData.message);
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, tossMessage: +parsedData.message, messageFrom: 'subject' } as GameMidSegueMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, tossMessage: +parsedData.message, messageFrom: 'subject' } as GameMidSegueMetadata);
           // NOTE - Commented for now, but this code works!
           // this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameTossStage.PHASE_0, messageFrom: 'subject' } as GameMidSegwayMetadata);
-          this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' } as GameMidSegueMetadata);
+          this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: PlaygroundGameStagePhaseEnum.COMPLETED, messageFrom: 'subject' } as GameMidSegueMetadata);
           // NOTE - Commented for now, but this code works! (if block only)
           // if (!this._playgroundService.createPlayground) {
           //   this.sendMessageWebRtc(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: tossResult, messageFrom: 'peer' } as GameMidSegwayMetadata))
@@ -404,22 +404,22 @@ export class WebRtcModel {
           break;
         }
 
-        case PlaygroundGameStage.BET: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.BET, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, betAmount: +parsedData.message, messageFrom: 'subject' } as GameMidSegueMetadata);
+        case PlaygroundGameStageEnum.BET: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.BET, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, betAmount: +parsedData.message, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
 
-        case PlaygroundGameStage.SHUFFLE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, beginShuffle: true, messageFrom: 'subject' } as GameMidSegueMetadata);
+        case PlaygroundGameStageEnum.SHUFFLE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.SHUFFLE, message: PlaygroundGameStageEnum.SHUFFLE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, beginShuffle: true, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
 
-        case PlaygroundGameStage.DISTRIBUTE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
+        case PlaygroundGameStageEnum.DISTRIBUTE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.DISTRIBUTE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
 
-        case PlaygroundGameStage.PICK: {
+        case PlaygroundGameStageEnum.PICK: {
           // switch (parsedData.gameStagePhase) {
           //   case PlaygroundGameStagePhase.INITIAL: {
           //     this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
@@ -435,8 +435,8 @@ export class WebRtcModel {
         }
 
         // NOTE: The Player in Pick Mode would send Choose to partner with Initial, then on Submitting choices via. Submit button will again send Choose to partner but with Intermediate gamephase.
-        case PlaygroundGameStage.CHOOSE: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.CHOOSE, message: parsedData.message, gameStagePhase: parsedData.gameStagePhase, messageFrom: 'subject' } as GameMidSegueMetadata);
+        case PlaygroundGameStageEnum.CHOOSE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.CHOOSE, message: parsedData.message, gameStagePhase: parsedData.gameStagePhase, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
 

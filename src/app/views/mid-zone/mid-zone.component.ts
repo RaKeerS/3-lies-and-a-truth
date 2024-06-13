@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { PlaygroundGameStage } from '../../enums/playground.enum';
+import { PlaygroundGameStageEnum } from '../../enums/playground.enum';
 import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
@@ -14,5 +14,5 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 export class MidZoneComponent {
   @Input() playgroundModel!: PlaygroundModel;
 
-  public PlaygroundGameStage: typeof PlaygroundGameStage = PlaygroundGameStage;
+  public PlaygroundGameStage: typeof PlaygroundGameStageEnum = PlaygroundGameStageEnum;
 }

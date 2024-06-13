@@ -120,7 +120,7 @@
                   <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playerTruthySelectedList || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.PICK)"></p-button>
                 }
                 @else {
-                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.playerFalsySelectedList.length < 3 || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.PICK)"></p-button>
+                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="(playgroundModel.playerFalsySelectedList && playgroundModel.playerFalsySelectedList.length < 3) || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.PICK)"></p-button>
                 }
               </div>
             </p-card>
@@ -135,7 +135,7 @@
                 <div class="flex w-full justify-content-end">
                   <p-toggleButton
                     [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth"
-                    [disabled]="false"
+                    [disabled]="!playgroundModel.enableSubmitOptionsButton"
                     onLabel="Toggle to Truth"
                     offLabel="Toggle to Lies" />
                   <!-- @if (!playgroundModel.toggleBetweenLiesOrTruth) {
@@ -155,7 +155,7 @@
                 @if (playgroundModel.toggleBetweenLiesOrTruth) {
                   @for (item of playgroundModel.opponentPickList | keyvalue; track $index) {
                     <p-checkbox
-                      [(ngModel)]="playgroundModel.opponentFalsySelectedList"
+                      [(ngModel)]="playgroundModel.opponentFalsySelectedListTemp"
                       (onChange)="handleCheckboxChange(PlaygroundGameStage.CHOOSE)"
                       [label]="convertString(item.value)"
                       [disabled]="!playgroundModel.enableSubmitOptionsButton"
@@ -172,7 +172,7 @@
                       [value]="item.key"
                       [label]="convertString(item.value)"
                       [disabled]="!playgroundModel.enableSubmitOptionsButton"
-                      [(ngModel)]="playgroundModel.opponentTruthySelectedList" />
+                      [(ngModel)]="playgroundModel.opponentTruthySelectedListTemp" />
                     <!-- <label [for]="item.toString()" class="ml-2">
                       {{ convertString(item.value)}}
                     </label> -->
@@ -183,10 +183,10 @@
 
               <div class="flex w-full justify-content-end mt-6">
                 @if (!playgroundModel.toggleBetweenLiesOrTruth) {
-                  <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.opponentTruthySelectedList || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.CHOOSE)"></p-button>
+                  <p-button type="button" severity="warning" label="Submit Truth Choice" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.opponentTruthySelectedListTemp || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.CHOOSE)"></p-button>
                 }
                 @else {
-                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="playgroundModel.opponentFalsySelectedList.length < 3 || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.CHOOSE)"></p-button>
+                  <p-button type="button" severity="warning" label="Submit Lies Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="(playgroundModel.opponentFalsySelectedListTemp && playgroundModel.opponentFalsySelectedListTemp.length < 3) || !playgroundModel.enableSubmitOptionsButton" (click)="playgroundModel.submitOptions(PlaygroundGameStage.CHOOSE)"></p-button>
                 }
               </div>
             </p-card>

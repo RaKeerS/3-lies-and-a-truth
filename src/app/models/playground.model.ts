@@ -22,7 +22,13 @@ import {
 
 import { CardDeckDictionary } from '../constants/card-deck.dictionary';
 import { CardDeckEnum } from '../enums/card-deck.enum';
-import { PlaygroundGameStage, PlaygroundGameStagePhase, PlaygroundGameTossOutcome } from '../enums/playground.enum';
+import {
+  PlaygroundGameStageEnum,
+  PlaygroundGameStagePhaseEnum,
+  PlaygroundGameStageWinnerEnum,
+  PlaygroundGameTossOutcomeEnum,
+  PlaygroundPlayersEnum,
+} from '../enums/playground.enum';
 import { PlaygroundService } from '../services/playground.service';
 import { GameMidSegueMetadata } from '../types/app-types';
 import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
@@ -35,7 +41,8 @@ export class PlaygroundModel {
 
   // private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
-  private _playerTossWinner?: PlaygroundGameTossOutcome;
+  private _playerTossWinner?: PlaygroundGameTossOutcomeEnum;
+  private _playerGameStageWinner?: PlaygroundGameStageWinnerEnum;
   private _isDeckShufflerPlayer?: boolean;
   private _playerOrder: Map<string, number> = new Map<string, number>();
 
@@ -46,10 +53,10 @@ export class PlaygroundModel {
   private _playgroundTimer: number = 0o0;
   private _globalPlaygroundTimer: number = 0o0;
 
-  private _gameStages: Map<PlaygroundGameStage, boolean> = new Map<PlaygroundGameStage, boolean>();
+  private _gameStages: Map<PlaygroundGameStageEnum, boolean> = new Map<PlaygroundGameStageEnum, boolean>();
 
   // NOTE - This Subject is only used to 'Update the GameStages'
-  private _gameStage: BehaviorSubject<PlaygroundGameStage> = new BehaviorSubject<PlaygroundGameStage>(PlaygroundGameStage.RULES);
+  private _gameStage: BehaviorSubject<PlaygroundGameStageEnum> = new BehaviorSubject<PlaygroundGameStageEnum>(PlaygroundGameStageEnum.RULES);
 
   private _subscription: Subscription;
 
@@ -75,7 +82,11 @@ export class PlaygroundModel {
   private _p1CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _p2CardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _opponentPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
-  private _opponentSelectedList?: any;
+  private _choicesSelectedList?: any[] | CardDeckEnum;
+  private _opponentTruthySelectedList?: CardDeckEnum;
+  private _opponentFalsySelectedList?: any[];
+  private _opponentTruthySelectedListTemp?: CardDeckEnum;
+  private _opponentFalsySelectedListTemp?: any[];
   private _playerFalsyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
   private _playerFalsySelectedList: any[] = [];
   private _playerTruthyPickList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -83,7 +94,7 @@ export class PlaygroundModel {
   private _flipCards: boolean = false;
   private _toggleBetweenLiesOrTruth: boolean = false;
 
-  public PlaygroundTossOutcome = PlaygroundGameTossOutcome;
+  public PlaygroundTossOutcome = PlaygroundGameTossOutcomeEnum;
 
 
   constructor(injector: Injector) {
@@ -96,11 +107,19 @@ export class PlaygroundModel {
 
     this._gameTossWinnerDetails = this._playgroundService.createPlayground ? 'Starting Toss!' : 'Waiting for your partner to start the toss';
 
-    this._gameStage.next(PlaygroundGameStage.OTHER);
+    this._gameStage.next(PlaygroundGameStageEnum.OTHER);
   }
 
   get dialogRef(): DynamicDialogRef | undefined {
     return this._dialogRef;
+  }
+
+  get whoAmI(): PlaygroundPlayersEnum {
+    return this._playgroundService.createPlayground ? PlaygroundPlayersEnum.PLAYER_1 : PlaygroundPlayersEnum.PLAYER_2;
+  }
+
+  get whoIsOpponent(): PlaygroundPlayersEnum {
+    return this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? PlaygroundPlayersEnum.PLAYER_2 : PlaygroundPlayersEnum.PLAYER_1;
   }
 
   get playerCardsList(): Map<CardDeckEnum, string> {
@@ -108,20 +127,20 @@ export class PlaygroundModel {
     return this._playgroundService.createPlayground ? this.p1CardsList : this.p2CardsList;
   }
 
-  get gameStage$(): Observable<PlaygroundGameStage> {
+  get gameStage$(): Observable<PlaygroundGameStageEnum> {
     return this._gameStage.asObservable();
   }
 
-  get gameStages(): Map<PlaygroundGameStage, boolean> {
+  get gameStages(): Map<PlaygroundGameStageEnum, boolean> {
     return this._gameStages;
   }
 
   get gameStageToss() {
-    return of(this.gameStages.get(PlaygroundGameStage.TOSS));
+    return of(this.gameStages.get(PlaygroundGameStageEnum.TOSS));
   }
 
   get gameStageBet(): boolean | undefined {
-    return this.gameStages.get(PlaygroundGameStage.BET);
+    return this.gameStages.get(PlaygroundGameStageEnum.BET);
   }
 
   // get gameToss(): boolean {
@@ -140,11 +159,18 @@ export class PlaygroundModel {
     return this._playerOrder;
   }
 
-  get playerTossWinner(): PlaygroundGameTossOutcome | undefined {
+  get playerTossWinner(): PlaygroundGameTossOutcomeEnum | undefined {
     return this._playerTossWinner;
   }
-  set playerTossWinner(value: PlaygroundGameTossOutcome) {
+  set playerTossWinner(value: PlaygroundGameTossOutcomeEnum) {
     this._playerTossWinner = value;
+  }
+
+  get playerGameStageWinner(): PlaygroundGameStageWinnerEnum | undefined {
+    return this._playerGameStageWinner;
+  }
+  set playerGameStageWinner(value: PlaygroundGameStageWinnerEnum) {
+    this._playerGameStageWinner = value;
   }
 
   get playerOneBetAmount(): number { // Use for data-binding with HTML
@@ -312,18 +338,43 @@ export class PlaygroundModel {
     this._opponentPickList = value;
   }
 
+  get choicesSelectedList(): any[] | CardDeckEnum | undefined {
+    return this._choicesSelectedList;
+  }
+  set choicesSelectedList(value: any[] | CardDeckEnum) {
+    this._choicesSelectedList = value;
+  }
+
+  get opponentFalsySelectedListTemp(): any[] {
+    return this._opponentFalsySelectedListTemp as any[];
+  }
+  set opponentFalsySelectedListTemp(value: any[]) {
+    this.choicesSelectedList = value;
+    this._opponentFalsySelectedListTemp = value;
+  }
+
+  get opponentTruthySelectedListTemp(): CardDeckEnum {
+    return this._opponentTruthySelectedListTemp as CardDeckEnum;
+  }
+  set opponentTruthySelectedListTemp(value: CardDeckEnum) {
+    this.choicesSelectedList = value;
+    this._opponentTruthySelectedListTemp = value;
+  }
+
   get opponentFalsySelectedList(): any[] {
-    return this._opponentSelectedList as any[];
+    return this._opponentFalsySelectedList as any[];
   }
   set opponentFalsySelectedList(value: any[]) {
-    this._opponentSelectedList = value;
+    this.choicesSelectedList = value;
+    this._opponentFalsySelectedList = value;
   }
 
   get opponentTruthySelectedList(): CardDeckEnum {
-    return this._opponentSelectedList as CardDeckEnum;
+    return this._opponentTruthySelectedList as CardDeckEnum;
   }
   set opponentTruthySelectedList(value: CardDeckEnum) {
-    this._opponentSelectedList = value;
+    this.choicesSelectedList = value;
+    this._opponentTruthySelectedList = value;
   }
 
   get playerFalsyPickList(): Map<CardDeckEnum, string> {
@@ -415,7 +466,7 @@ export class PlaygroundModel {
 
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
-    this._gameStage.next(PlaygroundGameStage.TOSS);
+    this._gameStage.next(PlaygroundGameStageEnum.TOSS);
 
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
       header: 'Game Toss',
@@ -448,7 +499,7 @@ export class PlaygroundModel {
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
 
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.OTHER),
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.OTHER),
       switchMap(() => this.doHandleOtherGameStages())
     )
   }
@@ -460,7 +511,7 @@ export class PlaygroundModel {
     // this.gameStages.set(PlaygroundGameStage.BET, true);
 
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.BET),
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.BET),
       switchMap(() => this.doGameBetting())
     );
 
@@ -471,7 +522,7 @@ export class PlaygroundModel {
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
 
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.RULES),
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.RULES),
       switchMap(() => this.doGameRulesRevelation())
     )
   }
@@ -480,7 +531,7 @@ export class PlaygroundModel {
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
 
     return this.gameStage$.pipe(
-      filter((stage) => stage === PlaygroundGameStage.TOSS),
+      filter((stage) => stage === PlaygroundGameStageEnum.TOSS),
       switchMap(() => forkJoin({ test: this.doGameToss() })
       // .pipe(
       //   // tap((data) => this.gameStages.set(PlaygroundGameStage.TOSS, false))
@@ -492,7 +543,7 @@ export class PlaygroundModel {
 
   private deckShuffling() {
     return this.gameStage$.pipe(
-      filter((stage) => stage === PlaygroundGameStage.SHUFFLE),
+      filter((stage) => stage === PlaygroundGameStageEnum.SHUFFLE),
       // filter(() => this.isShuffleDeckInitiated === true),
       switchMap(() => this.doDeckShuffling())
     );
@@ -500,14 +551,14 @@ export class PlaygroundModel {
 
   public distributeCards() {
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.DISTRIBUTE),
-      switchMap((stage: PlaygroundGameStage) => this.doDeckDistribution(stage))
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.DISTRIBUTE),
+      switchMap((stage: PlaygroundGameStageEnum) => this.doDeckDistribution(stage))
     )
   }
 
   public pickOptions() {
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.PICK),
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.PICK),
       switchMap(() => this.doOptionsPicking())
     )
     // return this.gameStage$.pipe(
@@ -518,7 +569,7 @@ export class PlaygroundModel {
 
   private chooseOptions() {
     return this.gameStage$.pipe(
-      filter((stage: PlaygroundGameStage) => stage === PlaygroundGameStage.CHOOSE),
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.CHOOSE),
       switchMap(() => this.doCardsChoice())
     )
   }
@@ -552,13 +603,13 @@ export class PlaygroundModel {
   }
 
   private initiateRounds(): void {
-    this._gameStage.next(PlaygroundGameStage.RULES);
-    this._gameStage.next(PlaygroundGameStage.TOSS);
-    this._gameStage.next(PlaygroundGameStage.BET);
-    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
-    this._gameStage.next(PlaygroundGameStage.DISTRIBUTE);
-    this._gameStage.next(PlaygroundGameStage.PICK);
-    this._gameStage.next(PlaygroundGameStage.CHOOSE);
+    this._gameStage.next(PlaygroundGameStageEnum.RULES);
+    this._gameStage.next(PlaygroundGameStageEnum.TOSS);
+    this._gameStage.next(PlaygroundGameStageEnum.BET);
+    this._gameStage.next(PlaygroundGameStageEnum.SHUFFLE);
+    this._gameStage.next(PlaygroundGameStageEnum.DISTRIBUTE);
+    this._gameStage.next(PlaygroundGameStageEnum.PICK);
+    this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);
   }
 
   public commenceRound() {
@@ -594,7 +645,7 @@ export class PlaygroundModel {
       this.showPlaygroundGameInitiationDialog();
 
       if (this._playgroundService.createPlayground) {
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.RULES, message: PlaygroundGameStage.RULES, messageFrom: 'peer' } as GameMidSegueMetadata))
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.RULES, message: PlaygroundGameStageEnum.RULES, messageFrom: 'peer' } as GameMidSegueMetadata))
       }
 
       console.log('Playground Game Rules Dialog Closed. Data: ', data);
@@ -607,15 +658,15 @@ export class PlaygroundModel {
   private doHandleOtherGameStages() {
     return this.switch$.pipe(
       // takeLast(1),
-      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.OTHER)),
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.OTHER)),
       tap((metadata?: GameMidSegueMetadata) => {
         switch(metadata?.gameStagePhase) {
-          case PlaygroundGameStagePhase.TIMER: {
+          case PlaygroundGameStagePhaseEnum.TIMER: {
             this.setGlobalPlaygroundTimer(metadata.message).pipe(
               takeLast(1)).subscribe();
             break;
           }
-          case PlaygroundGameStagePhase.MIDSEGUEMESSAGES: {
+          case PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES: {
             this.showWaitingHeader = true;
             this.showMessagesOnRegularIntervals(metadata).pipe(
               takeLast(1),
@@ -659,9 +710,9 @@ export class PlaygroundModel {
   private doGameRulesRevelation() {
     return this.switch$.pipe(
       // takeLast(1),
-      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES)),
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.RULES)),
       tap((metadata?: GameMidSegueMetadata) => {
-        if (metadata?.gameStage === PlaygroundGameStage.RULES) {
+        if (metadata?.gameStage === PlaygroundGameStageEnum.RULES) {
           this._gameTossWinnerDetails = 'Starting Toss!';
         }
       }));
@@ -678,15 +729,15 @@ export class PlaygroundModel {
     const setPlayerOrder = (tossOutcome: number) => {
       this.playerTossWinner = tossOutcome;
       if (this._playgroundService.createPlayground) {
-        if(tossOutcome === PlaygroundGameTossOutcome.PLAYER_1) {
+        if(tossOutcome === PlaygroundGameTossOutcomeEnum.PLAYER_1) {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'peer' } as GameMidSegueMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, tossMessage: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'subject' } as GameMidSegueMetadata);
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcomeEnum, messageFrom: 'peer' } as GameMidSegueMetadata));
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcomeEnum, tossMessage: this.playerTossWinner as PlaygroundGameTossOutcomeEnum, messageFrom: 'subject' } as GameMidSegueMetadata);
           // this._gameTossWinnerDetails = 'Player 1 Wins the Toss! Begins first!!'
         } else {
           // TODO: Alongside the below line, call the 'peerConnection's send method'
-          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'peer' } as GameMidSegueMetadata));
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcome, tossMessage: this.playerTossWinner as PlaygroundGameTossOutcome, messageFrom: 'subject' } as GameMidSegueMetadata);
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcomeEnum, messageFrom: 'peer' } as GameMidSegueMetadata));
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: this.playerTossWinner as PlaygroundGameTossOutcomeEnum, tossMessage: this.playerTossWinner as PlaygroundGameTossOutcomeEnum, messageFrom: 'subject' } as GameMidSegueMetadata);
           // this._gameTossWinnerDetails = 'Player 2 Wins the Toss! Begins first!!'
         }
       }
@@ -711,7 +762,7 @@ export class PlaygroundModel {
     tap(() => {
       toggleSwitch = !toggleSwitch;
       // this._playgroundService.switch = !this._playgroundService.switch
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.TOSS, message: toggleSwitch ? PlaygroundGameTossOutcome.PLAYER_1 : PlaygroundGameTossOutcome.PLAYER_2, tossMessage: toggleSwitch ? PlaygroundGameTossOutcome.PLAYER_1 : PlaygroundGameTossOutcome.PLAYER_2, messageFrom: 'subject' } as GameMidSegueMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: toggleSwitch ? PlaygroundGameTossOutcomeEnum.PLAYER_1 : PlaygroundGameTossOutcomeEnum.PLAYER_2, tossMessage: toggleSwitch ? PlaygroundGameTossOutcomeEnum.PLAYER_1 : PlaygroundGameTossOutcomeEnum.PLAYER_2, messageFrom: 'subject' } as GameMidSegueMetadata);
     }));
 
     const gameOrder$ = of(toggleSwitch).pipe(
@@ -720,18 +771,18 @@ export class PlaygroundModel {
 
     const gameTossResult$ = this.switch$.pipe(
       // takeLast(1),
-      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.RULES || metaData?.gameStage ===  PlaygroundGameStage.TOSS)),
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.RULES || metaData?.gameStage ===  PlaygroundGameStageEnum.TOSS)),
       tap((metaData?: GameMidSegueMetadata) => {
         // this._dialogRef?.close())
         if (metaData !== undefined) {
           this._playgroundService.ngZone.run(() => {
-            if (metaData.gameStage === PlaygroundGameStage.TOSS) {
+            if (metaData.gameStage === PlaygroundGameStageEnum.TOSS) {
               this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
-              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
             }
 
             if (this._playgroundService.createPlayground) {
-              this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStage.TOSS, message: PlaygroundGameStagePhase.COMPLETED, messageFrom: 'subject' });
+              this._playgroundService.tossCompleted.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: PlaygroundGameStagePhaseEnum.COMPLETED, messageFrom: 'subject' });
             }
             // else {
             //   this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.TOSS, message: metaData.message, messageFrom: 'peer' } as GameMidSegwayMetadata))
@@ -800,7 +851,7 @@ export class PlaygroundModel {
     )
 
     return this.switch$.pipe(
-      filter((metaData?: GameMidSegueMetadata) => metaData?.gameStage === PlaygroundGameStage.BET),
+      filter((metaData?: GameMidSegueMetadata) => metaData?.gameStage === PlaygroundGameStageEnum.BET),
       tap((metaData?: GameMidSegueMetadata) => (this.playgroundJoinerBetAmount = metaData?.betAmount ?? this.playgroundJoinerBetAmount, console.log('playgroundBetAmount: ', this.playgroundJoinerBetAmount, 'metaDataBetAmount: ', metaData?.betAmount))),
       switchMap(() =>
         concat(
@@ -815,11 +866,11 @@ export class PlaygroundModel {
 
     const tossWinningPlayer = (): boolean => {
       if (this._playgroundService.createPlayground) {
-        if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1) {
+        if (this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1) {
           return true;
         }
       } else {
-        if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_2) {
+        if (this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_2) {
           return true;
         }
       }
@@ -837,7 +888,7 @@ export class PlaygroundModel {
 
     let metaDataMessage, beginShuffle;
     const waitBeforeShuffling$ = this.switch$.pipe(
-      filter((metaData?: GameMidSegueMetadata) => metaData?.gameStage === PlaygroundGameStage.SHUFFLE),
+      filter((metaData?: GameMidSegueMetadata) => metaData?.gameStage === PlaygroundGameStageEnum.SHUFFLE),
       takeWhile((metaData?: GameMidSegueMetadata) => {
         if (metaData?.beginShuffle) {
           this.isShuffleDeckInitiated = true;
@@ -875,10 +926,10 @@ export class PlaygroundModel {
       tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
       delay(500),
       tap(() => {
-        this._gameStage.next(PlaygroundGameStage.DISTRIBUTE);
+        this._gameStage.next(PlaygroundGameStageEnum.DISTRIBUTE);
 
         if (this.isDeckShufflerPlayer) {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: PlaygroundGameStage.DISTRIBUTE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.DISTRIBUTE, message: PlaygroundGameStageEnum.DISTRIBUTE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
         }
       }));
 
@@ -899,15 +950,15 @@ export class PlaygroundModel {
     // );
   }
 
-  private doDeckDistribution(_stage: PlaygroundGameStage) {
+  private doDeckDistribution(_stage: PlaygroundGameStageEnum) {
 
     // const assignDistributedCards = (metaData?: GameMidSegwayMetadata) => {
     // }
 
     return this.switch$.pipe(
-      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.DISTRIBUTE)),
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.DISTRIBUTE)),
       switchMap((metaData?: GameMidSegueMetadata) => {
-        if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+        if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INITIAL) {
           return of(metaData).pipe(
             tap((metaData) => {
               if (metaData.message && !this.isDeckShufflerPlayer) {
@@ -935,15 +986,15 @@ export class PlaygroundModel {
             delay(500),
             tap(() => this.increaseZIndexPicker = true),
             tap(() => {
-              this._gameStage.next(PlaygroundGameStage.PICK);
+              this._gameStage.next(PlaygroundGameStageEnum.PICK);
 
               if (this.isDeckShufflerPlayer) {
-                this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
+                this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.PICK, message: PlaygroundGameStageEnum.PICK, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
               } else {
-                this._gameStage.next(PlaygroundGameStage.CHOOSE);
+                this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);
               }
             }));
-        } else if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+        } else if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INTERMEDIATE) {
           return of();
         } else {
           return of();
@@ -954,7 +1005,7 @@ export class PlaygroundModel {
 
   private doOptionsPicking() {
     return this.switch$.pipe(
-      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.PICK)),
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.PICK)),
       switchMap((metaData?: GameMidSegueMetadata) => {
         // const metaDataMessage = metaData?.message as GameMidSegwayMetadata;
         // if (metaDataMessage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
@@ -969,8 +1020,8 @@ export class PlaygroundModel {
         this.showWaitingHeader = false;
         this.globalPlaygroundTimer = 200;
 
-        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
-        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.CHOOSE, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'peer' } as GameMidSegueMetadata))
+        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
+        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE, message: PlaygroundGameStageEnum.CHOOSE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'peer' } as GameMidSegueMetadata))
 
         // this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
         return this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
@@ -1016,10 +1067,10 @@ export class PlaygroundModel {
 
   private doCardsChoice() {
     return this.switch$.pipe(
-      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStage.CHOOSE)),
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.CHOOSE)),
       tap((metaData?: GameMidSegueMetadata) => {
         switch (metaData?.gameStagePhase) {
-          case PlaygroundGameStagePhase.INITIAL: {
+          case PlaygroundGameStagePhaseEnum.INITIAL: {
             console.log('CHOOSE GameStage: ', metaData?.message);
 
             this.showMidSegueMessages = true;
@@ -1033,9 +1084,11 @@ export class PlaygroundModel {
           }
             break;
 
-          case PlaygroundGameStagePhase.INTERMEDIATE: {
+          case PlaygroundGameStagePhaseEnum.INTERMEDIATE: {
             if (metaData.message) {
               this.opponentPickList = new Map(metaData.message.opponentPickList);
+              this.opponentFalsySelectedList = metaData.message.opponentFalsySelectedList;
+              this.opponentTruthySelectedList = metaData.message.opponentTruthySelectedList;
             }
           }
           break;
@@ -1044,13 +1097,13 @@ export class PlaygroundModel {
       }),
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
-        if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+        if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INITIAL) {
           this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
 
           // NOTE: Below line works
           // return this.showMessagesOnRegularIntervals(PlaygroundGameStage.CHOOSE);
 
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: PlaygroundGameStageEnum.CHOOSE, gameStagePhase: PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
         }
 
 
@@ -1071,7 +1124,7 @@ export class PlaygroundModel {
       }),
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
-        if (metaData?.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+        if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INITIAL) {
           this.showWaitingHeader = false;
         }
       }));
@@ -1082,8 +1135,8 @@ export class PlaygroundModel {
   // ===========================================================================
 
   public initializeBetting(): void {
-    this._gameStage.next(PlaygroundGameStage.BET);
-    this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.BET, message: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
+    this._gameStage.next(PlaygroundGameStageEnum.BET);
+    this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.BET, message: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
   }
 
   public beginDeckShuffling(): void {
@@ -1093,21 +1146,21 @@ export class PlaygroundModel {
     this.isShufflePending = false;
     this._dialogService.getInstance(this._dialogRef!).hide();
     this.showBackdrop = true;
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.BET, message: this.playgroundCreatorBetAmount, messageFrom: 'peer' } as GameMidSegueMetadata))
-    this._gameStage.next(PlaygroundGameStage.SHUFFLE);
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.BET, message: this.playgroundCreatorBetAmount, messageFrom: 'peer' } as GameMidSegueMetadata))
+    this._gameStage.next(PlaygroundGameStageEnum.SHUFFLE);
 
     this.isDeckShufflerPlayer = true;
     // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', messageFrom: 'subject' } as GameMidSegwayMetadata);
 
-    if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1 && this._playgroundService.createPlayground) {
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegueMetadata);
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegueMetadata));
-    } else if (this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_2 && !this._playgroundService.createPlayground) {
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegueMetadata);
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.SHUFFLE, message: PlaygroundGameStage.SHUFFLE, messageFrom: 'peer' } as GameMidSegueMetadata));
+    if (this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 && this._playgroundService.createPlayground) {
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.SHUFFLE, message: PlaygroundGameStageEnum.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegueMetadata);
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.SHUFFLE, message: PlaygroundGameStageEnum.SHUFFLE, messageFrom: 'peer' } as GameMidSegueMetadata));
+    } else if (this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_2 && !this._playgroundService.createPlayground) {
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.SHUFFLE, message: PlaygroundGameStageEnum.SHUFFLE, beginShuffle: true, messageFrom: 'subject' } as GameMidSegueMetadata);
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.SHUFFLE, message: PlaygroundGameStageEnum.SHUFFLE, messageFrom: 'peer' } as GameMidSegueMetadata));
     } else {
       this.isDeckShufflerPlayer = false;
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.SHUFFLE, message: '', beginShuffle: false, messageFrom: 'subject' } as GameMidSegueMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.SHUFFLE, message: '', beginShuffle: false, messageFrom: 'subject' } as GameMidSegueMetadata);
     }
   }
 
@@ -1131,7 +1184,7 @@ export class PlaygroundModel {
   // }
 
   // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'. - [Done Implementing]
-  private distributeDeckCards(_player?: PlaygroundGameTossOutcome): void {
+  private distributeDeckCards(_player?: PlaygroundGameTossOutcomeEnum): void {
     // const distributionOngoing = true;
 
     // const firstPlayerCardsList = this.playerTossWinner === PlaygroundTossOutcome.PLAYER_1 ? this.p1CardsList : this.p2CardsList;
@@ -1180,9 +1233,9 @@ export class PlaygroundModel {
       }
     }
 
-    this.playerTossWinner === PlaygroundGameTossOutcome.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
+    this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
 
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.DISTRIBUTE, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()) }, messageFrom: 'peer' } as GameMidSegueMetadata))
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.DISTRIBUTE, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()) }, messageFrom: 'peer' } as GameMidSegueMetadata))
     // } else {
 
     // }
@@ -1268,8 +1321,8 @@ export class PlaygroundModel {
       // this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
       //   takeLast(1)).subscribe()
 
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata);
-      this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.OTHER, message: PlaygroundGameStage.CHOOSE, gameStagePhase: PlaygroundGameStagePhase.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata);
+      this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: PlaygroundGameStageEnum.CHOOSE, gameStagePhase: PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
 
       // this.showMessagesOnRegularIntervals(PlaygroundGameStage.PICK).subscribe();
 
@@ -1278,11 +1331,32 @@ export class PlaygroundModel {
       // if (this.isDeckShufflerPlayer) {
       // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
 
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhase.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStage.CHOOSE,
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE,
         message: { opponentFalsyPickList: Array.from(this.playerFalsyPickList.entries()), opponentFalsySelectedList: this.playerFalsySelectedList, opponentTruthyPickList: Array.from(this.playerTruthyPickList.entries()), opponentTruthySelectedList: this.playerTruthySelectedList, opponentPickList: Array.from(this.opponentPickList.entries()) },
-        gameStagePhase: PlaygroundGameStagePhase.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata))
+        gameStagePhase: PlaygroundGameStagePhaseEnum.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata))
       // }
+  }
+
+  private evaluatePickedOptions() {
+    let result;
+    if (!this.toggleBetweenLiesOrTruth) { // NOTE: !this.toggleBetweenLiesOrTruth means TRUE (here in this context) and this.toggleBetweenLiesOrTruth means FALSE (in this context)
+      if (this.choicesSelectedList && this.playerTruthySelectedList) {
+        result = +this.choicesSelectedList === +this.playerTruthySelectedList;
+      }
+    } else {
+      if (this.choicesSelectedList && this.opponentFalsySelectedList.length) {
+        result = (this.choicesSelectedList as any[]).every(item => this.opponentFalsySelectedList.includes(item));
+      }
+    }
+
+    if (result) {
+      this.playerGameStageWinner = +this.whoAmI;
+    } else {
+      this.playerGameStageWinner =  +this.whoIsOpponent;
+    }
+
+    console.log('Winner of this Game Stage is: ', this.playerGameStageWinner);
   }
 
   private showMessagesOnRegularIntervals(gameStage: GameMidSegueMetadata): Observable<number> {
@@ -1290,13 +1364,13 @@ export class PlaygroundModel {
       takeWhile(() => +this.globalPlaygroundTimer !== 0),
       tap((count) => {
         if (count % 2 === 0) {
-          if (gameStage.message === PlaygroundGameStage.PICK) {
+          if (gameStage.message === PlaygroundGameStageEnum.PICK) {
             this.midSegueMessages = 'Pick suitable options from the ones presented!';
-          } else if (gameStage.message === PlaygroundGameStage.CHOOSE)  {
-            if (gameStage.gameStagePhase === PlaygroundGameStagePhase.INITIAL) {
+          } else if (gameStage.message === PlaygroundGameStageEnum.CHOOSE)  {
+            if (gameStage.gameStagePhase === PlaygroundGameStagePhaseEnum.INITIAL) {
               this.midSegueMessages = 'Waiting for your partner to finish picking options...';
               this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
-            } else if (gameStage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+            } else if (gameStage.gameStagePhase === PlaygroundGameStagePhaseEnum.INTERMEDIATE) {
               this.midSegueMessages = 'Waiting for your partner to finish choosing from your submitted options...';
               this.waitingZoneHeader = 'Waiting for your partner to finish choosing from your submitted options...';
             }
@@ -1308,8 +1382,8 @@ export class PlaygroundModel {
       }));
   }
 
-  public submitOptions(gameStage: PlaygroundGameStage): void {
-    if (gameStage === PlaygroundGameStage.PICK) {
+  public submitOptions(gameStage: PlaygroundGameStageEnum): void {
+    if (gameStage === PlaygroundGameStageEnum.PICK) {
       if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
         // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
         this.enableSubmitOptionsButton = false;
@@ -1319,10 +1393,27 @@ export class PlaygroundModel {
       } else {
         this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
       }
-    } else if (gameStage === PlaygroundGameStage.CHOOSE) {
-      console.log('Shabbash Bete!! Bery Good!!!!');
+    } else if (gameStage === PlaygroundGameStageEnum.CHOOSE) {
+      this.enableSubmitOptionsButton = false;
+      this.globalPlaygroundTimer = 0;
+      this.confirmCancellation();
     }
 
+  }
+
+  private confirmCancellation(): void {
+    this._playgroundService.confirmationService.confirm({
+      header: 'Are you sure?',
+      message: 'Please confirm to proceed.',
+      accept: () => {
+        console.log('Shabbash Bete!! Bery Good!!!!');
+        this.evaluatePickedOptions();
+        // this._playgroundService.messageService.add({ severity: 'error', summary: 'Connection Error', detail: 'Connection not established due to interruption!', life: 3000 });
+      },
+      reject: () => {
+        return false;
+      }
+    });
   }
 
   public unsubscribeAll(): void {
