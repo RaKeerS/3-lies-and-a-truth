@@ -11,6 +11,7 @@ import {
   merge,
   Observable,
   of,
+  ReplaySubject,
   Subscription,
   switchMap,
   take,
@@ -38,6 +39,8 @@ export class PlaygroundModel {
 
   private _dialogService: DialogService
   private _dialogRef: DynamicDialogRef | undefined;
+
+  private _globalPlaygroundTimerSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   // private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
@@ -120,6 +123,10 @@ export class PlaygroundModel {
 
   get whoIsOpponent(): PlaygroundPlayersEnum {
     return this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? PlaygroundPlayersEnum.PLAYER_2 : PlaygroundPlayersEnum.PLAYER_1;
+  }
+
+  get globalPlaygroundTimerSubject$(): Observable<boolean> {
+    return this._globalPlaygroundTimerSubject.asObservable();
   }
 
   get playerCardsList(): Map<CardDeckEnum, string> {
@@ -578,8 +585,10 @@ export class PlaygroundModel {
     this.globalPlaygroundTimer = startTime;
 
     return interval(1000).pipe(
+      // takeUntil(this.globalPlaygroundTimerSubject$),
       takeWhile(() => +this.globalPlaygroundTimer !== 0),
       tap(() => {
+        console.log('globalPlaygroundTimer: ', new Date() + ' - ' + this.globalPlaygroundTimer);
         this.globalPlaygroundTimer = +this.globalPlaygroundTimer - 1;
         if (+this.globalPlaygroundTimer % 100 === 99) {
           this.globalPlaygroundTimer = +this.globalPlaygroundTimer - 40;
@@ -662,8 +671,11 @@ export class PlaygroundModel {
       tap((metadata?: GameMidSegueMetadata) => {
         switch(metadata?.gameStagePhase) {
           case PlaygroundGameStagePhaseEnum.TIMER: {
-            this.setGlobalPlaygroundTimer(metadata.message).pipe(
-              takeLast(1)).subscribe();
+            const subscription = this.setGlobalPlaygroundTimer(metadata.message).pipe(
+              takeLast(1),
+              // takeUntil(of(+this.globalPlaygroundTimer !== 0))
+            ).subscribe();
+            console.log('subscription: ', subscription);
             break;
           }
           case PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES: {
@@ -1026,8 +1038,12 @@ export class PlaygroundModel {
         // this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
         return this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
           takeLast(1),
+          takeUntil(this._globalPlaygroundTimerSubject),
           tap(() => {
             this.enableSubmitOptionsButton = false;
+            this.globalPlaygroundTimer = 0;
+            this._globalPlaygroundTimerSubject.next(false);
+            // this._globalPlaygroundTimerSubject.complete();
 
             // If nothing is selected by DeckShufflerWinner Player then choose from initial values as default
             if (this.playerFalsySelectedList.length < 3) {
@@ -1388,14 +1404,14 @@ export class PlaygroundModel {
         // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
         this.enableSubmitOptionsButton = false;
         this.globalPlaygroundTimer = 0;
+        this._globalPlaygroundTimerSubject.next(false);
+        // this._globalPlaygroundTimerSubject.complete();
         this.buildUp3LiesAndATruth(true);
         this.notifyAndWaitForPartnerToChoose();
       } else {
         this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
       }
     } else if (gameStage === PlaygroundGameStageEnum.CHOOSE) {
-      this.enableSubmitOptionsButton = false;
-      this.globalPlaygroundTimer = 0;
       this.confirmCancellation();
     }
 
@@ -1407,6 +1423,10 @@ export class PlaygroundModel {
       message: 'Please confirm to proceed.',
       accept: () => {
         console.log('Shabbash Bete!! Bery Good!!!!');
+        this.enableSubmitOptionsButton = false;
+        this.globalPlaygroundTimer = 0;
+        // this._globalPlaygroundTimerSubject.next(false);
+        // this._globalPlaygroundTimerSubject.complete();
         this.evaluatePickedOptions();
         // this._playgroundService.messageService.add({ severity: 'error', summary: 'Connection Error', detail: 'Connection not established due to interruption!', life: 3000 });
       },
