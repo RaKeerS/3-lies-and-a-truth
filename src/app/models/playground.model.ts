@@ -11,7 +11,6 @@ import {
   merge,
   Observable,
   of,
-  ReplaySubject,
   Subscription,
   switchMap,
   take,
@@ -40,8 +39,6 @@ export class PlaygroundModel {
   private _dialogService: DialogService
   private _dialogRef: DynamicDialogRef | undefined;
 
-  private _globalPlaygroundTimerSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
-
   // private _gameToss: boolean = true;
   private _gameTossWinnerDetails: string = '';
   private _playerTossWinner?: PlaygroundGameTossOutcomeEnum;
@@ -62,6 +59,7 @@ export class PlaygroundModel {
   private _gameStage: BehaviorSubject<PlaygroundGameStageEnum> = new BehaviorSubject<PlaygroundGameStageEnum>(PlaygroundGameStageEnum.RULES);
 
   private _subscription: Subscription;
+  private _globalPlaygroundTimerSubscription?: Subscription;
 
   private _showBackdrop: boolean = false;
   private _isBettingCompleted: boolean = false;
@@ -123,10 +121,6 @@ export class PlaygroundModel {
 
   get whoIsOpponent(): PlaygroundPlayersEnum {
     return this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? PlaygroundPlayersEnum.PLAYER_2 : PlaygroundPlayersEnum.PLAYER_1;
-  }
-
-  get globalPlaygroundTimerSubject$(): Observable<boolean> {
-    return this._globalPlaygroundTimerSubject.asObservable();
   }
 
   get playerCardsList(): Map<CardDeckEnum, string> {
@@ -671,11 +665,13 @@ export class PlaygroundModel {
       tap((metadata?: GameMidSegueMetadata) => {
         switch(metadata?.gameStagePhase) {
           case PlaygroundGameStagePhaseEnum.TIMER: {
-            const subscription = this.setGlobalPlaygroundTimer(metadata.message).pipe(
+            this._globalPlaygroundTimerSubscription?.unsubscribe();
+            this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(metadata.message).pipe(
               takeLast(1),
+              tap(() => this._globalPlaygroundTimerSubscription?.unsubscribe())
               // takeUntil(of(+this.globalPlaygroundTimer !== 0))
             ).subscribe();
-            console.log('subscription: ', subscription);
+            console.log('subscription: ', this._globalPlaygroundTimerSubscription);
             break;
           }
           case PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES: {
@@ -1018,7 +1014,7 @@ export class PlaygroundModel {
   private doOptionsPicking() {
     return this.switch$.pipe(
       filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.PICK)),
-      switchMap((metaData?: GameMidSegueMetadata) => {
+      tap((metaData?: GameMidSegueMetadata) => {
         // const metaDataMessage = metaData?.message as GameMidSegwayMetadata;
         // if (metaDataMessage.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
         //   this.setPlaygroundTimer(metaDataMessage.message);
@@ -1036,13 +1032,15 @@ export class PlaygroundModel {
         this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE, message: PlaygroundGameStageEnum.CHOOSE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'peer' } as GameMidSegueMetadata))
 
         // this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
-        return this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
+        // return this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
+        this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
           takeLast(1),
-          takeUntil(this._globalPlaygroundTimerSubject),
+          // takeUntil(this._globalPlaygroundTimerSubject),
           tap(() => {
+            this._globalPlaygroundTimerSubscription?.unsubscribe();
             this.enableSubmitOptionsButton = false;
             this.globalPlaygroundTimer = 0;
-            this._globalPlaygroundTimerSubject.next(false);
+            // this._globalPlaygroundTimerSubject.next(false);
             // this._globalPlaygroundTimerSubject.complete();
 
             // If nothing is selected by DeckShufflerWinner Player then choose from initial values as default
@@ -1063,7 +1061,7 @@ export class PlaygroundModel {
             this.waitingZoneHeader = 'Waiting for your partner to finish choosing from your submitted options...';
 
             this.notifyAndWaitForPartnerToChoose();
-          }));
+          })).subscribe();
 
         // return of();
       }));
@@ -1402,9 +1400,10 @@ export class PlaygroundModel {
     if (gameStage === PlaygroundGameStageEnum.PICK) {
       if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
         // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
+        this._globalPlaygroundTimerSubscription?.unsubscribe();
         this.enableSubmitOptionsButton = false;
         this.globalPlaygroundTimer = 0;
-        this._globalPlaygroundTimerSubject.next(false);
+        // this._globalPlaygroundTimerSubject.next(false);
         // this._globalPlaygroundTimerSubject.complete();
         this.buildUp3LiesAndATruth(true);
         this.notifyAndWaitForPartnerToChoose();
@@ -1423,6 +1422,7 @@ export class PlaygroundModel {
       message: 'Please confirm to proceed.',
       accept: () => {
         console.log('Shabbash Bete!! Bery Good!!!!');
+        this._globalPlaygroundTimerSubscription?.unsubscribe();
         this.enableSubmitOptionsButton = false;
         this.globalPlaygroundTimer = 0;
         // this._globalPlaygroundTimerSubject.next(false);
