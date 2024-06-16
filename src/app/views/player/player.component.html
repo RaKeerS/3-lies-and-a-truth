@@ -59,7 +59,7 @@
       </div>
       <div class="flex card-body justify-content-between w-full">
         <div class="flex inline-size-25rem" [style.z-index]="playgroundModel.increaseZIndexPicker ? 1001 : 'auto'">
-          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK) {
+          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK || (playgroundModel.gameStage$ | async) === PlaygroundGameStage.EVALUATE) {
             <p-card [header]="!playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 1 Truth' : 'Pick 3 Lies'" class="header-Picker w-full">
               <div class="m-0 flex w-full">
                 <div class="flex w-full">
@@ -125,7 +125,7 @@
               </div>
             </p-card>
           }
-          @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE && (playgroundModel.switch$ | async)?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
+          @if (((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE || (playgroundModel.gameStage$ | async) === PlaygroundGameStage.EVALUATE) && (playgroundModel.switch$ | async)?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
             <p-card [header]="!playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 1 Truth' : 'Pick 3 Lies'" class="header-Picker w-full">
               <div class="m-0 flex w-full">
                 <div class="flex w-full">

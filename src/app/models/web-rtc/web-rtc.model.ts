@@ -440,6 +440,11 @@ export class WebRtcModel {
           break;
         }
 
+        case PlaygroundGameStageEnum.EVALUATE: {
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: parsedData.isPicker, messageFrom: 'peer' } as GameMidSegueMetadata);
+          break;
+        }
+
         default: {
           break;
         }

@@ -575,6 +575,13 @@ export class PlaygroundModel {
     )
   }
 
+  private evaluateChoices() {
+    return this.gameStage$.pipe(
+      filter((stage: PlaygroundGameStageEnum) => stage === PlaygroundGameStageEnum.EVALUATE),
+      switchMap(() => this.doEvaluateChoices())
+    )
+  }
+
   private setGlobalPlaygroundTimer(startTime: number) {
     this.globalPlaygroundTimer = startTime;
 
@@ -624,7 +631,8 @@ export class PlaygroundModel {
       this.deckShuffling(),
       this.distributeCards(),
       this.pickOptions(),
-      this.chooseOptions());
+      this.chooseOptions(),
+      this.evaluateChoices());
   }
 
   public showPlaygroundGameRulesDialog(): void {
@@ -1154,6 +1162,31 @@ export class PlaygroundModel {
       }));
   }
 
+  private doEvaluateChoices() {
+    return this.switch$.pipe(
+      filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.EVALUATE)),
+      tap((_metaData?: GameMidSegueMetadata) => {
+        this.showWaitingHeader = true;
+        this.waitingZoneHeader = 'Evaluating result please wait...!';
+        this.midSegueMessages = 'Evaluating result please wait...!';
+      }),
+      tap((metaData?: GameMidSegueMetadata) => {
+        if (metaData?.isPicker) {
+          this.evaluatePickedOptions();
+        } else {
+          this._globalPlaygroundTimerSubscription?.unsubscribe();
+          this.globalPlaygroundTimer = 0;
+
+          if (metaData?.message === this.whoAmI) {
+            this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
+          } else {
+            this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
+          }
+          this.showWaitingHeader = false;
+        }
+      }),);
+  }
+
   // ===========================================================================
   // Event Handlers for Button Clicks
   // ===========================================================================
@@ -1355,15 +1388,16 @@ export class PlaygroundModel {
       // if (this.isDeckShufflerPlayer) {
       // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
 
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata));
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE,
         message: { opponentFalsyPickList: Array.from(this.playerFalsyPickList.entries()), opponentFalsySelectedList: this.playerFalsySelectedList, opponentTruthyPickList: Array.from(this.playerTruthyPickList.entries()), opponentTruthySelectedList: this.playerTruthySelectedList, opponentPickList: Array.from(this.opponentPickList.entries()) },
-        gameStagePhase: PlaygroundGameStagePhaseEnum.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata))
+        gameStagePhase: PlaygroundGameStagePhaseEnum.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata));
       // }
   }
 
   private evaluatePickedOptions() {
     let result;
+
     if (!this.toggleBetweenLiesOrTruth) { // NOTE: !this.toggleBetweenLiesOrTruth means TRUE (here in this context) and this.toggleBetweenLiesOrTruth means FALSE (in this context)
       if (this.choicesSelectedList && this.playerTruthySelectedList) {
         result = +this.choicesSelectedList === +this.playerTruthySelectedList;
@@ -1378,11 +1412,17 @@ export class PlaygroundModel {
       this.playerGameStageWinner = +this.whoAmI;
       this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
     } else {
-      this.playerGameStageWinner =  +this.whoIsOpponent;
+      this.playerGameStageWinner = +this.whoIsOpponent;
       this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
     }
 
+    // NOTE: Here 'isPicker' is set to 'false', because the one calling the evaluatePickedOptions() method is the Player choosing the options provided and calling evaluation. This message is post evaluation to be notified to the Player who provided the Picklist.
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: this.playerGameStageWinner, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: false, messageFrom: 'peer' } as GameMidSegueMetadata));
+    // this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: this.playerGameStageWinner, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: false, messageFrom: 'peer' } as GameMidSegueMetadata);
+
     console.log('Winner of this Game Stage is: ', this.playerGameStageWinner);
+
+    this.showWaitingHeader = false;
   }
 
   private showMessagesOnRegularIntervals(gameStage: GameMidSegueMetadata): Observable<number> {
@@ -1415,6 +1455,8 @@ export class PlaygroundModel {
         this._globalPlaygroundTimerSubscription?.unsubscribe();
         this.enableSubmitOptionsButton = false;
         this.globalPlaygroundTimer = 0;
+
+        this._gameStage.next(PlaygroundGameStageEnum.EVALUATE);
         // this._globalPlaygroundTimerSubject.next(false);
         // this._globalPlaygroundTimerSubject.complete();
         this.buildUp3LiesAndATruth(true);
@@ -1423,12 +1465,12 @@ export class PlaygroundModel {
         this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
       }
     } else if (gameStage === PlaygroundGameStageEnum.CHOOSE) {
-      this.confirmCancellation();
+      this.confirmChoiceSubmission();
     }
 
   }
 
-  private confirmCancellation(): void {
+  private confirmChoiceSubmission(): void {
     this._playgroundService.confirmationService.confirm({
       header: 'Are you sure?',
       message: 'Please confirm to proceed.',
@@ -1439,7 +1481,13 @@ export class PlaygroundModel {
         this.globalPlaygroundTimer = 0;
         // this._globalPlaygroundTimerSubject.next(false);
         // this._globalPlaygroundTimerSubject.complete();
-        this.evaluatePickedOptions();
+
+        // NOTE: Here 'isPicker' is set to 'true', because the one calling the evaluatePickedOptions() method is the Player choosing the options provided and calling evaluation. This message is post evaluation to be notified to the Player who provided the Picklist.
+        this._gameStage.next(PlaygroundGameStageEnum.EVALUATE);
+        this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: PlaygroundGameStageEnum.EVALUATE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: true, messageFrom: 'peer' } as GameMidSegueMetadata);
+        // this.evaluatePickedOptions();
+
+
         // this._playgroundService.messageService.add({ severity: 'error', summary: 'Connection Error', detail: 'Connection not established due to interruption!', life: 3000 });
       },
       reject: () => {

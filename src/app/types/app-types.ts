@@ -38,4 +38,5 @@ export type GameMidSegueMetadata = {
   tossMessage?: PlaygroundGameTossOutcomeEnum;
   beginShuffle?: boolean;
   gameStagePhase?: PlaygroundGameStagePhaseEnum;
+  isPicker?: boolean;
 }
