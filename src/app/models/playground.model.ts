@@ -1100,6 +1100,12 @@ export class PlaygroundModel {
 
           case PlaygroundGameStagePhaseEnum.INTERMEDIATE: {
             if (metaData.message) {
+              this.enableWaitingZone = true;
+              this.showWaitingHeader = true;
+
+              this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
+              this.midSegueMessages = 'Waiting for your partner to finish picking options...';
+
               this.opponentPickList = new Map(metaData.message.opponentPickList);
               this.opponentFalsySelectedList = metaData.message.opponentFalsySelectedList;
               this.opponentTruthySelectedList = metaData.message.opponentTruthySelectedList;
@@ -1112,12 +1118,14 @@ export class PlaygroundModel {
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
         if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INITIAL) {
-          this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.'
+          this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.';
 
           // NOTE: Below line works
           // return this.showMessagesOnRegularIntervals(PlaygroundGameStage.CHOOSE);
 
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: PlaygroundGameStageEnum.CHOOSE, gameStagePhase: PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES, messageFrom: 'peer' } as GameMidSegueMetadata);
+        } else if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INTERMEDIATE) {
+          this.waitingZoneHeader = 'You will be redirected to next game phase when the timer runs out.';
         }
 
 
@@ -1139,6 +1147,8 @@ export class PlaygroundModel {
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
         if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INITIAL) {
+          this.showWaitingHeader = false;
+        } else if (metaData?.gameStagePhase === PlaygroundGameStagePhaseEnum.INTERMEDIATE) {
           this.showWaitingHeader = false;
         }
       }));
@@ -1366,8 +1376,10 @@ export class PlaygroundModel {
 
     if (result) {
       this.playerGameStageWinner = +this.whoAmI;
+      this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
     } else {
       this.playerGameStageWinner =  +this.whoIsOpponent;
+      this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
     }
 
     console.log('Winner of this Game Stage is: ', this.playerGameStageWinner);
