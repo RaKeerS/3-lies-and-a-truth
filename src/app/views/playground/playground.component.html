@@ -148,14 +148,19 @@
                     <span style='font-size: 1rem'>&#58;</span>
                   </div>
                   <!-- playgroundTimer: {{ playgroundModel.playgroundTimer }} -->
-                </ng-template>
-              </p-inputOtp>
-            </p-card>
+                  </ng-template>
+                </p-inputOtp>
+              </p-card>
             <!-- <div class="flex justify-content-between mt-5 align-self-stretch">
                 <p-button label="Resend Code" [link]="true" class="p-0"></p-button>
                 <p-button label="Submit Code"></p-button>
             </div> -->
-        </div>
+          </div>
+          <div class="flex flex-column align-items-end">
+            <p-card class="flex flex-column">
+              <div class="font-bold text-2xl mb-4 flex justify-content-center"> Round {{ playgroundModel.globalPlaygroundRoundCounter }} </div>
+            </p-card>
+          </div>
         </div>
       </div>
     </div>
