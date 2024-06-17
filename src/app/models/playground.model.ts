@@ -1399,8 +1399,8 @@ export class PlaygroundModel {
     let result;
 
     if (!this.toggleBetweenLiesOrTruth) { // NOTE: !this.toggleBetweenLiesOrTruth means TRUE (here in this context) and this.toggleBetweenLiesOrTruth means FALSE (in this context)
-      if (this.choicesSelectedList && this.playerTruthySelectedList) {
-        result = +this.choicesSelectedList === +this.playerTruthySelectedList;
+      if (this.choicesSelectedList && this.opponentTruthySelectedList) {
+        result = +this.choicesSelectedList === +this.opponentTruthySelectedList;
       }
     } else {
       if (this.choicesSelectedList && this.opponentFalsySelectedList.length) {
