@@ -350,7 +350,7 @@ export class PlaygroundModel {
   get choicesSelectedList(): any[] | CardDeckEnum | undefined {
     return this._choicesSelectedList;
   }
-  set choicesSelectedList(value: any[] | CardDeckEnum) {
+  set choicesSelectedList(value: any[] | CardDeckEnum | undefined) {
     this._choicesSelectedList = value;
   }
 
@@ -1135,6 +1135,8 @@ export class PlaygroundModel {
               this.opponentPickList = new Map(metaData.message.opponentPickList);
               this.opponentFalsySelectedList = metaData.message.opponentFalsySelectedList;
               this.opponentTruthySelectedList = metaData.message.opponentTruthySelectedList;
+
+              console.log('opponentPickList: ', this.opponentPickList, 'opponentFalsySelectedList: ', this.opponentFalsySelectedList, 'opponentTruthySelectedList: ', this.opponentTruthySelectedList);
             }
           }
           break;
@@ -1592,7 +1594,7 @@ export class PlaygroundModel {
 
         // NOTE: Here 'isPicker' is set to 'true', because the one calling the evaluatePickedOptions() method is the Player choosing the options provided and calling evaluation. This message is post evaluation to be notified to the Player who provided the Picklist.
         this._gameStage.next(PlaygroundGameStageEnum.EVALUATE);
-        this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: PlaygroundGameStageEnum.EVALUATE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: true, messageFrom: 'peer' } as GameMidSegueMetadata);
+        this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: { gameStage: PlaygroundGameStageEnum.EVALUATE, destroyAll: !this.toggleBetweenLiesOrTruth }, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: true, messageFrom: 'peer' } as GameMidSegueMetadata);
         // this.evaluatePickedOptions();
 
 
@@ -1602,6 +1604,10 @@ export class PlaygroundModel {
         return false;
       }
     });
+  }
+
+  public resetChoicesListOnToggle(): void {
+    this.choicesSelectedList = undefined;
   }
 
   public unsubscribeAll(): void {

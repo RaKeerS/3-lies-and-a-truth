@@ -136,6 +136,7 @@
                   <p-toggleButton
                     [(ngModel)]="playgroundModel.toggleBetweenLiesOrTruth"
                     [disabled]="!playgroundModel.enableSubmitOptionsButton"
+                    (onChange)="playgroundModel.resetChoicesListOnToggle()"
                     onLabel="Toggle to Truth"
                     offLabel="Toggle to Lies" />
                   <!-- @if (!playgroundModel.toggleBetweenLiesOrTruth) {

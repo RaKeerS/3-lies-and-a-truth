@@ -134,9 +134,14 @@
 
 @if (playgroundModel.enableWaitingZone) {
   <div class="playground-timer-backdrop mid-graphics">
-    <div class="backdrop-body flex justify-content-center align-items-center h-8rem">
-      <div class="field p-fluid m-0">
-        <div class="p-field p-col-12">
+    <div class="backdrop-body flex justify-content-center align-items-center h-8rem w-full">
+      <div class="field p-fluid m-0 w-full">
+        <div class="p-field p-col-12 flex justify-content-between">
+          <div class="flex flex-column align-items-end">
+            <p-card class="flex flex-column">
+              <div class="font-bold text-2xl mb-4 flex justify-content-center custom-banners"> Round {{ playgroundModel.globalPlaygroundRoundCounter }} </div>
+            </p-card>
+          </div>
           <div class="flex flex-column align-items-center">
             <p-card class="flex flex-column">
               <div class="font-bold text-2xl mb-4 flex justify-content-center"> Timer </div>
@@ -158,7 +163,7 @@
           </div>
           <div class="flex flex-column align-items-end">
             <p-card class="flex flex-column">
-              <div class="font-bold text-2xl mb-4 flex justify-content-center"> Round {{ playgroundModel.globalPlaygroundRoundCounter }} </div>
+              <div class="font-bold text-2xl mb-4 flex justify-content-center custom-banners"> Round {{ playgroundModel.globalPlaygroundRoundCounter }} </div>
             </p-card>
           </div>
         </div>
