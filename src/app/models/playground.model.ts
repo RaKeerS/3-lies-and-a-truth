@@ -1059,6 +1059,8 @@ export class PlaygroundModel {
 
         // this.setGlobalPlaygroundTimer(200).pipe(takeWhile(() => +this.globalPlaygroundTimer !== 0)).subscribe();
         // return this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
+
+        this._globalPlaygroundTimerSubscription?.unsubscribe();
         this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
           takeLast(1),
           // takeUntil(this._globalPlaygroundTimerSubject),
@@ -1129,19 +1131,58 @@ export class PlaygroundModel {
               this.enableWaitingZone = true;
               this.showWaitingHeader = true;
 
-              this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
               this.midSegueMessages = 'Waiting for your partner to finish picking options...';
+              this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
 
               this.opponentPickList = new Map(metaData.message.opponentPickList);
               this.opponentFalsySelectedList = metaData.message.opponentFalsySelectedList;
               this.opponentTruthySelectedList = metaData.message.opponentTruthySelectedList;
+
+              this._globalPlaygroundTimerSubscription?.unsubscribe();
+              this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
+                takeLast(1),
+                // takeUntil(this._globalPlaygroundTimerSubject),
+                tap(() => {
+                  this._globalPlaygroundTimerSubscription?.unsubscribe();
+                  this.enableSubmitOptionsButton = false;
+                  this.globalPlaygroundTimer = 0;
+
+                  this.chooseAnyOptions();
+
+                  // this.submitOptions(PlaygroundGameStageEnum.CHOOSE);
+
+                  // NOTE: Here 'isPicker' is set to 'true', because the one calling the evaluatePickedOptions() method is the Player choosing the options provided and calling evaluation. This message is post evaluation to be notified to the Player who provided the Picklist.
+                  this._gameStage.next(PlaygroundGameStageEnum.EVALUATE);
+                  this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: { gameStage: PlaygroundGameStageEnum.EVALUATE, destroyAll: !this.toggleBetweenLiesOrTruth }, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: true, messageFrom: 'peer' } as GameMidSegueMetadata);
+
+                  // this._globalPlaygroundTimerSubject.next(false);
+                  // this._globalPlaygroundTimerSubject.complete();
+
+                  // If nothing is selected by DeckShufflerWinner Player then choose from initial values as default
+                  // if (this.playerFalsySelectedList.length < 3) {
+                  //   this.playerFalsySelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
+                  // }
+
+                  // if (!this.playerTruthySelectedList) {
+                  //   this.playerTruthySelectedList = Array.from(this.playerTruthyPickList.keys())[0];
+                  // }
+
+                  // this.buildUp3LiesAndATruth(true);
+
+                  // console.log('playerFalsySelectedList: ', this.playerFalsySelectedList);
+                  // console.log('playerTruthySelectedList: ', this.playerTruthySelectedList);
+
+                  // this.midSegueMessages = 'Waiting for your partner to finish choosing from your submitted options...';
+                  // this.waitingZoneHeader = 'Waiting for your partner to finish choosing from your submitted options...';
+
+                  // this.notifyAndWaitForPartnerToChoose();
+                })).subscribe();
 
               console.log('opponentPickList: ', this.opponentPickList, 'opponentFalsySelectedList: ', this.opponentFalsySelectedList, 'opponentTruthySelectedList: ', this.opponentTruthySelectedList);
             }
           }
           break;
         }
-
       }),
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
@@ -1192,7 +1233,7 @@ export class PlaygroundModel {
       }),
       tap((metaData?: GameMidSegueMetadata) => {
         if (metaData?.isPicker) {
-          this.evaluatePickedOptions();
+          this.evaluatePickedOptions(metaData);
         } else {
           this._globalPlaygroundTimerSubscription?.unsubscribe();
           this.globalPlaygroundTimer = 0;
@@ -1426,14 +1467,25 @@ export class PlaygroundModel {
       // if (this.isDeckShufflerPlayer) {
       // this._playgroundService.switch.next({ gameStage: PlaygroundGameStage.PICK, message: PlaygroundGameStage.PICK, gameStagePhase: PlaygroundGameStagePhase.INITIAL, messageFrom: 'subject' } as GameMidSegwayMetadata);
 
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata));
+      // NOTE: The below code is commented since we need to have control over what happens when the timer runs out. Here the logic to apply timer is simple, the one who needs to perform some action or task when timer runs out need not use Subject to initiate timer, rather call it explicitly by subscribing to it. Whereas, for the other partner, just initiate timer using the subject.
+      // this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata));
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE,
         message: { opponentFalsyPickList: Array.from(this.playerFalsyPickList.entries()), opponentFalsySelectedList: this.playerFalsySelectedList, opponentTruthyPickList: Array.from(this.playerTruthyPickList.entries()), opponentTruthySelectedList: this.playerTruthySelectedList, opponentPickList: Array.from(this.opponentPickList.entries()) },
         gameStagePhase: PlaygroundGameStagePhaseEnum.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata));
       // }
   }
 
-  private evaluatePickedOptions() {
+  private chooseAnyOptions() {
+    this.toggleBetweenLiesOrTruth = !!Math.floor(Math.random() * 2);
+
+    if (!this.toggleBetweenLiesOrTruth) {
+      this.choicesSelectedList = Array.from(this.opponentPickList.keys())[0];
+    } else {
+      this.choicesSelectedList = Array.from(this.playerFalsyPickList.keys()).slice(0, 3);
+    }
+  }
+
+  private evaluatePickedOptions(metaData: GameMidSegueMetadata) {
     let result;
     let destroyAll: boolean = false;
 
@@ -1463,6 +1515,8 @@ export class PlaygroundModel {
 
     console.log('Winner of this Game Stage is: ', this.playerGameStageWinner);
 
+    metaData.message.destroyAll = destroyAll;
+    metaData.message.playerGameStageWinner = this.playerGameStageWinner;
     this.showWaitingHeader = false;
   }
 
@@ -1509,9 +1563,9 @@ export class PlaygroundModel {
       }
     }
 
-    this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? ( p1CardsList = this.p1CardsList, p2CardsList = this.p2CardsList) : (p1CardsList = this.p2CardsList, p2CardsList = this.p1CardsList);
+    // this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? (p1CardsList = this.p1CardsList, p2CardsList = this.p2CardsList) : (p1CardsList = this.p2CardsList, p2CardsList = this.p1CardsList);
 
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: { p1CardsList: Array.from(p1CardsList.entries()), p2CardsList: Array.from(p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()) }, gameStagePhase: PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS, messageFrom: 'peer' } as GameMidSegueMetadata))
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()) }, gameStagePhase: PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS, messageFrom: 'peer' } as GameMidSegueMetadata))
 
     // while(true) {
     //   const randomNumber = Math.floor(Math.random() * 53) + 1;
