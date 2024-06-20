@@ -678,11 +678,11 @@ export class PlaygroundModel {
     return this.switch$.pipe(
       // takeLast(1),
       filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.OTHER)),
-      tap((metadata?: GameMidSegueMetadata) => {
-        switch(metadata?.gameStagePhase) {
+      tap((metaData?: GameMidSegueMetadata) => {
+        switch(metaData?.gameStagePhase) {
           case PlaygroundGameStagePhaseEnum.TIMER: {
             this._globalPlaygroundTimerSubscription?.unsubscribe();
-            this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(metadata.message).pipe(
+            this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(metaData.message).pipe(
               takeLast(1),
               tap(() => this._globalPlaygroundTimerSubscription?.unsubscribe())
               // takeUntil(of(+this.globalPlaygroundTimer !== 0))
@@ -693,7 +693,7 @@ export class PlaygroundModel {
 
           case PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES: {
             this.showWaitingHeader = true;
-            this.showMessagesOnRegularIntervals(metadata).pipe(
+            this.showMessagesOnRegularIntervals(metaData).pipe(
               takeLast(1),
               tap((data) => {
                 console.log('Heree: ', data);
@@ -706,9 +706,7 @@ export class PlaygroundModel {
           }
 
           case PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS: {
-            this.p1CardsList = metadata.message.p1CardsList;
-            this.p2CardsList = metadata.message.p2CardsList;
-            this.deckCardsList = metadata.message.deckCardsList;
+            this.mapCardsList(metaData);
             break;
           }
 
@@ -995,9 +993,7 @@ export class PlaygroundModel {
           return of(metaData).pipe(
             tap((metaData) => {
               if (metaData.message && !this.isDeckShufflerPlayer) {
-                this.p1CardsList = new Map(metaData.message.p1CardsList);
-                this.p2CardsList = new Map(metaData.message.p2CardsList);
-                this.deckCardsList = new Map(metaData.message.deckCardsList);
+                this.mapCardsList(metaData);
               }
             }),
             // NOTE - Create Options PickList for the Player.
@@ -1139,7 +1135,7 @@ export class PlaygroundModel {
               this.opponentTruthySelectedList = metaData.message.opponentTruthySelectedList;
 
               this._globalPlaygroundTimerSubscription?.unsubscribe();
-              this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(+this.globalPlaygroundTimer).pipe(
+              this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(metaData?.message.globalPlaygroundTimer).pipe(
                 takeLast(1),
                 // takeUntil(this._globalPlaygroundTimerSubject),
                 tap(() => {
@@ -1232,6 +1228,7 @@ export class PlaygroundModel {
         this.midSegueMessages = 'Evaluating result please wait...!';
       }),
       tap((metaData?: GameMidSegueMetadata) => {
+        this.showWaitingHeader = true;
         if (metaData?.isPicker) {
           this.evaluatePickedOptions(metaData);
         } else {
@@ -1257,9 +1254,9 @@ export class PlaygroundModel {
       }),
       delay(1800),
       tap((_metaData?: GameMidSegueMetadata) => {
-        this.waitingZoneHeader = 'Commencing Round 2';
-        this.midSegueMessages = 'Commencing Round 2';
-        this.globalPlaygroundRoundCounter++;
+        this.globalPlaygroundRoundCounter += 1;
+        this.waitingZoneHeader =`'Commencing Round ${this.globalPlaygroundRoundCounter}`;
+        this.midSegueMessages = `Commencing Round ${this.globalPlaygroundRoundCounter}`;
       }),
       delay(1800),
       tap((_metaData?: GameMidSegueMetadata) => this.showWaitingHeader = false)
@@ -1377,6 +1374,12 @@ export class PlaygroundModel {
     // }
   }
 
+  private mapCardsList(metaData: GameMidSegueMetadata): void {
+    this.p1CardsList = new Map(metaData.message.p1CardsList);
+    this.p2CardsList = new Map(metaData.message.p2CardsList);
+    this.deckCardsList = new Map(metaData.message.deckCardsList);
+  }
+
   private createPicklistForPlayer(): void {
     const playerPicklist: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
 
@@ -1470,7 +1473,7 @@ export class PlaygroundModel {
       // NOTE: The below code is commented since we need to have control over what happens when the timer runs out. Here the logic to apply timer is simple, the one who needs to perform some action or task when timer runs out need not use Subject to initiate timer, rather call it explicitly by subscribing to it. Whereas, for the other partner, just initiate timer using the subject.
       // this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata));
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE,
-        message: { opponentFalsyPickList: Array.from(this.playerFalsyPickList.entries()), opponentFalsySelectedList: this.playerFalsySelectedList, opponentTruthyPickList: Array.from(this.playerTruthyPickList.entries()), opponentTruthySelectedList: this.playerTruthySelectedList, opponentPickList: Array.from(this.opponentPickList.entries()) },
+        message: { opponentFalsyPickList: Array.from(this.playerFalsyPickList.entries()), opponentFalsySelectedList: this.playerFalsySelectedList, opponentTruthyPickList: Array.from(this.playerTruthyPickList.entries()), opponentTruthySelectedList: this.playerTruthySelectedList, opponentPickList: Array.from(this.opponentPickList.entries()), globalPlaygroundTimer: this.globalPlaygroundTimer },
         gameStagePhase: PlaygroundGameStagePhaseEnum.INTERMEDIATE, messageFrom: 'peer' } as GameMidSegueMetadata));
       // }
   }

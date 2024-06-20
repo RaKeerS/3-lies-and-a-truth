@@ -382,7 +382,7 @@ export class WebRtcModel {
     if (parsedData?.gameStage !== undefined && parsedData?.message !== undefined) {
       switch(parsedData.gameStage) {
         case PlaygroundGameStageEnum.OTHER: {
-          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'subject' } as GameMidSegueMetadata);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.OTHER, message: parsedData.message, gameStagePhase: parsedData.gameStagePhase, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
 
