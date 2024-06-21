@@ -207,7 +207,7 @@ export class PlaygroundModel {
     return this._globalPlaygroundRoundCounter;
   }
   set globalPlaygroundRoundCounter(value: number) {
-    this._globalPlaygroundTimer = value;
+    this._globalPlaygroundRoundCounter = value;
   }
 
   get playgroundCreatorBetAmount(): number {
@@ -1520,7 +1520,7 @@ export class PlaygroundModel {
 
     metaData.message.destroyAll = destroyAll;
     metaData.message.playerGameStageWinner = this.playerGameStageWinner;
-    this.showWaitingHeader = false;
+    // this.showWaitingHeader = false;
   }
 
   /*

@@ -297,7 +297,8 @@ $min-block-size: 24rem;
 
 .playground-waiting-zone-backdrop {
   @extend .backdrop;
-  block-size: 25vh;
+  // block-size: 25vh;
+  block-size: auto;
   top: 42vh;
   z-index: 1002;
 }
