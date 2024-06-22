@@ -61,6 +61,7 @@ export class PlaygroundModel {
 
   private _subscription: Subscription;
   private _globalPlaygroundTimerSubscription?: Subscription;
+  private _globalPlaygroundMidSegueMessagesSubscription?: Subscription;
 
   private _showBackdrop: boolean = false;
   private _isBettingCompleted: boolean = false;
@@ -692,8 +693,9 @@ export class PlaygroundModel {
           }
 
           case PlaygroundGameStagePhaseEnum.MIDSEGUEMESSAGES: {
+            this._globalPlaygroundMidSegueMessagesSubscription?.unsubscribe();
             this.showWaitingHeader = true;
-            this.showMessagesOnRegularIntervals(metaData).pipe(
+            this._globalPlaygroundMidSegueMessagesSubscription = this.showMessagesOnRegularIntervals(metaData).pipe(
               takeLast(1),
               tap((data) => {
                 console.log('Heree: ', data);
@@ -1016,9 +1018,8 @@ export class PlaygroundModel {
             delay(500),
             tap(() => this.increaseZIndexPicker = true),
             tap(() => {
-              this._gameStage.next(PlaygroundGameStageEnum.PICK);
-
               if (this.isDeckShufflerPlayer) {
+                this._gameStage.next(PlaygroundGameStageEnum.PICK);
                 this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.PICK, message: PlaygroundGameStageEnum.PICK, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
               } else {
                 this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);
@@ -1061,9 +1062,11 @@ export class PlaygroundModel {
           takeLast(1),
           // takeUntil(this._globalPlaygroundTimerSubject),
           tap(() => {
-            this._globalPlaygroundTimerSubscription?.unsubscribe();
-            this.enableSubmitOptionsButton = false;
-            this.globalPlaygroundTimer = 0;
+            this.unsubscribeAllAndResetCounter();
+            // this._globalPlaygroundTimerSubscription?.unsubscribe();
+            // this.enableSubmitOptionsButton = false;
+            // this.globalPlaygroundTimer = 0;
+
             // this._globalPlaygroundTimerSubject.next(false);
             // this._globalPlaygroundTimerSubject.complete();
 
@@ -1139,9 +1142,11 @@ export class PlaygroundModel {
                 takeLast(1),
                 // takeUntil(this._globalPlaygroundTimerSubject),
                 tap(() => {
-                  this._globalPlaygroundTimerSubscription?.unsubscribe();
-                  this.enableSubmitOptionsButton = false;
-                  this.globalPlaygroundTimer = 0;
+                  this.unsubscribeAllAndResetCounter();
+
+                  // this._globalPlaygroundTimerSubscription?.unsubscribe();
+                  // this.enableSubmitOptionsButton = false;
+                  // this.globalPlaygroundTimer = 0;
 
                   this.chooseAnyOptions();
 
@@ -1227,13 +1232,16 @@ export class PlaygroundModel {
         this.waitingZoneHeader = 'Evaluating result please wait...!';
         this.midSegueMessages = 'Evaluating result please wait...!';
       }),
+      delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
         this.showWaitingHeader = true;
         if (metaData?.isPicker) {
           this.evaluatePickedOptions(metaData);
         } else {
-          this._globalPlaygroundTimerSubscription?.unsubscribe();
-          this.globalPlaygroundTimer = 0;
+          this.unsubscribeAllAndResetCounter();
+
+          // this._globalPlaygroundTimerSubscription?.unsubscribe();
+          // this.globalPlaygroundTimer = 0;
 
           if (metaData?.message.playerGameStageWinner === this.whoAmI) {
             this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
@@ -1244,7 +1252,7 @@ export class PlaygroundModel {
           }
         }
       }),
-      delay(2000),
+      delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
         if (metaData?.message.playerGameStageWinner !== this.whoAmI) {
           this.reDistributeCardsPostEvaluation(metaData?.message.destroyAll);
@@ -1255,7 +1263,7 @@ export class PlaygroundModel {
       delay(1800),
       tap((_metaData?: GameMidSegueMetadata) => {
         this.globalPlaygroundRoundCounter += 1;
-        this.waitingZoneHeader =`'Commencing Round ${this.globalPlaygroundRoundCounter}`;
+        this.waitingZoneHeader =`Commencing Round ${this.globalPlaygroundRoundCounter}`;
         this.midSegueMessages = `Commencing Round ${this.globalPlaygroundRoundCounter}`;
       }),
       delay(1800),
@@ -1315,6 +1323,13 @@ export class PlaygroundModel {
   //     tap(() => this.shuffleDeckHeader = 'Cards Distributed'),
   //     tap(() => this._gameStage.next(PlaygroundGameStage.SHUFFLE))).subscribe();
   // }
+
+  private unsubscribeAllAndResetCounter(): void {
+    this.globalPlaygroundTimer = 0;
+    this._globalPlaygroundTimerSubscription?.unsubscribe();
+    this._globalPlaygroundMidSegueMessagesSubscription?.unsubscribe();
+    this.enableSubmitOptionsButton = false;
+  }
 
   // FIXME // NOTE - This method should only be called if 'this.createPlayground' is true, this is because both sessions are generating different sets of cards for 'Player 1' and 'Player 2'. - [Done Implementing]
   private distributeDeckCards(_player?: PlaygroundGameTossOutcomeEnum): void {
@@ -1619,9 +1634,10 @@ export class PlaygroundModel {
     if (gameStage === PlaygroundGameStageEnum.PICK) {
       if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
         // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
-        this._globalPlaygroundTimerSubscription?.unsubscribe();
-        this.enableSubmitOptionsButton = false;
-        this.globalPlaygroundTimer = 0;
+        this.unsubscribeAllAndResetCounter();
+        // this._globalPlaygroundTimerSubscription?.unsubscribe();
+        // this.enableSubmitOptionsButton = false;
+        // this.globalPlaygroundTimer = 0;
 
         this._gameStage.next(PlaygroundGameStageEnum.EVALUATE);
         // this._globalPlaygroundTimerSubject.next(false);
@@ -1643,9 +1659,11 @@ export class PlaygroundModel {
       message: 'Please confirm to proceed.',
       accept: () => {
         console.log('Shabbash Bete!! Bery Good!!!!');
-        this._globalPlaygroundTimerSubscription?.unsubscribe();
-        this.enableSubmitOptionsButton = false;
-        this.globalPlaygroundTimer = 0;
+        this.unsubscribeAllAndResetCounter();
+        // this._globalPlaygroundTimerSubscription?.unsubscribe();
+        // this.enableSubmitOptionsButton = false;
+        // this.globalPlaygroundTimer = 0;
+
         // this._globalPlaygroundTimerSubject.next(false);
         // this._globalPlaygroundTimerSubject.complete();
 

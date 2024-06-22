@@ -62,6 +62,7 @@
           @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.PICK || (playgroundModel.gameStage$ | async) === PlaygroundGameStage.EVALUATE) {
             <p-card [header]="!playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 1 Truth' : 'Pick 3 Lies'" class="header-Picker w-full">
               <div class="m-0 flex w-full">
+                PICK GameStage
                 <div class="flex w-full">
                   <label class="flex align-items-center" for="flipCards">Flip Cards: </label>
                     <p-inputSwitch id="flipCards" class="flex p-2" [(ngModel)]="playgroundModel.flipCards" />
@@ -128,6 +129,7 @@
           @if (((playgroundModel.gameStage$ | async) === PlaygroundGameStage.CHOOSE || (playgroundModel.gameStage$ | async) === PlaygroundGameStage.EVALUATE) && (playgroundModel.switch$ | async)?.gameStagePhase === PlaygroundGameStagePhase.INTERMEDIATE) {
             <p-card [header]="!playgroundModel.toggleBetweenLiesOrTruth ? 'Pick 1 Truth' : 'Pick 3 Lies'" class="header-Picker w-full">
               <div class="m-0 flex w-full">
+                CHOOSE GameStage
                 <div class="flex w-full">
                   <label class="flex align-items-center" for="flipCards">Flip Cards: </label>
                     <p-inputSwitch id="flipCards" class="flex p-2" [(ngModel)]="playgroundModel.flipCards" />
