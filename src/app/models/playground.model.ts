@@ -219,7 +219,7 @@ export class PlaygroundModel {
   }
 
   get playgroundJoinerBetAmount(): number {
-    return this._playgroundService.createPlayground ?  this._playerTwoBetAmount : this._playerOneBetAmount;
+    return this._playgroundService.createPlayground ? this._playerTwoBetAmount : this._playerOneBetAmount;
   }
   set playgroundJoinerBetAmount(value: number) {
     this._playgroundService.createPlayground ? this._playerTwoBetAmount = value : this._playerOneBetAmount = value;
@@ -1045,7 +1045,6 @@ export class PlaygroundModel {
 
         console.log('PICK GameStage: ', metaData?.message);
 
-        this.enableSubmitOptionsButton = true;
         this.showMidSegueMessages = false;
         this.showPlayerSegueMessages = true;
         this.enableWaitingZone = true;
@@ -1245,8 +1244,13 @@ export class PlaygroundModel {
           // this.globalPlaygroundTimer = 0;
         }
         if (metaData?.message.playerGameStageWinner === this.whoAmI) {
+          // NOTE: Check this betAmount Logic once!
+          this.playgroundCreatorBetAmount += this.playgroundJoinerBetAmount;
+          this.playgroundJoinerBetAmount -= this.playgroundCreatorBetAmount;
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
         } else {
+          this.playgroundJoinerBetAmount += this.playgroundCreatorBetAmount;
+          this.playgroundCreatorBetAmount -= this.playgroundJoinerBetAmount;
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
           this.waitingZoneHeader = 'Destroying Your Cards';
           this.midSegueMessages = 'Destroying Your Cards';
@@ -1265,6 +1269,9 @@ export class PlaygroundModel {
         this.globalPlaygroundRoundCounter += 1;
         this.waitingZoneHeader =`Commencing Round ${this.globalPlaygroundRoundCounter}`;
         this.midSegueMessages = `Commencing Round ${this.globalPlaygroundRoundCounter}`;
+
+        this._playgroundService.switch.forEach(() => this._playgroundService.switch.next(undefined));
+        this.enableSubmitOptionsButton = true;
 
         if (!metaData?.isPicker) {
           this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);

@@ -110,6 +110,10 @@ export class PlaygroundService {
     return this._switch;
   }
 
+  set switch(value: ReplaySubject<GameMidSegueMetadata | undefined>) {
+    this._switch = value;
+  }
+
   get switch$(): Observable<GameMidSegueMetadata | undefined> {
     return this._switch.asObservable();
   }
