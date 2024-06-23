@@ -1045,6 +1045,7 @@ export class PlaygroundModel {
 
         console.log('PICK GameStage: ', metaData?.message);
 
+        this.enableSubmitOptionsButton = true;
         this.showMidSegueMessages = false;
         this.showPlayerSegueMessages = true;
         this.enableWaitingZone = true;
@@ -1242,14 +1243,13 @@ export class PlaygroundModel {
 
           // this._globalPlaygroundTimerSubscription?.unsubscribe();
           // this.globalPlaygroundTimer = 0;
-
-          if (metaData?.message.playerGameStageWinner === this.whoAmI) {
-            this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
-          } else {
-            this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
-            this.waitingZoneHeader = 'Destroying Your Cards';
-            this.midSegueMessages = 'Destroying Your Cards';
-          }
+        }
+        if (metaData?.message.playerGameStageWinner === this.whoAmI) {
+          this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
+        } else {
+          this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
+          this.waitingZoneHeader = 'Destroying Your Cards';
+          this.midSegueMessages = 'Destroying Your Cards';
         }
       }),
       delay(1800),
@@ -1261,10 +1261,17 @@ export class PlaygroundModel {
         }
       }),
       delay(1800),
-      tap((_metaData?: GameMidSegueMetadata) => {
+      tap((metaData?: GameMidSegueMetadata) => {
         this.globalPlaygroundRoundCounter += 1;
         this.waitingZoneHeader =`Commencing Round ${this.globalPlaygroundRoundCounter}`;
         this.midSegueMessages = `Commencing Round ${this.globalPlaygroundRoundCounter}`;
+
+        if (!metaData?.isPicker) {
+          this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);
+        } else {
+          this._gameStage.next(PlaygroundGameStageEnum.PICK);
+          this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.PICK, message: PlaygroundGameStageEnum.PICK, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
+        }
       }),
       delay(1800),
       tap((_metaData?: GameMidSegueMetadata) => this.showWaitingHeader = false)
@@ -1519,13 +1526,15 @@ export class PlaygroundModel {
       }
     }
 
-    if (result) {
-      this.playerGameStageWinner = +this.whoAmI;
-      this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
-    } else {
-      this.playerGameStageWinner = +this.whoIsOpponent;
-      this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
-    }
+    this.playerGameStageWinner = !!result ? +this.whoAmI : +this.whoIsOpponent;
+
+    // if (result) {
+    //   this.playerGameStageWinner = +this.whoAmI;
+    //   this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
+    // } else {
+    //   this.playerGameStageWinner = +this.whoIsOpponent;
+    //   this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
+    // }
 
     // NOTE: Here 'isPicker' is set to 'false', because the one calling the evaluatePickedOptions() method is the Player choosing the options provided and calling evaluation. This message is post evaluation to be notified to the Player who provided the Picklist.
     this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.EVALUATE, message: { playerGameStageWinner: this.playerGameStageWinner, destroyAll: destroyAll }, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, isPicker: false, messageFrom: 'peer' } as GameMidSegueMetadata));
