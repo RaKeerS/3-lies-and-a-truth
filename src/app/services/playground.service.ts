@@ -227,8 +227,19 @@ export class PlaygroundService {
     // });
     this._counter++;
 
-    await navigator.clipboard.writeText(this.signalInvitationToken ?? '')
-    console.log('Clicked!!!');
+    await navigator.clipboard.writeText(this.signalInvitationToken ?? '');
+
+    this.messageService.add({ severity: 'info', summary: 'Clipboard', detail: 'Copied Text!' });
+    console.log('Copied!!!');
+  }
+
+  async pasteFromClipboard() {
+    this._counter++;
+
+    this.signalInvitationToken = await navigator.clipboard.readText();
+
+    this.messageService.add({ severity: 'info', summary: 'Clipboard', detail: 'Pasted Text!' });
+    console.log('Pasted!!!');
   }
 
 

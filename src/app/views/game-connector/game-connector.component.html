@@ -134,8 +134,12 @@
                 }
                 @else {
                   <div class="p-field p-col-12 p-3 h-full">
+                    <span class="icon flex justify-content-end pb-2">
+                      <span class="tooltiptext" id="myTooltip">Paste from clipboard</span>
+                      <i class="pi pi-clipboard icon-paste" (click)="playgroundService.pasteFromClipboard()"></i>
+                    </span>
                     <span class="p-float-label h-full">
-                      <textarea id="token-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="false" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
+                      <textarea id="token-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                       <label for="token-input">Token</label>
                     </span>
                   </div>
@@ -148,7 +152,7 @@
                 <p-button (onClick)="nextCallback.emit(); playgroundService.resetTokenForPlayground();" [disabled]="!playgroundService.signalInvitationTokenCreated && optionSelected === 1" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
               @else {
-                <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" (click)="playgroundService.sendTokenForPlayground();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                <p-button (onClick)="nextCallback.emit(); playgroundService.sendTokenForPlayground();" (click)="playgroundService.sendTokenForPlayground();" [disabled]="!playgroundService.signalInvitationToken?.trim()?.length" label="Next" icon="pi pi-arrow-right" iconPos="right" />
               }
             </div>
           </ng-template>
@@ -172,9 +176,13 @@
               <div *ngIf="this.playgroundService.signalInvitationTokenCreated || optionSelected === 1" class="text-center mt-3 mb-3 text-xl font-semibold"> {{ tokenHeaderMessageToDisplay2 }} </div>
               <div class="field p-fluid h-15rem">
                 @if(optionSelected === 1) {
+                  <span class="icon flex justify-content-end pb-2">
+                    <span class="tooltiptext" id="myTooltip">Paste from clipboard</span>
+                    <i class="pi pi-clipboard icon-paste" (click)="playgroundService.pasteFromClipboard()"></i>
+                  </span>
                   <div class="p-field p-col-12 p-3 h-full">
                     <span class="p-float-label h-full">
-                      <textarea id="float-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="false" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
+                      <textarea id="float-input" class="h-full" rows="5" cols="30" pInputTextarea [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken"></textarea>
                       <label for="float-input">Token</label>
                     </span>
                   </div>

@@ -366,7 +366,7 @@ export class PlaygroundModel {
   get opponentTruthySelectedListTemp(): CardDeckEnum {
     return this._opponentTruthySelectedListTemp as CardDeckEnum;
   }
-  set opponentTruthySelectedListTemp(value: CardDeckEnum) {
+  set opponentTruthySelectedListTemp(value: CardDeckEnum | undefined) {
     this.choicesSelectedList = value;
     this._opponentTruthySelectedListTemp = value;
   }
@@ -375,7 +375,6 @@ export class PlaygroundModel {
     return this._opponentFalsySelectedList as any[];
   }
   set opponentFalsySelectedList(value: any[]) {
-    this.choicesSelectedList = value;
     this._opponentFalsySelectedList = value;
   }
 
@@ -383,7 +382,6 @@ export class PlaygroundModel {
     return this._opponentTruthySelectedList as CardDeckEnum;
   }
   set opponentTruthySelectedList(value: CardDeckEnum) {
-    this.choicesSelectedList = value;
     this._opponentTruthySelectedList = value;
   }
 
@@ -411,7 +409,7 @@ export class PlaygroundModel {
   get playerTruthySelectedList(): CardDeckEnum | undefined {
     return this._playerTruthySelectedList;
   }
-  set playerTruthySelectedList(value: CardDeckEnum) {
+  set playerTruthySelectedList(value: CardDeckEnum | undefined) {
     this._playerTruthySelectedList = value;
   }
 
@@ -598,7 +596,7 @@ export class PlaygroundModel {
       // takeUntil(this.globalPlaygroundTimerSubject$),
       takeWhile(() => +this.globalPlaygroundTimer !== 0),
       tap(() => {
-        console.log('globalPlaygroundTimer: ', new Date() + ' - ' + this.globalPlaygroundTimer);
+        // console.log('globalPlaygroundTimer: ', new Date() + ' - ' + this.globalPlaygroundTimer);
         this.globalPlaygroundTimer = +this.globalPlaygroundTimer - 1;
         if (+this.globalPlaygroundTimer % 100 === 99) {
           this.globalPlaygroundTimer = +this.globalPlaygroundTimer - 40;
@@ -1043,13 +1041,24 @@ export class PlaygroundModel {
         //   this.setPlaygroundTimer(metaDataMessage.message);
         // }
 
+        // console.log('PlayerCardsList: ', this.playerCardsList);
+        // console.log('PlayerFalsyPickList: ', this.playerFalsyPickList);
+        // console.log('PlayerFalsySelectedList: ', this.playerFalsySelectedList);
+        // console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
+        // console.log('PlayerTruthySelectedList: ', this.playerTruthySelectedList);
+        // console.log('Deck Cards List: ', this.deckCardsList);
+        // console.log('Void Cards List: ', this.voidDeckCardsList);
+
         console.log('PICK GameStage: ', metaData?.message);
 
         this.showMidSegueMessages = false;
         this.showPlayerSegueMessages = true;
+        this.showBackdrop = true;
         this.enableWaitingZone = true;
         this.showWaitingHeader = false;
         this.globalPlaygroundTimer = 200;
+
+        this.midSegueMessages = 'Pick suitable options from the ones presented!';
 
         this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.globalPlaygroundTimer, gameStagePhase: PlaygroundGameStagePhaseEnum.TIMER, messageFrom: 'peer' } as GameMidSegueMetadata))
         this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.CHOOSE, message: PlaygroundGameStageEnum.CHOOSE, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'peer' } as GameMidSegueMetadata))
@@ -1248,10 +1257,14 @@ export class PlaygroundModel {
           this.playgroundCreatorBetAmount += this.playgroundJoinerBetAmount;
           this.playgroundJoinerBetAmount -= this.playgroundCreatorBetAmount;
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
+          this._playgroundService.messageService.add({ severity: 'success', summary: 'Achievement: Bounty Winner!🤴🏻', detail: 'Your will receive your opponent\'s bounty amount!🤑' });
+          this._playgroundService.messageService.add({ severity: 'success', summary: 'Achievement: Card Destroyer!😈', detail: 'Your opponent\'s cards will be destroyed following your round victory!😎' });
         } else {
           this.playgroundJoinerBetAmount += this.playgroundCreatorBetAmount;
           this.playgroundCreatorBetAmount -= this.playgroundJoinerBetAmount;
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
+          this._playgroundService.messageService.add({ severity: 'error', summary: 'Achievement: Bounty Loser!😭', detail: 'Your opponent will receive your bounty amount!🙄' });
+          this._playgroundService.messageService.add({ severity: 'error', summary: 'Achievement: Self Destructor!🤡', detail: 'Your cards will be destroyed following your round loss!😑' });
           this.waitingZoneHeader = 'Destroying Your Cards';
           this.midSegueMessages = 'Destroying Your Cards';
         }
@@ -1272,9 +1285,18 @@ export class PlaygroundModel {
 
         this._playgroundService.switch.forEach(() => this._playgroundService.switch.next(undefined));
         this.enableSubmitOptionsButton = true;
+        this.toggleBetweenLiesOrTruth = false;
+
+        this.playerFalsySelectedList = [];
+        this.playerTruthySelectedList = undefined;
+        this.choicesSelectedList = undefined;
+        this.opponentFalsySelectedListTemp = [];
+        this.opponentTruthySelectedListTemp = undefined;
 
         if (!metaData?.isPicker) {
           this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);
+          this.showPlayerSegueMessages = false;
+          this.increaseZIndexCards = true;
         } else {
           this._gameStage.next(PlaygroundGameStageEnum.PICK);
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.PICK, message: PlaygroundGameStageEnum.PICK, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
@@ -1387,6 +1409,7 @@ export class PlaygroundModel {
           }
         }
         this.deckCardsList.delete(randomNumber);
+        this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
       }
 
 
@@ -1397,7 +1420,7 @@ export class PlaygroundModel {
 
     this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 ? (this.p1CardsList = firstPlayerCardsList, this.p2CardsList = secondPlayerCardsList) : (this.p1CardsList = secondPlayerCardsList, this.p2CardsList = firstPlayerCardsList);
 
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.DISTRIBUTE, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()) }, messageFrom: 'peer' } as GameMidSegueMetadata))
+    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.DISTRIBUTE, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()), voidDeckCardsList: Array.from(this.voidDeckCardsList.entries()) }, messageFrom: 'peer' } as GameMidSegueMetadata))
     // } else {
 
     // }
@@ -1407,6 +1430,16 @@ export class PlaygroundModel {
     this.p1CardsList = new Map(metaData.message.p1CardsList);
     this.p2CardsList = new Map(metaData.message.p2CardsList);
     this.deckCardsList = new Map(metaData.message.deckCardsList);
+    this.voidDeckCardsList = new Map(metaData.message.voidDeckCardsList);
+
+
+    console.log('PlayerCardsList: ', this.playerCardsList);
+    console.log('PlayerFalsyPickList: ', this.playerFalsyPickList);
+    console.log('PlayerFalsySelectedList: ', this.playerFalsySelectedList);
+    console.log('PlayerTruthyPickList: ', this.playerTruthyPickList);
+    console.log('PlayerTruthySelectedList: ', this.playerTruthySelectedList);
+    console.log('Deck Cards List: ', this.deckCardsList);
+    console.log('Void Cards List: ', this.voidDeckCardsList);
   }
 
   private createPicklistForPlayer(): void {
@@ -1579,27 +1612,36 @@ export class PlaygroundModel {
       })
     }
 
-    while(true) {
-      const randomNumber = Math.floor(Math.random() * 53) + 1;
-      if (this.playerCardsList.size === 4) {
-        break;
+    if (this.deckCardsList.size !== 0 && this.deckCardsList.size >= this.playerCardsList.size) {
+      while(true) {
+        const randomNumber = Math.floor(Math.random() * 53) + 1;
+        if (this.playerCardsList.size === 4) {
+          break;
+        }
+
+        if (this.deckCardsList.has(randomNumber)) {
+          if (this.playerCardsList.size === 0) {
+            this.playerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+          } else {
+            if (!this.playerCardsList.has(randomNumber)) {
+              this.playerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+            }
+          }
+          this.deckCardsList.delete(randomNumber);
+          this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+        }
       }
 
-      if (this.deckCardsList.has(randomNumber)) {
-        if (this.playerCardsList.size === 0) {
-          this.playerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
-        } else {
-          if (!this.playerCardsList.has(randomNumber)) {
-            this.playerCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
-          }
-        }
-        this.deckCardsList.delete(randomNumber);
-      }
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()), voidDeckCardsList: Array.from(this.voidDeckCardsList.entries()) }, gameStagePhase: PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS, messageFrom: 'peer' } as GameMidSegueMetadata))
+    } else {
+      console.log('Deck ke Cards khatam ho gae!');
     }
+
+
 
     // this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? (p1CardsList = this.p1CardsList, p2CardsList = this.p2CardsList) : (p1CardsList = this.p2CardsList, p2CardsList = this.p1CardsList);
 
-    this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()) }, gameStagePhase: PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS, messageFrom: 'peer' } as GameMidSegueMetadata))
+
 
     // while(true) {
     //   const randomNumber = Math.floor(Math.random() * 53) + 1;
