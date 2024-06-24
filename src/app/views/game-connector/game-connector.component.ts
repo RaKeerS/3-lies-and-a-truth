@@ -104,7 +104,7 @@ export class GameConnectorComponent implements OnInit, OnDestroy {
       this._modalClosed = true;
       this._subscription = of(this._modalClosed).pipe(
         delay(100),
-        tap(() => this.closeDialog())).subscribe();
+        tap(() => this.closeDialog())).subscribe(() => this._subscription?.unsubscribe());
     }
     return this.playgroundService.redirectCounter;
   }

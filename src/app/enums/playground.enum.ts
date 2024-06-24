@@ -33,6 +33,7 @@ export enum PlaygroundGameStageEnum {
 }
 
 export enum PlaygroundGameStagePhaseEnum {
+  OPPONENTNAME,
   TIMER,
   MIDSEGUEMESSAGES,
   REDISTRIBUTECARDS,

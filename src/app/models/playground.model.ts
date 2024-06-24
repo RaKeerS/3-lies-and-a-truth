@@ -75,6 +75,7 @@ export class PlaygroundModel {
   private _waitingZoneHeader: string = '';
   private _increaseZIndexCards: boolean = false;
   private _increaseZIndexPicker: boolean = false;
+  private _increaseZIndexVoidedCards: boolean = false;
   private _midSegueMessages: string = '';
   private _showMidSegueMessages: boolean = false;
   private _showPlayerSegueMessages: boolean = false;
@@ -326,6 +327,13 @@ export class PlaygroundModel {
     this._increaseZIndexPicker = value;
   }
 
+  get increaseZIndexVoidedCards(): boolean {
+    return this._increaseZIndexVoidedCards;
+  }
+  set increaseZIndexVoidedCards(value: boolean) {
+    this._increaseZIndexVoidedCards = value;
+  }
+
   get midSegueMessages(): string {
     return this._midSegueMessages;
   }
@@ -348,7 +356,11 @@ export class PlaygroundModel {
   }
 
   get playerName(): string {
-    return this._playgroundService.playerName;
+    return this._playgroundService.createPlayground ? this._playgroundService.playerName : this._playgroundService.opponentName;
+  }
+
+  get opponentName(): string {
+    return this._playgroundService.createPlayground ? this._playgroundService.opponentName : this._playgroundService.playerName;
   }
 
   get p1CardsList(): Map<CardDeckEnum, string> {
@@ -703,6 +715,11 @@ export class PlaygroundModel {
       filter((metaData?: GameMidSegueMetadata) => (metaData?.gameStage === PlaygroundGameStageEnum.OTHER)),
       tap((metaData?: GameMidSegueMetadata) => {
         switch(metaData?.gameStagePhase) {
+          case PlaygroundGameStagePhaseEnum.OPPONENTNAME: {
+            this._playgroundService.opponentName = metaData.message;
+            break;
+          }
+
           case PlaygroundGameStagePhaseEnum.TIMER: {
             this._globalPlaygroundTimerSubscription?.unsubscribe();
             this._globalPlaygroundTimerSubscription = this.setGlobalPlaygroundTimer(metaData.message).pipe(
@@ -838,7 +855,7 @@ export class PlaygroundModel {
           this._playgroundService.ngZone.run(() => {
             if (metaData.gameStage === PlaygroundGameStageEnum.TOSS) {
               this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
-              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 ? 'Player 1 Wins the Toss! Begins first!!' : 'Player 2 Wins the Toss! Begins first!!';
+              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 ? `${this.playerName} Wins the Toss! Begins first!!` : `${this.opponentName} Wins the Toss! Begins first!!`;
             }
 
             if (this._playgroundService.createPlayground) {
@@ -1085,6 +1102,7 @@ export class PlaygroundModel {
         this.showBackdrop = true;
         this.enableWaitingZone = true;
         this.showWaitingHeader = false;
+        this.increaseZIndexVoidedCards = false;
         this.globalPlaygroundTimer = 200;
 
         this.midSegueMessages = 'Pick suitable options from the ones presented!';
@@ -1100,6 +1118,7 @@ export class PlaygroundModel {
           takeLast(1),
           // takeUntil(this._globalPlaygroundTimerSubject),
           tap(() => {
+            this.hideVoidedCards();
             this.unsubscribeAllAndResetCounter();
             // this._globalPlaygroundTimerSubscription?.unsubscribe();
             // this.enableSubmitOptionsButton = false;
@@ -1167,6 +1186,7 @@ export class PlaygroundModel {
             if (metaData.message) {
               this.enableWaitingZone = true;
               this.showWaitingHeader = true;
+              this.increaseZIndexVoidedCards = true;
 
               this.midSegueMessages = 'Waiting for your partner to finish picking options...';
               this.waitingZoneHeader = 'Waiting for your partner to finish picking options...';
@@ -1180,6 +1200,7 @@ export class PlaygroundModel {
                 takeLast(1),
                 // takeUntil(this._globalPlaygroundTimerSubject),
                 tap(() => {
+                  this.hideVoidedCards();
                   this.unsubscribeAllAndResetCounter();
 
                   // this._globalPlaygroundTimerSubscription?.unsubscribe();
@@ -1272,10 +1293,12 @@ export class PlaygroundModel {
       }),
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
+        this.increaseZIndexVoidedCards = false;
         this.showWaitingHeader = true;
         if (metaData?.isPicker) {
           this.evaluatePickedOptions(metaData);
         } else {
+          this.hideVoidedCards();
           this.unsubscribeAllAndResetCounter();
 
           // this._globalPlaygroundTimerSubscription?.unsubscribe();
@@ -1326,6 +1349,7 @@ export class PlaygroundModel {
           this._gameStage.next(PlaygroundGameStageEnum.CHOOSE);
           this.showPlayerSegueMessages = false;
           this.increaseZIndexCards = true;
+          this.increaseZIndexVoidedCards = true;
         } else {
           this._gameStage.next(PlaygroundGameStageEnum.PICK);
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.PICK, message: PlaygroundGameStageEnum.PICK, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
@@ -1420,6 +1444,7 @@ export class PlaygroundModel {
           }
         }
         this.deckCardsList.delete(randomNumber);
+        this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
       }
 
       if (firstPlayerCardsList.size === 4) {
@@ -1721,6 +1746,7 @@ export class PlaygroundModel {
     if (gameStage === PlaygroundGameStageEnum.PICK) {
       if (this.playerFalsySelectedList.length === 3 && !!this.playerTruthySelectedList) {
         // Call Next GameStage for Player who won toss, while the other player stays in waiting mode.
+        this.hideVoidedCards();
         this.unsubscribeAllAndResetCounter();
         // this._globalPlaygroundTimerSubscription?.unsubscribe();
         // this.enableSubmitOptionsButton = false;
@@ -1735,6 +1761,7 @@ export class PlaygroundModel {
         this.toggleBetweenLiesOrTruth = !this.toggleBetweenLiesOrTruth;
       }
     } else if (gameStage === PlaygroundGameStageEnum.CHOOSE) {
+      this.hideVoidedCards();
       this.confirmChoiceSubmission();
     }
 
@@ -1746,6 +1773,7 @@ export class PlaygroundModel {
       message: 'Please confirm to proceed.',
       accept: () => {
         console.log('Shabbash Bete!! Bery Good!!!!');
+        this.hideVoidedCards();
         this.unsubscribeAllAndResetCounter();
         // this._globalPlaygroundTimerSubscription?.unsubscribe();
         // this.enableSubmitOptionsButton = false;
@@ -1777,6 +1805,7 @@ export class PlaygroundModel {
       header: 'Are you sure?',
       message: 'Proceeding will reduce your Voided Deck Inspection chances by 1!',
       accept: () => {
+        this.showMidSegueMessages = false;
         this.showVoidedCardsList = true;
         this.playerVoidListInspectionCounter--;
 
@@ -1787,6 +1816,11 @@ export class PlaygroundModel {
         return false;
       }
     });
+  }
+
+  public hideVoidedCards(): void {
+    this.showMidSegueMessages = true;
+    this.showVoidedCardsList = false;
   }
 
   public unsubscribeAll(): void {

@@ -48,6 +48,7 @@ export class PlaygroundService {
   // private _signalInvitationTokenCreated: boolean = false;
   // private _message: string = '';
   private _playerName: string = '';
+  private _opponentName: string = '';
 
   constructor(injector: Injector) {
     this._messageService = injector.get(MessageService);
@@ -157,7 +158,15 @@ export class PlaygroundService {
     this._playerName = value;
   }
 
+  get opponentName(): string {
+    return this._opponentName;
+  }
+  set opponentName(value: string) {
+    this._opponentName = value;
+  }
+
   private navigateToPlayground(): void {
+    this.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.playerName, gameStagePhase: PlaygroundGameStagePhaseEnum.OPPONENTNAME, messageFrom: 'peer' } as GameMidSegueMetadata));
     this._router.navigate(['playground'], { state: { } });
   }
 

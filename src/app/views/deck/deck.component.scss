@@ -39,15 +39,17 @@
 
 
 .backdrop {
-  position: fixed;
-  top: 5.8rem;
+  // position: fixed;
+  // top: 9.3rem;
+  position: absolute;
+  top: -0.45rem;
   display: flex;
   background: black;
   flex-wrap: wrap;
   vertical-align: middle;
-  inline-size: 14.8%;
-  block-size: 72%;
-  margin: 7px -1px;
+  inline-size: 15rem;
+  block-size: 24rem;
+  margin: 7px 0px;
   border-radius: 6px;
   opacity: 1;
   z-index: 1001;
