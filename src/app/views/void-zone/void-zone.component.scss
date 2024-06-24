@@ -32,3 +32,41 @@
 .border-radius-6px {
   border-radius: 6px;
 }
+
+.backdrop {
+  position: fixed;
+  top: 5.8rem;
+  display: flex;
+  background: black;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  inline-size: 14.8%;
+  block-size: 72%;
+  margin: 7px -1px;
+  border-radius: 6px;
+  opacity: 1;
+  z-index: 1001;
+  background-color: #030303db;
+  align-content: center;
+}
+
+.voided-cards {
+  // > img {
+  //   + div.backdrop.void-graphics {
+  //     display: none;
+  //   }
+
+  //   &:hover + div.backdrop.void-graphics {
+  //     display: block;
+  //   }
+  // }
+
+  div.backdrop.void-graphics {
+    display: none;
+  }
+
+  &:hover div.backdrop.void-graphics {
+    display: block;
+  }
+}
+

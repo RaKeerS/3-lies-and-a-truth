@@ -1,16 +1,13 @@
 <div class="flex min-h-200p mb-5">
   <!-- @if (1 === 1+1) { -->
-  @if (!playgroundModel.midSegueMessages) {
-    <p-card header="Mid-Zone" class="header-Mid-Zone inner">
+  @if (!playgroundModel.midSegueMessages && playgroundModel.showVoidedCardsList) {
+    <p-card header="Mid-Zone" class="header-Mid-Zone inner w-full">
       <div class="flex flex-column">
         <div class="flex mid-segment col-12 flex-wrap h-30rem">
-          @for (item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
+          @for (item of playgroundModel.voidDeckCardsList.values(); track $index) {
             <div class="flex container sm:col-3 md:col-3 lg:col-3 xl:col-3 void-zone-cards">
               <p-card class="mb-4">
-                <p class="m-0">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
-                  quas!
-                </p>
+                <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" [src]="'./../../../assets/images/card-faces/' + item.toLocaleLowerCase() + '.png'" />
               </p-card>
             </div>
           }

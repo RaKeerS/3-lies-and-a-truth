@@ -390,6 +390,7 @@ export class WebRtcModel {
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.RULES, message: PlaygroundGameStageEnum.RULES, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
           break;
         }
+
         case PlaygroundGameStageEnum.TOSS: {
           // const tossResult = Boolean(+parsedData.message);
           this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.TOSS, message: parsedData.message, gameStagePhase: PlaygroundGameStagePhaseEnum.INITIAL, tossMessage: +parsedData.message, messageFrom: 'subject' } as GameMidSegueMetadata);

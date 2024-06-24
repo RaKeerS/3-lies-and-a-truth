@@ -53,6 +53,8 @@ export class PlaygroundModel {
   private _playgroundTimer: number = 0o0;
   private _globalPlaygroundTimer: number = 0o0;
   private _globalPlaygroundRoundCounter: number = 1;
+  private _playerVoidListInspectionCounter: number = 4;
+  private _opponentVoidListInspectionCounter: number = 4;
 
   private _gameStages: Map<PlaygroundGameStageEnum, boolean> = new Map<PlaygroundGameStageEnum, boolean>();
 
@@ -79,6 +81,7 @@ export class PlaygroundModel {
   private _enableWaitingZone: boolean = false;
   private _showWaitingHeader: boolean = false;
   private _enableSubmitOptionsButton: boolean = true;
+  private _showVoidedCardsList: boolean = false;
 
   private _deckCardsList: Map<CardDeckEnum, string> = CardDeckDictionary;
   private _voidDeckCardsList: Map<CardDeckEnum, string> = new Map<CardDeckEnum, string>();
@@ -211,6 +214,20 @@ export class PlaygroundModel {
     this._globalPlaygroundRoundCounter = value;
   }
 
+  get playerVoidListInspectionCounter(): number {
+    return this._playerVoidListInspectionCounter;
+  }
+  set playerVoidListInspectionCounter(value: number) {
+    this._playerVoidListInspectionCounter = value;
+  }
+
+  get opponentVoidListInspectionCounter(): number {
+    return this._opponentVoidListInspectionCounter;
+  }
+  set opponentVoidListInspectionCounter(value: number) {
+    this._opponentVoidListInspectionCounter = value;
+  }
+
   get playgroundCreatorBetAmount(): number {
     return this._playgroundService.createPlayground ? this._playerOneBetAmount : this._playerTwoBetAmount
   }
@@ -265,6 +282,13 @@ export class PlaygroundModel {
   }
   set isOptionsPickerInitiated(value: boolean) {
     this._isOptionsPickerInitiated = value;
+  }
+
+  get showVoidedCardsList(): boolean {
+    return this._showVoidedCardsList;
+  }
+  set showVoidedCardsList(value: boolean) {
+    this._showVoidedCardsList = value;
   }
 
   get shuffleDeckHeader(): string {
@@ -707,6 +731,11 @@ export class PlaygroundModel {
 
           case PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS: {
             this.mapCardsList(metaData);
+            break;
+          }
+
+          case PlaygroundGameStagePhaseEnum.UPDATEINSPECTVOIDEDCARDSCOUNTER: {
+            this.opponentVoidListInspectionCounter = metaData.message;
             break;
           }
 
@@ -1741,6 +1770,23 @@ export class PlaygroundModel {
 
   public resetChoicesListOnToggle(): void {
     this.choicesSelectedList = undefined;
+  }
+
+  public showVoidedCards(): void {
+    this._playgroundService.confirmationService.confirm({
+      header: 'Are you sure?',
+      message: 'Proceeding will reduce your Voided Deck Inspection chances by 1!',
+      accept: () => {
+        this.showVoidedCardsList = true;
+        this.playerVoidListInspectionCounter--;
+
+        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.playerVoidListInspectionCounter, gameStagePhase: PlaygroundGameStagePhaseEnum.UPDATEINSPECTVOIDEDCARDSCOUNTER, messageFrom: 'peer' } as GameMidSegueMetadata))
+        this._playgroundService.messageService.add({ severity: 'warn', summary: 'Warning', detail: `Your remaining chances of inspecting the Voided Deck left are: ${this.playerVoidListInspectionCounter}` });
+      },
+      reject: () => {
+        return false;
+      }
+    });
   }
 
   public unsubscribeAll(): void {

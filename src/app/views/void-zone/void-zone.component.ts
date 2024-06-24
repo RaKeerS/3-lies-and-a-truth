@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
+import { PlaygroundModel } from '../../models/playground.model';
 import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 
 @Component({
@@ -10,5 +11,11 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
   styleUrl: './void-zone.component.scss'
 })
 export class VoidZoneComponent {
+
+  @Input() playgroundModel!: PlaygroundModel;
+
+  inspectVoidedCards(): void {
+    this.playgroundModel.showVoidedCards();
+  }
 
 }
