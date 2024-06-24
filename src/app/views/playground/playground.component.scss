@@ -343,6 +343,14 @@ $min-block-size: 24rem;
   block-size: 4.62rem;
 }
 
+.color-red {
+  color: var(--red-500);
+}
+
+.player-lifelines, .opponent-lifelines {
+  padding-bottom: 0.85rem;
+}
+
 // Move-Up Transition
 
 .card-deck-pick {

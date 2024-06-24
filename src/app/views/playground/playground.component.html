@@ -139,7 +139,32 @@
         <div class="p-field p-col-12 flex justify-content-between">
           <div class="flex flex-column align-items-end">
             <p-card class="flex flex-column">
-              <div class="font-bold text-2xl mb-4 flex justify-content-center custom-banners"> Round {{ playgroundModel.globalPlaygroundRoundCounter }} </div>
+              <div class="font-bold text-1xl flex justify-content-start custom-banners flex-wrap align-content-center h-full p-3">
+                <div class="flex player-lifelines">
+                  Player Lifelines -
+                  @for (item of [].constructor(4 - playgroundModel.playerVoidListInspectionCounter); track $index;) {
+                    <i class="pi pi-heart icon-heart px-2"></i>
+                  }
+
+                  @for (item of [].constructor(playgroundModel.playerVoidListInspectionCounter); track $index;) {
+                    <i class="pi pi-heart-fill icon-heart-fill px-2 color-red"></i>
+                  }
+                </div>
+
+                <div class="flex opponent-lifelines">
+                  Opponent Lifelines -
+                  @for (item of [].constructor(4 - playgroundModel.opponentVoidListInspectionCounter); track $index;) {
+                    <i class="pi pi-heart icon-heart px-2"></i>
+                  }
+
+                  @for (item of [].constructor(playgroundModel.opponentVoidListInspectionCounter); track $index;) {
+                    <i class="pi pi-heart-fill icon-heart-fill px-2 color-red"></i>
+                  }
+                </div>
+              </div>
+              <!-- <div class="font-bold text-1xl flex justify-content-center custom-banners flex-wrap align-content-center"> Opponent Lifelines -
+
+              </div> -->
             </p-card>
           </div>
           <div class="flex flex-column align-items-center">
