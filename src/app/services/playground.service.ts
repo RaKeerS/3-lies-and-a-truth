@@ -227,6 +227,10 @@ export class PlaygroundService {
     this._webRtc.sendMessageWebRtc(message);
   }
 
+  terminateConnectionFromPlayground(): void {
+    this._webRtc.terminateWebRtc();
+  }
+
   async copyToClipboard() {
     // navigator.permissions.query({ name: 'clipboard-write' as PermissionName }).then(async (result) => {
     //   if (result.state === "granted" || result.state === "prompt") {

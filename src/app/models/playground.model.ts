@@ -756,6 +756,11 @@ export class PlaygroundModel {
             break;
           }
 
+          case PlaygroundGameStagePhaseEnum.GAMEWINNER: {
+            this.terminateConnection(true);
+            break;
+          }
+
           default: {
             break;
           }
@@ -1324,6 +1329,7 @@ export class PlaygroundModel {
       delay(1800),
       tap((metaData?: GameMidSegueMetadata) => {
         if (metaData?.message.playerGameStageWinner !== this.whoAmI) {
+          this.playerGameStageWinner = metaData?.message.playerGameStageWinner;
           this.reDistributeCardsPostEvaluation(metaData?.message.destroyAll);
           this.waitingZoneHeader = 'Redistributing Cards to you';
           this.midSegueMessages = 'Redistributing Cards to you';
@@ -1688,6 +1694,8 @@ export class PlaygroundModel {
 
       this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: { p1CardsList: Array.from(this.p1CardsList.entries()), p2CardsList: Array.from(this.p2CardsList.entries()), deckCardsList: Array.from(this.deckCardsList.entries()), voidDeckCardsList: Array.from(this.voidDeckCardsList.entries()) }, gameStagePhase: PlaygroundGameStagePhaseEnum.REDISTRIBUTECARDS, messageFrom: 'peer' } as GameMidSegueMetadata))
     } else {
+      this.terminateConnection(false);
+
       console.log('Deck ke Cards khatam ho gae!');
     }
 
@@ -1809,7 +1817,7 @@ export class PlaygroundModel {
         this.showVoidedCardsList = true;
         this.playerVoidListInspectionCounter--;
 
-        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.playerVoidListInspectionCounter, gameStagePhase: PlaygroundGameStagePhaseEnum.UPDATEINSPECTVOIDEDCARDSCOUNTER, messageFrom: 'peer' } as GameMidSegueMetadata))
+        this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.playerVoidListInspectionCounter, gameStagePhase: PlaygroundGameStagePhaseEnum.UPDATEINSPECTVOIDEDCARDSCOUNTER, messageFrom: 'peer' } as GameMidSegueMetadata));
         this._playgroundService.messageService.add({ severity: 'warn', summary: 'Warning', detail: `Your remaining chances of inspecting the Voided Deck left are: ${this.playerVoidListInspectionCounter}` });
       },
       reject: () => {
@@ -1821,6 +1829,49 @@ export class PlaygroundModel {
   public hideVoidedCards(): void {
     this.showMidSegueMessages = true;
     this.showVoidedCardsList = false;
+  }
+
+  public terminateConnection(hasWon: boolean): void {
+    this.showWaitingHeader = true;
+    if (hasWon) {
+      this._playgroundService.messageService.add({ severity: 'success', summary: 'Victory', detail: 'You won the game!😎' });
+      // this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+
+      interval(1000).pipe(
+        take(1),
+        tap(() => this.waitingZoneHeader = 'You won the game!'),
+        delay(2000),
+        tap(() => this.waitingZoneHeader = 'Good Game, Keep it up!'),
+        delay(2000),
+        tap(() => this.waitingZoneHeader = `Collect from your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerOneBetAmount : this.playerTwoBetAmount} bucks!` ),
+        delay(2000),
+        tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
+        delay(2000)
+      ).subscribe(() => {
+        this.unsubscribeAllAndResetCounter();
+        this.unsubscribeAll()
+        this._playgroundService.terminateConnectionFromPlayground()
+      });
+    } else {
+      this._playgroundService.messageService.add({ severity: 'error', summary: 'Loss', detail: 'You lost the game!😭' });
+      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+
+      interval(1000).pipe(
+        take(1),
+        tap(() => this.waitingZoneHeader = 'You lost the game!'),
+        delay(2000),
+        tap(() => this.waitingZoneHeader = 'Better luck next time!'),
+        delay(2000),
+        tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
+        delay(2000),
+        tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
+        delay(2000)
+      ).subscribe(() => {
+        this.unsubscribeAllAndResetCounter();
+        this.unsubscribeAll();
+        this._playgroundService.terminateConnectionFromPlayground()
+      });
+    }
   }
 
   public unsubscribeAll(): void {

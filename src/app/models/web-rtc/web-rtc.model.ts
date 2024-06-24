@@ -481,6 +481,7 @@ export class WebRtcModel {
 
   public terminateWebRtc(): void {
     // this._signaling.postMessage({type: 'bye'});
+    this._playgroundService.peerConnection.destroy();
   }
 
   // public sendSignalWebRtc(token: string) {
