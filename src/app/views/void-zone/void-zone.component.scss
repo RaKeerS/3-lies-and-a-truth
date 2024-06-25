@@ -1,0 +1,74 @@
+:host {
+  &::ng-deep {
+    .void-container {
+      .p-card {
+        .p-card-body {
+          padding: 0%;
+          overflow: unset;
+            // box-shadow: -5px 0px 0px 5px rgb(41 38 38 / 20%),
+            //             -10px 10px 0px 0px rgba(0, 0, 0, 0.14),
+            //             -10px 5px 5px 0px rgba(0, 0, 0, 0.12);
+            // box-shadow: 6px 12px 6px 4px black;
+            border-radius: 16px;
+            box-shadow: 12px 0px 0px -4px #907f7f;
+            // box-shadow: -7px 10px 5px -3px black;
+          .p-card-content {
+            padding: 0%;
+          }
+        }
+      }
+    }
+  }
+}
+
+.inline-size-15rem {
+  inline-size: 15rem;
+}
+
+.block-size-24rem {
+  block-size: 24rem;
+}
+
+.border-radius-6px {
+  border-radius: 6px;
+}
+
+.backdrop {
+  // position: fixed;
+  // top: 9.3rem;
+  position: absolute;
+  top: -0.45rem;
+  display: flex;
+  background: black;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  inline-size: 15rem;
+  block-size: 24rem;
+  margin: 7px 0px;
+  border-radius: 6px;
+  opacity: 1;
+  z-index: 1001;
+  background-color: #030303db;
+  align-content: center;
+}
+
+.voided-cards {
+  // > img {
+  //   + div.backdrop.void-graphics {
+  //     display: none;
+  //   }
+
+  //   &:hover + div.backdrop.void-graphics {
+  //     display: block;
+  //   }
+  // }
+
+  div.backdrop.void-graphics {
+    display: none;
+  }
+
+  &:hover div.backdrop.void-graphics {
+    display: block;
+  }
+}
+

@@ -1,0 +1,44 @@
+:host {
+  &::ng-deep {
+    .mid-zone-voided-cards {
+      .p-card-body {
+        padding: 0%;
+        // box-shadow: 0px 6px 5px 0px black;
+        .p-card-content {
+          padding: 0%;
+          block-size: 24rem;
+          inline-size: 15rem;
+        }
+      }
+    }
+  }
+}
+
+.segway {
+  inline-size: 100%;
+}
+
+.mid-segway-messages {
+  block-size: 6.5rem;
+  min-block-size: auto;
+  justify-content: center;
+  display: flex;
+  font-size: 1.5rem;
+  font-weight: 700;
+  vertical-align: middle;
+  align-items: center;
+  padding: 0;
+  scale: 1.2;
+}
+
+.inline-size-15rem {
+  inline-size: 15rem;
+}
+
+.block-size-24rem {
+  block-size: 24rem;
+}
+
+.border-radius-10px {
+  border-radius: 10px;
+}

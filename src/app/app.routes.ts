@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { PlaygroundComponent } from './playground/playground.component';
+import { PlaygroundComponent } from './views/playground/playground.component';
 
 export const routes: Routes = [
   {

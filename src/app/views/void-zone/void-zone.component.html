@@ -1,0 +1,22 @@
+<p-card class="void-container">
+  <!-- <p class="m-0">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+    quas!
+  </p> -->
+  <div class="flex voided-cards">
+    <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back black.png" />
+    <div class="backdrop void-graphics">
+      <div class="backdrop-body flex justify-content-center align-items-center flex-column">
+        <div class="flex align-items-center">
+          <p class="text-color-secondary block"> Voided Cards Count:  </p>
+          <div class="text-center font-60px font-semibold pl-2">
+            {{ playgroundModel.voidDeckCardsList.size }}
+          </div>
+        </div>
+        <div class="flex align-items-center">
+          <p-button label="Inspect Cards?" severity="contrast" class="opacity-100" [disabled]="playgroundModel.playerVoidListInspectionCounter === 0 || playgroundModel.voidDeckCardsList.size === 0 || playgroundModel.showVoidedCardsList" (click)="inspectVoidedCards()"></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-card>

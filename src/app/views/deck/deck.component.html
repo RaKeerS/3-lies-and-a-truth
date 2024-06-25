@@ -1,0 +1,22 @@
+<p-card class="deck-container">
+  <!-- <p class="m-0">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
+    quas!
+  </p> -->
+  <div class="flex deck-cards" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
+    <img class="hermit inline-size-15rem block-size-24rem border-radius-6px" src="./../../../assets/images/card back orange.png" />
+    <div class="backdrop void-graphics">
+      <div class="backdrop-body flex justify-content-center align-items-center flex-column">
+        <div class="flex align-items-center">
+          <p class="text-color-secondary block"> Deck Cards Count:  </p>
+          <div class="text-center font-60px font-semibold pl-2">
+            {{ playgroundModel.deckCardsList.size }}
+          </div>
+        </div>
+        <div class="flex align-items-center">
+          <p-button label="Give Up?" severity="danger" class="" (click)="playgroundModel.terminateConnection(false)"></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-card>
