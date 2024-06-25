@@ -1,3 +1,27 @@
+:host {
+  &::ng-deep {
+    p-menubar {
+      .p-menubar-start {
+        display: flex;
+        inline-size: 100%;
+        flex: 0 0 auto;
+        padding: 0.5rem;
+        width: 85%;
+        // width: 83.3333%;
+      }
+
+      .p-menubar-end {
+        margin-left: 0;
+        justify-content: end;
+        display: flex;
+        // flex: 0 0 auto;
+        padding: 0.5rem;
+        width: 16.6667%;
+      }
+    }
+  }
+}
+
 main {
   width: 100%;
   min-height: 100%;
