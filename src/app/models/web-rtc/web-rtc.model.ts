@@ -291,11 +291,160 @@ export class WebRtcModel {
   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
 
+  custCfg = {
+    iceServers: [
+      // {
+      //   urls: 'stun:stun.l.google.com:19302'
+      // },
+      // {
+      //   urls: 'turn:192.158.29.39:3478?transport=udp',
+      //   credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+      //   username: '28224511:1379330808'
+      // },
+      // {
+      //   urls: 'turn:192.158.29.39:3478?transport=tcp',
+      //   credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+      //   username: '28224511:1379330808'
+      // }
+      // { urls: 'turn:freestun.net:5350', username: 'free', credential: 'free' },
+
+
+      // {
+      //   urls: "stun:openrelay.metered.ca:80",
+      // },
+      // {
+      //   urls: "turn:openrelay.metered.ca:80",
+      //   username: "openrelayproject",
+      //   credential: "openrelayproject",
+      // },
+      // {
+      //   urls: "turn:openrelay.metered.ca:443",
+      //   username: "openrelayproject",
+      //   credential: "openrelayproject",
+      // },
+      // {
+      //   urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      //   username: "openrelayproject",
+      //   credential: "openrelayproject",
+      // },
+    ] as RTCIceServer[]
+  }
+
+  // NOTE: Working List of IceServers!
+  // const peer = new SimplePeer({
+  //   initiator: true,
+  //   objectMode: true,
+  //   config: {
+  //     iceServers: [
+  //       {
+  //         url: 'turn:numb.viagenie.ca',
+  //         credential: 'muazkh',
+  //         username: 'webrtc@live.com'
+  //       },
+  //       {
+  //         url: 'turn:192.158.29.39:3478?transport=udp',
+  //         credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //         username: '28224511:1379330808'
+  //       },
+  //       {
+  //         url: 'turn:192.158.29.39:3478?transport=tcp',
+  //         credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //         username: '28224511:1379330808'
+  //       },
+  //       {
+  //         url: 'turn:turn.bistri.com:80',
+  //         credential: 'homeo',
+  //         username: 'homeo'
+  //       },
+  //       {
+  //         url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+  //         credential: 'webrtc',
+  //         username: 'webrtc'
+  //       }
+  //     ]
+  //   }
+  // })
+
+  // NOTE: Not working List of IceServers!
+  private _iceServers: any = [
+    {
+      urls: "turn:global.relay.metered.ca:80",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:80?transport=tcp",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:443",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turns:global.relay.metered.ca:443?transport=tcp",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+  ];
+
+  // private _iceServers = [
+  //   {
+  //     urls: 'turn:numb.viagenie.ca',
+  //     credential: 'muazkh',
+  //     username: 'webrtc@live.com'
+  //   },
+  //   {
+  //     urls: 'turn:192.158.29.39:3478?transport=udp',
+  //     credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //     username: '28224511:1379330808'
+  //   },
+  //   {
+  //     urls: 'turn:192.158.29.39:3478?transport=tcp',
+  //     credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //     username: '28224511:1379330808'
+  //   },
+  //   {
+  //     urls: 'turn:turn.bistri.com:80',
+  //     credential: 'homeo',
+  //     username: 'homeo'
+  //   },
+  //   {
+  //     urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
+  //     credential: 'webrtc',
+  //     username: 'webrtc'
+  //   }
+  // ];
+
   constructor(private _playgroundService: PlaygroundService, private _ngZone: NgZone) {
     // NOTE - This is where it begins!
     // this._signaling = new BroadcastChannel('webrtc');playerName: string = '';
     // this._receiver = new BroadcastChannel('webrtc');
     // this.handleSignalingEvents();
+
+    // this._iceServers = this.fetchTurnServerCredentials();
+    // this.fetchTurnServerCredentials();
+  }
+
+  get isWebRtcSupported(): boolean {
+    return SimplePeer.WEBRTC_SUPPORT;
+  }
+
+  private async fetchTurnServerCredentials(): Promise<void> {
+    // Calling the REST API TO fetch the TURN Server Credentials
+    const response = await fetch("https://webrtc-development-app.metered.live/api/v1/turn/credentials?apiKey=882b79b4ec7814a772c3189d5f335c691024");
+
+    // Saving the response in the iceServers array
+    const iceServers = await response.json();
+    // return await response.json();
+
+    // Using the iceServers array in the RTCPeerConnection method
+    // var myPeerConnection = new RTCPeerConnection({
+    //   iceServers: iceServers
+    // });
+
+    this._iceServers = iceServers;
   }
 
 
@@ -466,7 +615,13 @@ export class WebRtcModel {
       // i.e. the UI was stuck on the message - 'Connecting to the a Playground... Please Wait!' because the code flow wasn't coming out of the 'peerConnection's on signal event handler' apparently.
       // Do not know why, but apparently, sending signal once out of that event handler was not enough, but by setting trickle = true in case of 'Join Playground' workflow, multiple signals are thrown,
       // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
-      trickle: !this._playgroundService.createPlayground
+      trickle: false,
+      iceCompleteTimeout: 100,
+      config: {
+        // iceServers: this.custCfg.iceServers
+        iceServers: this._iceServers,
+        iceTransportPolicy: 'relay'
+      }
     });
     console.log('Simple Peer: ', this._playgroundService.peerConnection);
 
