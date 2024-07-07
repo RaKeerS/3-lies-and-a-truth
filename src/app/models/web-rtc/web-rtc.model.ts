@@ -365,29 +365,50 @@ export class WebRtcModel {
   //   }
   // })
 
+  private _iceServers = [
+    {
+      urls: "stun:openrelay.metered.ca:80",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+  ]
+
   // NOTE: Not working List of IceServers!
-  private _iceServers: any = [
-    {
-      urls: "turn:global.relay.metered.ca:80",
-      username: "c483cc3551a5809d406b7f30",
-      credential: "1PmhzrBoIJXH/N4i",
-    },
-    {
-      urls: "turn:global.relay.metered.ca:80?transport=tcp",
-      username: "c483cc3551a5809d406b7f30",
-      credential: "1PmhzrBoIJXH/N4i",
-    },
-    {
-      urls: "turn:global.relay.metered.ca:443",
-      username: "c483cc3551a5809d406b7f30",
-      credential: "1PmhzrBoIJXH/N4i",
-    },
-    {
-      urls: "turns:global.relay.metered.ca:443?transport=tcp",
-      username: "c483cc3551a5809d406b7f30",
-      credential: "1PmhzrBoIJXH/N4i",
-    },
-  ];
+  // private _iceServers: any = [
+  //   {
+  //     urls: "turn:global.relay.metered.ca:80",
+  //     username: "c483cc3551a5809d406b7f30",
+  //     credential: "1PmhzrBoIJXH/N4i",
+  //   },
+  //   {
+  //     urls: "turn:global.relay.metered.ca:80?transport=tcp",
+  //     username: "c483cc3551a5809d406b7f30",
+  //     credential: "1PmhzrBoIJXH/N4i",
+  //   },
+  //   {
+  //     urls: "turn:global.relay.metered.ca:443",
+  //     username: "c483cc3551a5809d406b7f30",
+  //     credential: "1PmhzrBoIJXH/N4i",
+  //   },
+  //   {
+  //     urls: "turns:global.relay.metered.ca:443?transport=tcp",
+  //     username: "c483cc3551a5809d406b7f30",
+  //     credential: "1PmhzrBoIJXH/N4i",
+  //   },
+  // ];
 
   // private _iceServers = [
   //   {
@@ -614,7 +635,7 @@ export class WebRtcModel {
       // In order to fix the UI issue where the next screen is stepper was not working in case of 'Join' workflow,
       // i.e. the UI was stuck on the message - 'Connecting to the a Playground... Please Wait!' because the code flow wasn't coming out of the 'peerConnection's on signal event handler' apparently.
       // Do not know why, but apparently, sending signal once out of that event handler was not enough, but by setting trickle = true in case of 'Join Playground' workflow, multiple signals are thrown,
-      // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
+      // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugaad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
       trickle: false,
       iceCompleteTimeout: 100,
       config: {
