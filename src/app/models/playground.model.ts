@@ -129,6 +129,10 @@ export class PlaygroundModel {
     return this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? PlaygroundPlayersEnum.PLAYER_2 : PlaygroundPlayersEnum.PLAYER_1;
   }
 
+  get isConnected(): boolean {
+    return this._playgroundService.isConnected;
+  }
+
   get playerCardsList(): Map<CardDeckEnum, string> {
     // NOTE: Player1 is always the one who creates the Playground. Player 2 is always the one who joins the playground. Deck Shuffler Player (i.e. the one who Shuffles and Distributes the Deck) is the one who wins the toss.
     return this._playgroundService.createPlayground ? this.p1CardsList : this.p2CardsList;
@@ -1450,7 +1454,7 @@ export class PlaygroundModel {
           }
         }
         this.deckCardsList.delete(randomNumber);
-        this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+        // this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
       }
 
       if (firstPlayerCardsList.size === 4) {
@@ -1469,7 +1473,7 @@ export class PlaygroundModel {
           }
         }
         this.deckCardsList.delete(randomNumber);
-        this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+        // this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
       }
 
 

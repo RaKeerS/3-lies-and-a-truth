@@ -5,16 +5,21 @@ import { PlaygroundComponent } from './views/playground/playground.component';
 
 export const routes: Routes = [
   {
-    path: '',
-    component: AppComponent
-  },
-  {
     path: 'playground',
     component: PlaygroundComponent,
     // outlet: ''
   },
   {
+    path: '',
+    redirectTo: '/home',
+    pathMatch: 'full'
+  },
+  {
     path: 'home',
-    component: AppComponent
-  }
+    component: AppComponent,
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  },
 ];

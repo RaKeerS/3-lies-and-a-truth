@@ -418,7 +418,6 @@
                         </div>
                       </div>
                   </p-dialog> -->
-
                   
 <p-menubar class="w-full">
   <ng-template pTemplate="start">
@@ -448,7 +447,10 @@
   </ng-template>
 </p-menubar>
 
+                @if (router.url !== '/home') {
                 <router-outlet />
+                }
+
               </div>
             </div>
           </div>

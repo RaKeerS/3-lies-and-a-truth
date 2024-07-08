@@ -1,5 +1,5 @@
 import { Component, Injector, OnDestroy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { compress, decompress } from '@zalari/string-compression-utils';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -40,6 +40,9 @@ export class AppComponent implements OnDestroy {
 
   get isConnected(): boolean {
     return this._playgroundService.isConnected;
+  }
+  get router(): Router {
+    return this._playgroundService.router;
   }
 
   // ngAfterViewInit(): void {

@@ -62,8 +62,12 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // NOTE: Commented below line for testing 'card-deck-shuffle' animation
-    this.playgroundModel.showPlaygroundGameRulesDialog();
+    if (!this.playgroundModel.isConnected) {
+      this._router.navigate(['home']);
+    } else {
+      // NOTE: Commented below line for testing 'card-deck-shuffle' animation
+      this.playgroundModel.showPlaygroundGameRulesDialog();
+    }
 
     // this._subscription = this._playgroundSubject.subscribe(value => console.log('Playground Component: ', value));
   }
