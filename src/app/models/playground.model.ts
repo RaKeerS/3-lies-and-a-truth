@@ -1833,6 +1833,7 @@ export class PlaygroundModel {
 
   public terminateConnection(hasWon: boolean): void {
     this.showWaitingHeader = true;
+    this.midSegueMessages = 'You will be redirected to home screen on connection termination!';
     if (hasWon) {
       this._playgroundService.messageService.add({ severity: 'success', summary: 'Victory', detail: 'You won the game!😎' });
       // this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
@@ -1846,30 +1847,49 @@ export class PlaygroundModel {
         tap(() => this.waitingZoneHeader = `Collect from your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerOneBetAmount : this.playerTwoBetAmount} bucks!` ),
         delay(2000),
         tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
-        delay(2000)
-      ).subscribe(() => {
-        this.unsubscribeAllAndResetCounter();
-        this.unsubscribeAll()
-        this._playgroundService.terminateConnectionFromPlayground()
-      });
-    } else {
-      this._playgroundService.messageService.add({ severity: 'error', summary: 'Loss', detail: 'You lost the game!😭' });
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
-
-      interval(1000).pipe(
-        take(1),
-        tap(() => this.waitingZoneHeader = 'You lost the game!'),
-        delay(2000),
-        tap(() => this.waitingZoneHeader = 'Better luck next time!'),
-        delay(2000),
-        tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
-        delay(2000),
+        delay(4000),
+        tap(() => this.waitingZoneHeader = `Collect from your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerOneBetAmount : this.playerTwoBetAmount} bucks!` ),
+        delay(4000),
         tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
         delay(2000)
       ).subscribe(() => {
         this.unsubscribeAllAndResetCounter();
         this.unsubscribeAll();
-        this._playgroundService.terminateConnectionFromPlayground()
+        this._playgroundService.terminateConnectionFromPlayground();
+        this.waitingZoneHeader = 'Connection with your partner terminated!';
+      });
+    } else {
+      this._playgroundService.confirmationService.confirm({
+        header: 'Are you sure?',
+        message: 'Do you really wish to end the game!? Doing so will result in your loss!',
+        accept: () => {
+          this._playgroundService.messageService.add({ severity: 'error', summary: 'Loss', detail: 'You lost the game!😭' });
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+
+          interval(1000).pipe(
+            take(1),
+            tap(() => this.waitingZoneHeader = 'You lost the game!'),
+            delay(2000),
+            tap(() => this.waitingZoneHeader = 'Better luck next time!'),
+            delay(2000),
+            tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
+            delay(2000),
+            tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
+            delay(4000),
+            tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
+            delay(4000),
+            tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
+            delay(2000)
+          ).subscribe(() => {
+            this.unsubscribeAllAndResetCounter();
+            this.unsubscribeAll();
+            this._playgroundService.terminateConnectionFromPlayground();
+            this.waitingZoneHeader = 'Connection with your partner terminated!';
+          });
+        },
+        reject: () => {
+          return false;
+        }
       });
     }
   }

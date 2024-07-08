@@ -365,50 +365,50 @@ export class WebRtcModel {
   //   }
   // })
 
-  private _iceServers = [
-    {
-      urls: "stun:openrelay.metered.ca:80",
-    },
-    {
-      urls: "turn:openrelay.metered.ca:80",
-      username: "openrelayproject",
-      credential: "openrelayproject",
-    },
-    {
-      urls: "turn:openrelay.metered.ca:443",
-      username: "openrelayproject",
-      credential: "openrelayproject",
-    },
-    {
-      urls: "turn:openrelay.metered.ca:443?transport=tcp",
-      username: "openrelayproject",
-      credential: "openrelayproject",
-    },
-  ]
+  // private _iceServers = [
+  //   {
+  //     urls: "stun:openrelay.metered.ca:80",
+  //   },
+  //   {
+  //     urls: "turn:openrelay.metered.ca:80",
+  //     username: "openrelayproject",
+  //     credential: "openrelayproject",
+  //   },
+  //   {
+  //     urls: "turn:openrelay.metered.ca:443",
+  //     username: "openrelayproject",
+  //     credential: "openrelayproject",
+  //   },
+  //   {
+  //     urls: "turn:openrelay.metered.ca:443?transport=tcp",
+  //     username: "openrelayproject",
+  //     credential: "openrelayproject",
+  //   },
+  // ]
 
   // NOTE: Not working List of IceServers!
-  // private _iceServers: any = [
-  //   {
-  //     urls: "turn:global.relay.metered.ca:80",
-  //     username: "c483cc3551a5809d406b7f30",
-  //     credential: "1PmhzrBoIJXH/N4i",
-  //   },
-  //   {
-  //     urls: "turn:global.relay.metered.ca:80?transport=tcp",
-  //     username: "c483cc3551a5809d406b7f30",
-  //     credential: "1PmhzrBoIJXH/N4i",
-  //   },
-  //   {
-  //     urls: "turn:global.relay.metered.ca:443",
-  //     username: "c483cc3551a5809d406b7f30",
-  //     credential: "1PmhzrBoIJXH/N4i",
-  //   },
-  //   {
-  //     urls: "turns:global.relay.metered.ca:443?transport=tcp",
-  //     username: "c483cc3551a5809d406b7f30",
-  //     credential: "1PmhzrBoIJXH/N4i",
-  //   },
-  // ];
+  private _iceServers = [
+    {
+      urls: "turn:global.relay.metered.ca:80",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:80?transport=tcp",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:443",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turns:global.relay.metered.ca:443?transport=tcp",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+  ];
 
   // private _iceServers = [
   //   {

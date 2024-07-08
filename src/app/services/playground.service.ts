@@ -229,6 +229,9 @@ export class PlaygroundService {
 
   terminateConnectionFromPlayground(): void {
     this._webRtc.terminateWebRtc();
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connection Terminated Successfully!' });
+    this._router.navigate(['']);
   }
 
   async copyToClipboard() {
