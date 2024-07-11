@@ -106,6 +106,9 @@ export class PlaygroundService {
   get redirectCounter(): number {
     return this._redirectCounter;
   }
+  set redirectCounter(value: number) {
+    this._redirectCounter = value;
+  }
 
   get switch(): ReplaySubject<GameMidSegueMetadata | undefined> {
     return this._switch;
@@ -166,15 +169,21 @@ export class PlaygroundService {
   }
 
   private navigateToPlayground(): void {
-    this.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.playerName, gameStagePhase: PlaygroundGameStagePhaseEnum.OPPONENTNAME, messageFrom: 'peer' } as GameMidSegueMetadata));
-    this._router.navigate(['playground'], { state: { } });
+    this.ngZone.run(() => {
+      this.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.playerName, gameStagePhase: PlaygroundGameStagePhaseEnum.OPPONENTNAME, messageFrom: 'peer' } as GameMidSegueMetadata));
+      this._router.navigate(['playground'], { state: { } });
+    });
   }
 
   createOrJoinPlayground(optionSelected: number): void {
     if (this.playerName.trim().length > 0) {
       this.createPlayground = Boolean(optionSelected);
       // if (this.optionSelected === PlaygroundEnum.CREATE) {
-      this._webRtc.initiateWebRtc();
+
+      // this._webRtc.initiateWebRtc();
+
+      this._webRtc.initiatePeerConnection();
+
       // } else {
       // }
 
@@ -202,7 +211,11 @@ export class PlaygroundService {
       const subscription: Subscription = concat(
         interval(1000).pipe(
           take(5),
-          tap(() => this._redirectCounter--)),
+          tap(() => {
+            this.ngZone.run(() => {
+              this.redirectCounter--;
+            });
+          })),
         of(this.redirectCounter === 0).pipe(
           tap(() => (subscription.unsubscribe(), this.switch.next({ gameStage: PlaygroundGameStageEnum.CONNECTION, message: PlaygroundGameStageEnum.CONNECTION, gameStagePhase: PlaygroundGameStagePhaseEnum.COMPLETED, messageFrom: 'subject' } as GameMidSegueMetadata), this.navigateToPlayground())))
       ).subscribe()
@@ -215,20 +228,23 @@ export class PlaygroundService {
 
   sendTokenForPlayground(): void {
     if (this.signalInvitationToken?.trim().length) {
-      // this._webRtc.sendMessageWebRtc(this._webRtc.signalInvitationToken);
-      this._webRtc.sendSignalWebRtc();
-      // this.showTokenDialog = false;
+      // this._webRtc.sendSignalWebRtc();
+
+      this._webRtc.joinAnInitiator();
     } else {
       // NOTE - Show Toaster
     }
   }
 
   sendMessageForPlayground(message: string): void {
-    this._webRtc.sendMessageWebRtc(message);
+    // this._webRtc.sendMessageWebRtc(message);
+    this._webRtc.sendMessageViaDataConnection(message);
   }
 
   terminateConnectionFromPlayground(): void {
-    this._webRtc.terminateWebRtc();
+    // this._webRtc.terminateWebRtc();
+
+    this._webRtc.terminatePeerConnection();
 
     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connection Terminated Successfully!' });
     this._router.navigate(['']);
