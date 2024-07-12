@@ -1315,14 +1315,14 @@ export class PlaygroundModel {
         }
         if (metaData?.message.playerGameStageWinner === this.whoAmI) {
           // NOTE: Check this betAmount Logic once!
-          this.playgroundCreatorBetAmount += this.playgroundJoinerBetAmount;
-          this.playgroundJoinerBetAmount -= this.playgroundCreatorBetAmount;
+          this.playgroundCreatorBetAmount += Math.abs(this.playgroundJoinerBetAmount);
+          this.playgroundJoinerBetAmount -= Math.abs(this.playgroundCreatorBetAmount);
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Achievement: Bounty Winner!🤴🏻', detail: 'Your will receive your opponent\'s bounty amount!🤑' });
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Achievement: Card Destroyer!😈', detail: 'Your opponent\'s cards will be destroyed following your round victory!😎' });
         } else {
-          this.playgroundJoinerBetAmount += this.playgroundCreatorBetAmount;
-          this.playgroundCreatorBetAmount -= this.playgroundJoinerBetAmount;
+          this.playgroundJoinerBetAmount += Math.abs(this.playgroundCreatorBetAmount);
+          this.playgroundCreatorBetAmount -= Math.abs(this.playgroundJoinerBetAmount);
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Achievement: Bounty Loser!😭', detail: 'Your opponent will receive your bounty amount!🙄' });
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Achievement: Self Destructor!🤡', detail: 'Your cards will be destroyed following your round loss!😑' });

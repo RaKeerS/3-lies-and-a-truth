@@ -317,6 +317,7 @@ export class WebRtcModel {
       // peer.ser = this._lastPeerId;
       if (!this._disconnect) {
         console.log('Retrying connection!');
+        this._playgroundService.messageService.add({ severity: 'info', summary: 'Information', detail: 'Reconnecting... Please wait!' });
         peer.reconnect();
       }
     });
