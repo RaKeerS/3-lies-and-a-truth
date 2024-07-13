@@ -360,100 +360,100 @@
       <!-- <p-confirmDialog></p-confirmDialog> -->
       <!-- <main class="main">
         <div class="content"> -->
-          <div class="grid">
-            <div class="col-12 p-0">
-              <div class="card mb-0">
+      <div class="grid">
+        <div class="col-12 p-0">
+          <div class="card mb-0">
 
-                    <!-- <p-dialog class="dialog-pick-playground" header="Header" [visible]="showPlaygroundDialog" [closable]="true" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-                        <ng-template pTemplate="header">
-                            <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
-                                <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> --!>
-                                <span class="font-bold white-space-nowrap">Welcome Player!</span>
-                            </div>
-                        </ng-template>
-                        <div class="p-fluid p-grid">
-                          <!-- <div class="p-field p-col-12 p-3 flex w-full">
-                            <span class="p-float-label w-full mr-3">
-                              <input type="text" pInputText [(ngModel)]="token" />
-                              <label for="inputtext"> Enter Playground Token </label>
-                            </span>
-                            <span class="w-50">
-                              <p-button (click)="joinExistingPlayground()" severity="info" label="Join"></p-button>
-                            </span>
-                          </div> --!>
-
-                          <ng-container *ngIf="!nextStage; then createOrJoinDialog; else tokenExchangeDialog;"></ng-container>
-
-
+                <!-- <p-dialog class="dialog-pick-playground" header="Header" [visible]="showPlaygroundDialog" [closable]="true" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+                    <ng-template pTemplate="header">
+                        <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
+                            <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> --!>
+                            <span class="font-bold white-space-nowrap">Welcome Player!</span>
                         </div>
-                    </p-dialog>
+                    </ng-template>
+                    <div class="p-fluid p-grid">
+                      <!-- <div class="p-field p-col-12 p-3 flex w-full">
+                        <span class="p-float-label w-full mr-3">
+                          <input type="text" pInputText [(ngModel)]="token" />
+                          <label for="inputtext"> Enter Playground Token </label>
+                        </span>
+                        <span class="w-50">
+                          <p-button (click)="joinExistingPlayground()" severity="info" label="Join"></p-button>
+                        </span>
+                      </div> --!>
 
-                    <p-dialog class="dialog-add-token" header="Header" [visible]="showTokenDialog" [closable]="true" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-                      <ng-template pTemplate="header">
-                          <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
-                              <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> --!>
-                              <span class="font-bold white-space-nowrap">Add Token</span>
-                          </div>
-                      </ng-template>
-                      <div class="p-fluid p-grid">
-                        <div class="p-field p-col-12 p-3">
-                          <span class="p-float-label">
-                            <input type="text" id="inputtext" [required]="true" pInputText [(ngModel)]="token" />
-                            <label for="inputtext">Enter Your Token String </label>
-                          </span>
-                        </div>
-                        <!-- <p-divider align="center" type="solid"><b> Create or Join a Playground </b></p-divider> -->
-                        <!-- <div class="p-field p-col-12 p-3 flex w-full">
-                          <span class="p-float-label w-full mr-3">
-                            <input type="text" pInputText [(ngModel)]="token" />
-                            <label for="inputtext"> Enter Playground Token </label>
-                          </span>
-                          <span class="w-50">
-                            <p-button (click)="joinExistingPlayground()" severity="info" label="Join"></p-button>
-                          </span>
-                        </div> --!>
-                        <div class="p-field p-col-12 py-3 flex flex-wrap">
-                          <!-- <p-button class="w-6 px-3" (click)="joinExistingPlayground()" severity="info" label="Join"></p-button> --!>
-                          <p-button class="w-full" (click)="sendTokenForPlayground()" severity="info" label="Submit"></p-button>
-                        </div>
+                      <ng-container *ngIf="!nextStage; then createOrJoinDialog; else tokenExchangeDialog;"></ng-container>
+
+
+                    </div>
+                </p-dialog>
+
+                <p-dialog class="dialog-add-token" header="Header" [visible]="showTokenDialog" [closable]="true" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+                  <ng-template pTemplate="header">
+                      <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
+                          <!-- <p-avatar image="https://primefaces.org/cdn/primeng/images/avatar/amyelsner.png" shape="circle" /> --!>
+                          <span class="font-bold white-space-nowrap">Add Token</span>
                       </div>
-                  </p-dialog> -->
-                  
-<p-menubar class="w-full">
-  <ng-template pTemplate="start">
-    <a href="https://github.com/RaKeerS">
-      <p-avatar image="https://avatars.githubusercontent.com/u/22376097?v=4" size="large" shape="circle">
-      </p-avatar>
-    </a>
-    <div class="flex text-2xl w-full justify-content-center font-medium align-items-center">
-      3 Lies and a Truth
-    </div>
-  </ng-template>
+                  </ng-template>
+                  <div class="p-fluid p-grid">
+                    <div class="p-field p-col-12 p-3">
+                      <span class="p-float-label">
+                        <input type="text" id="inputtext" [required]="true" pInputText [(ngModel)]="token" />
+                        <label for="inputtext">Enter Your Token String </label>
+                      </span>
+                    </div>
+                    <!-- <p-divider align="center" type="solid"><b> Create or Join a Playground </b></p-divider> -->
+                    <!-- <div class="p-field p-col-12 p-3 flex w-full">
+                      <span class="p-float-label w-full mr-3">
+                        <input type="text" pInputText [(ngModel)]="token" />
+                        <label for="inputtext"> Enter Playground Token </label>
+                      </span>
+                      <span class="w-50">
+                        <p-button (click)="joinExistingPlayground()" severity="info" label="Join"></p-button>
+                      </span>
+                    </div> --!>
+                    <div class="p-field p-col-12 py-3 flex flex-wrap">
+                      <!-- <p-button class="w-6 px-3" (click)="joinExistingPlayground()" severity="info" label="Join"></p-button> --!>
+                      <p-button class="w-full" (click)="sendTokenForPlayground()" severity="info" label="Submit"></p-button>
+                    </div>
+                  </div>
+              </p-dialog> -->
 
-  <ng-template pTemplate="end">
-      <div class="flex align-items-center gap-2">
-          <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
-          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
-          @if(showPlaygroundDialog) {
-            <app-game-connector [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector>
-          }
+            <p-menubar class="w-full">
+              <ng-template pTemplate="start">
+                <a href="https://github.com/RaKeerS">
+                  <p-avatar image="https://avatars.githubusercontent.com/u/22376097?v=4" size="large" shape="circle">
+                  </p-avatar>
+                </a>
+                <div class="flex text-2xl w-full justify-content-center font-medium align-items-center">
+                  3 Lies and a Truth
+                </div>
+              </ng-template>
 
-          @if (!isConnected) {
-            <div class="card flex justify-content-center">
-              <p-button (click)="toggleDialogState()" label="Hit the Playground!"></p-button>
-            </div>
-          }
-      </div>
-  </ng-template>
-</p-menubar>
+              <ng-template pTemplate="end">
+                <div class="flex align-items-center gap-2">
+                    <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
+                    <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
+                    @if(showPlaygroundDialog) {
+                      <app-game-connector [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector>
+                    }
 
-                @if (router.url !== '/home') {
-                <router-outlet />
-                }
+                    @if (!isConnected) {
+                      <div class="card flex justify-content-center">
+                        <p-button (click)="toggleDialogState()" label="Hit the Playground!"></p-button>
+                      </div>
+                    }
+                </div>
+              </ng-template>
+            </p-menubar>
 
-              </div>
-            </div>
+            @if (router.url !== '/home') {
+              <router-outlet />
+            }
+
           </div>
+        </div>
+      </div>
         <!-- </div>
       </main> -->
     </div>
