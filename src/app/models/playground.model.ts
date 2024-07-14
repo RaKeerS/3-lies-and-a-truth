@@ -1841,6 +1841,7 @@ export class PlaygroundModel {
     if (hasWon) {
       this._playgroundService.messageService.add({ severity: 'success', summary: 'Victory', detail: 'You won the game!😎' });
       // this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+      this.globalPlaygroundTimer = 0;
 
       interval(1000).pipe(
         take(1),
@@ -1869,6 +1870,7 @@ export class PlaygroundModel {
         accept: () => {
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Loss', detail: 'You lost the game!😭' });
           this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+          this.globalPlaygroundTimer = 0;
 
           interval(1000).pipe(
             take(1),
