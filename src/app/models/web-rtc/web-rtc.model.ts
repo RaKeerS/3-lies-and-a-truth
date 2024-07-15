@@ -489,7 +489,7 @@ export class WebRtcModel {
   }
 
   public initiatePeerConnection(): void {
-    this._playgroundService.peerConnection = new Peer('', { debug: 2 });
+    this._playgroundService.peerConnection = new Peer('', { debug: 0 });
 
     this.handlePeerEvents(this._playgroundService.peerConnection);
   }
