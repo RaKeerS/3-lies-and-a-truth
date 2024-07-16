@@ -73,6 +73,7 @@ $min-block-size: 24rem;
 
     .p-card-title {
       text-align: center;
+      margin-top: 1.5rem;
     }
 
     .header-Mid-Zone {
@@ -120,7 +121,8 @@ $min-block-size: 24rem;
         width: 100%;
 
         > .p-card-body {
-          padding: 0.55rem;
+          // padding: 0.55rem;
+          padding: 0%;
         }
       }
 
@@ -339,6 +341,10 @@ $min-block-size: 24rem;
 
 .pl-3\.5 {
   padding-left: 1.3rem !important;
+}
+
+.ml-1\.5 {
+  margin-left: 0.5rem !important;
 }
 
 .mr-1\.5 {
