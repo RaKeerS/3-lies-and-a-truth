@@ -686,7 +686,7 @@ export class PlaygroundModel {
     this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
       header: 'Welcome to the Playground!',
       width: '50vw',
-      contentStyle: { overflow: 'auto' },
+      contentStyle: { overflow: 'auto', justifyContent: 'center' },
       breakpoints: {
           '2000px': '50vw',
           '1199px': '75vw',

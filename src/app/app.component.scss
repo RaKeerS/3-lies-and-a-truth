@@ -3,6 +3,17 @@
     width: max-content;
     min-width: 100%;
   }
+
+  .p-dynamic-dialog, .p-dialog {
+    .p-dialog-header {
+      justify-content: center;
+      padding: 2rem 1.5rem;
+
+      .p-dialog-title {
+        font-size: 1.4rem;
+      }
+    }
+  }
 }
 
 :host {
@@ -25,6 +36,12 @@
         // flex: 0 0 auto;
         padding: 0.5rem;
         width: 16.6667%;
+      }
+    }
+
+    .p-dynamic-dialog {
+      .p-dialog-header {
+        justify-content: center;
       }
     }
   }
