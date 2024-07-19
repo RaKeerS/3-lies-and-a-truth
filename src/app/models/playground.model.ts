@@ -65,6 +65,7 @@ export class PlaygroundModel {
   private _globalPlaygroundTimerSubscription?: Subscription;
   private _globalPlaygroundMidSegueMessagesSubscription?: Subscription;
 
+  private _isGameStageToss: boolean = false;
   private _showBackdrop: boolean = false;
   private _isBettingCompleted: boolean = false;
   private _isShuffleDeckInitiated: boolean = false;
@@ -131,6 +132,10 @@ export class PlaygroundModel {
 
   get isConnected(): boolean {
     return this._playgroundService.isConnected;
+  }
+
+  get isGameStageTossOrTimer(): string {
+    return this._isGameStageToss ? 'Game Toss' : 'Timer';
   }
 
   get playerCardsList(): Map<CardDeckEnum, string> {
@@ -515,9 +520,10 @@ export class PlaygroundModel {
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
     this._gameStage.next(PlaygroundGameStageEnum.TOSS);
+    this._isGameStageToss = true;
 
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
-      header: 'Game Toss',
+      header: 'Welcome to the Playground!',
       width: '50vw',
       contentStyle: { overflow: 'auto' },
       breakpoints: {
@@ -686,7 +692,7 @@ export class PlaygroundModel {
     this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
       header: 'Welcome to the Playground!',
       width: '50vw',
-      contentStyle: { overflow: 'auto', justifyContent: 'center' },
+      contentStyle: { overflow: 'auto' },
       breakpoints: {
           '2000px': '50vw',
           '1199px': '75vw',
@@ -1375,6 +1381,7 @@ export class PlaygroundModel {
   // ===========================================================================
 
   public initializeBetting(): void {
+    this._isGameStageToss = false;
     this._gameStage.next(PlaygroundGameStageEnum.BET);
     this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.BET, message: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
   }
