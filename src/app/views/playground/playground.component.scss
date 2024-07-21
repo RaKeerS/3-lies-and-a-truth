@@ -73,7 +73,13 @@ $min-block-size: 24rem;
 
     .p-card-title {
       text-align: center;
-      margin-top: 1.5rem;
+    }
+
+    .root-card {
+      .p-card-title {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
     }
 
     .header-Mid-Zone {

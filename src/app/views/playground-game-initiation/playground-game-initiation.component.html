@@ -7,8 +7,8 @@
         <div class="flex font-bold text-2xl mb-4 justify-content-center"> {{ playgroundModel.isGameStageTossOrTimer }} </div>
         <div class="toss-players">
           <!-- {{ (playgroundModel.switch$ | async)?.message }} -->
-          <p-button [label]="playgroundModel.playerName" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !!(playgroundModel.switch$ | async)?.tossMessage ? (playgroundModel.switch$ | async)?.tossMessage === playgroundModel.PlaygroundTossOutcome.PLAYER_1 : this.playgroundModel.playerTossWinner === playgroundModel.PlaygroundTossOutcome.PLAYER_1 }"></p-button>
-          <p-button [label]="playgroundModel.opponentName" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !!(playgroundModel.switch$ | async)?.tossMessage ? (playgroundModel.switch$ | async)?.tossMessage === playgroundModel.PlaygroundTossOutcome.PLAYER_2 : this.playgroundModel.playerTossWinner === playgroundModel.PlaygroundTossOutcome.PLAYER_2  }"></p-button>
+          <p-button class="toss-buttons" [label]="playgroundModel.playerName" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !!(playgroundModel.switch$ | async)?.tossMessage ? (playgroundModel.switch$ | async)?.tossMessage === playgroundModel.PlaygroundTossOutcome.PLAYER_1 : this.playgroundModel.playerTossWinner === playgroundModel.PlaygroundTossOutcome.PLAYER_1 }"></p-button>
+          <p-button class="toss-buttons" [label]="playgroundModel.opponentName" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !!(playgroundModel.switch$ | async)?.tossMessage ? (playgroundModel.switch$ | async)?.tossMessage === playgroundModel.PlaygroundTossOutcome.PLAYER_2 : this.playgroundModel.playerTossWinner === playgroundModel.PlaygroundTossOutcome.PLAYER_2  }"></p-button>
         </div>
 
         <!-- <div class="toss-result flex p-3 justify-content-center">

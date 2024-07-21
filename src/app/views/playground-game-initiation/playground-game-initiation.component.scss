@@ -15,6 +15,13 @@
         inline-size: 12rem;
       }
     }
+
+    .toss-buttons {
+      button {
+        min-inline-size: 6.951rem;
+        min-block-size: 100%;
+      }
+    }
   }
 }
 

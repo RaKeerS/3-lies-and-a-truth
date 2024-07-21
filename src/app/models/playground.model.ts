@@ -1067,7 +1067,7 @@ export class PlaygroundModel {
               this.isOptionsPickerInitiated = false;
               this.showMidSegueMessages = true;
               this.midSegueMessages = 'You can have a look at the cards assigned.';
-              window.scrollTo(0, (document.body.scrollHeight - 1380));
+              window.scrollTo(0, (document.body.scrollHeight - 1250));
               // this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
             }),
             delay(500),
