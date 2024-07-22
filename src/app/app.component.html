@@ -421,7 +421,7 @@
 
             <p-menubar class="w-full">
               <ng-template pTemplate="start">
-                <a href="https://github.com/RaKeerS">
+                <a href="https://github.com/RaKeerS" pTooltip="Go to my GitHub Profile 😎👨🏻‍💻" tooltipPosition="bottom" tooltipStyleClass="avatar-tooltip-styling">
                   <p-avatar image="https://avatars.githubusercontent.com/u/22376097?v=4" size="large" shape="circle">
                   </p-avatar>
                 </a>
@@ -440,7 +440,7 @@
 
                     @if (!isConnected) {
                       <div class="card flex justify-content-center">
-                        <p-button (click)="toggleDialogState()" label="Hit the Playground!"></p-button>
+                        <p-button (click)="toggleDialogState()" label="Hit the Playground!" pTooltip="Let's gooo!! 🎮" tooltipPosition="left" [showDelay]="1000" [hideDelay]="300" ></p-button>
                       </div>
                     }
                 </div>

@@ -121,7 +121,7 @@
                     <div class="p-field p-col-12 p-3 h-full align-content-center pb-8">
                       <span class="icon flex justify-content-end pb-2">
                         <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
-                        <i class="pi pi-copy icon-copy" (click)="playgroundService.copyToClipboard()"></i>
+                        <i class="pi pi-copy icon-copy" (click)="playgroundService.copyToClipboard()" pTooltip="Copy content" tooltipPosition="top"></i>
                       </span>
                       <span class="p-float-label pt-3">
                         <input type="text" id="token-output" class="h-full" [required]="true" pInputText [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken" />
@@ -135,7 +135,7 @@
                   <div class="p-field p-col-12 p-3 h-full align-content-center pb-8">
                     <span class="icon flex justify-content-end pb-2">
                       <span class="tooltiptext" id="myTooltip">Paste from clipboard</span>
-                      <i class="pi pi-clipboard icon-paste" (click)="playgroundService.pasteFromClipboard()"></i>
+                      <i class="pi pi-clipboard icon-paste" (click)="playgroundService.pasteFromClipboard()" pTooltip="Paste content" tooltipPosition="top"></i>
                     </span>
                     <span class="p-float-label pt-3">
                       <input type="text" id="token-input" class="h-full" [required]="true" pInputText [disabled]="true" [(ngModel)]="playgroundService.signalInvitationToken" />
