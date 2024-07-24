@@ -31,8 +31,12 @@ import {
 } from '../enums/playground.enum';
 import { PlaygroundService } from '../services/playground.service';
 import { GameMidSegueMetadata } from '../types/app-types';
-import { PlaygroundGameInitiationComponent } from '../views/playground-game-initiation/playground-game-initiation.component';
-import { PlaygroundGameRulesComponent } from '../views/playground-game-rules/playground-game-rules.component';
+import {
+  PlaygroundGameInitiationDialogComponent,
+} from '../views/modal-dialogs/playground-game-initiation-dialog/playground-game-initiation.component-dialog';
+import {
+  PlaygroundGameRulesDialogComponent,
+} from '../views/modal-dialogs/playground-game-rules-dialog/playground-game-rules.component-dialog';
 
 export class PlaygroundModel {
 
@@ -522,6 +526,8 @@ export class PlaygroundModel {
     this._gameStage.next(PlaygroundGameStageEnum.TOSS);
     this._isGameStageToss = true;
 
+    this._dialogRef = this._dialogService.open(PlaygroundGameInitiationDialogComponent, {
+      header: 'Game Toss',
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
       header: 'Welcome to the Playground!',
       width: '50vw',
@@ -689,7 +695,7 @@ export class PlaygroundModel {
   }
 
   public showPlaygroundGameRulesDialog(): void {
-    this._dialogRef = this._dialogService.open(PlaygroundGameRulesComponent, {
+    this._dialogRef = this._dialogService.open(PlaygroundGameRulesDialogComponent, {
       header: 'Welcome to the Playground!',
       width: '50vw',
       contentStyle: { overflow: 'auto' },

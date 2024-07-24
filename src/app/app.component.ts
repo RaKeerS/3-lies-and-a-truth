@@ -6,14 +6,14 @@ import { DialogService } from 'primeng/dynamicdialog';
 
 import { PrimeNgModule } from './prime-ng/prime-ng.module';
 import { PlaygroundService } from './services/playground.service';
-import { GameConnectorComponent } from './views/game-connector/game-connector.component';
+import { GameConnectorDialogComponent } from './views/modal-dialogs/game-connector-dialog/game-connector-dialog.component';
 
 @Component({
     selector: 'app-root',
     standalone: true,
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    imports: [RouterOutlet, PrimeNgModule, GameConnectorComponent],
+    imports: [RouterOutlet, PrimeNgModule, GameConnectorDialogComponent],
     providers: [DialogService, MessageService, PlaygroundService, ConfirmationService]
 })
 export class AppComponent implements OnDestroy {

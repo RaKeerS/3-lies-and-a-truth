@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlaygroundGameRulesComponent } from './playground-game-rules.component';
+import { PlaygroundGameRulesDialogComponent } from './playground-game-rules-dialog.component';
 
 describe('PlaygroundGameRulesComponent', () => {
-  let component: PlaygroundGameRulesComponent;
-  let fixture: ComponentFixture<PlaygroundGameRulesComponent>;
+  let component: PlaygroundGameRulesDialogComponent;
+  let fixture: ComponentFixture<PlaygroundGameRulesDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlaygroundGameRulesComponent]
+      imports: [PlaygroundGameRulesDialogComponent]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(PlaygroundGameRulesComponent);
+
+    fixture = TestBed.createComponent(PlaygroundGameRulesDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

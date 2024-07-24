@@ -425,18 +425,18 @@
                   <p-avatar image="https://avatars.githubusercontent.com/u/22376097?v=4" size="large" shape="circle">
                   </p-avatar>
                 </a>
-                <div class="flex text-2xl w-full justify-content-center font-medium align-items-center ml-12">
+                <div class="flex text-2xl w-full justify-content-center font-medium align-items-center ml-9">
                   3 Lies and a Truth
                 </div>
               </ng-template>
 
-              <ng-template pTemplate="end">
-                <div class="flex align-items-center gap-2">
-                    <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
-                    <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
-                    @if(showPlaygroundDialog) {
-                      <app-game-connector [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector>
-                    }
+  <ng-template pTemplate="end">
+      <div class="flex align-items-center gap-2">
+          <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
+          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
+          @if(showPlaygroundDialog) {
+            <app-game-connector-dialog [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector-dialog>
+          }
 
                     @if (!isConnected) {
                       <div class="card flex justify-content-center">

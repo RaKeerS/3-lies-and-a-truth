@@ -9,9 +9,11 @@ import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
 import { APP_CONTAINER_FLEX_CLASS } from '../../types/app-types';
 import { DeckComponent } from '../deck/deck.component';
 import { MidZoneComponent } from '../mid-zone/mid-zone.component';
+import {
+  PlaygroundGameRulesDialogComponent,
+} from '../modal-dialogs/playground-game-rules-dialog/playground-game-rules.component-dialog';
 import { OpponentComponent } from '../opponent/opponent.component';
 import { PlayerComponent } from '../player/player.component';
-import { PlaygroundGameRulesComponent } from '../playground-game-rules/playground-game-rules.component';
 import { VoidZoneComponent } from '../void-zone/void-zone.component';
 
 @Component({
@@ -19,7 +21,7 @@ import { VoidZoneComponent } from '../void-zone/void-zone.component';
     standalone: true,
     templateUrl: './playground.component.html',
     styleUrl: './playground.component.scss',
-    imports: [PrimeNgModule, OpponentComponent, MidZoneComponent, PlayerComponent, DeckComponent, VoidZoneComponent, PlaygroundGameRulesComponent],
+    imports: [PrimeNgModule, OpponentComponent, MidZoneComponent, PlayerComponent, DeckComponent, VoidZoneComponent, PlaygroundGameRulesDialogComponent],
     providers: [DialogService]
 })
 export class PlaygroundComponent implements OnInit, OnDestroy {

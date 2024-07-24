@@ -1,18 +1,18 @@
 import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
-import { PlaygroundGameStageEnum, PlaygroundGameStagePhaseEnum } from '../../enums/playground.enum';
-import { PlaygroundModel } from '../../models/playground.model';
-import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
+import { PlaygroundGameStageEnum, PlaygroundGameStagePhaseEnum } from '../../../enums/playground.enum';
+import { PlaygroundModel } from '../../../models/playground.model';
+import { PrimeNgModule } from '../../../prime-ng/prime-ng.module';
 
 @Component({
-  selector: 'app-playground-game-initiation',
+  selector: 'app-playground-game-initiation-dialog',
   standalone: true,
   imports: [PrimeNgModule],
-  templateUrl: './playground-game-initiation.component.html',
-  styleUrl: './playground-game-initiation.component.scss'
+  templateUrl: './playground-game-initiation-dialog.component.html',
+  styleUrl: './playground-game-initiation-dialog.component.scss'
 })
-export class PlaygroundGameInitiationComponent implements OnInit, OnDestroy {
+export class PlaygroundGameInitiationDialogComponent implements OnInit, OnDestroy {
 
   private _dynamicDialogConfig: DynamicDialogConfig;
   private _modalData: PlaygroundModel;

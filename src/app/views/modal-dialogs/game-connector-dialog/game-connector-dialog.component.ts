@@ -1,21 +1,21 @@
 import { Component, EventEmitter, Injector, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { delay, filter, of, Subscription, tap } from 'rxjs';
 
-import { PlaygroundGameEnum, PlaygroundGameStageEnum } from '../../enums/playground.enum';
-import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
-import { PlaygroundService } from '../../services/playground.service';
-import { GameMidSegueMetadata } from '../../types/app-types';
+import { PlaygroundGameEnum, PlaygroundGameStageEnum } from '../../../enums/playground.enum';
+import { PrimeNgModule } from '../../../prime-ng/prime-ng.module';
+import { PlaygroundService } from '../../../services/playground.service';
+import { GameMidSegueMetadata } from '../../../types/app-types';
 
 
 @Component({
-  selector: 'app-game-connector',
+  selector: 'app-game-connector-dialog',
   standalone: true,
   imports: [PrimeNgModule],
-  templateUrl: './game-connector.component.html',
-  styleUrl: './game-connector.component.scss'
+  templateUrl: './game-connector-dialog.component.html',
+  styleUrl: './game-connector-dialog.component.scss'
 })
 
-export class GameConnectorComponent implements OnInit, OnDestroy {
+export class GameConnectorDialogComponent implements OnInit, OnDestroy {
   private _showPlaygroundDialog: boolean = false;
   private _playgroundService: PlaygroundService;
 

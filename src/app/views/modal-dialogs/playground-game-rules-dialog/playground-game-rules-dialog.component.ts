@@ -1,16 +1,16 @@
 import { Component, Injector } from '@angular/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
-import { PrimeNgModule } from '../../prime-ng/prime-ng.module';
+import { PrimeNgModule } from '../../../prime-ng/prime-ng.module';
 
 @Component({
-  selector: 'app-playground-game-rules',
+  selector: 'app-playground-game-rules-dialog',
   standalone: true,
   imports: [PrimeNgModule],
-  templateUrl: './playground-game-rules.component.html',
-  styleUrl: './playground-game-rules.component.scss'
+  templateUrl: './playground-game-rules-dialog.component.html',
+  styleUrl: './playground-game-rules-dialog.component.scss'
 })
-export class PlaygroundGameRulesComponent {
+export class PlaygroundGameRulesDialogComponent {
 
   // @Output() commenceGame: EventEmitter<boolean> = new EventEmitter<boolean>();
 
