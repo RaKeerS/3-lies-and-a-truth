@@ -33,10 +33,10 @@ import { PlaygroundService } from '../services/playground.service';
 import { GameMidSegueMetadata } from '../types/app-types';
 import {
   PlaygroundGameInitiationDialogComponent,
-} from '../views/modal-dialogs/playground-game-initiation-dialog/playground-game-initiation.component-dialog';
+} from '../views/modal-dialogs/playground-game-initiation-dialog/playground-game-initiation-dialog.component';
 import {
   PlaygroundGameRulesDialogComponent,
-} from '../views/modal-dialogs/playground-game-rules-dialog/playground-game-rules.component-dialog';
+} from '../views/modal-dialogs/playground-game-rules-dialog/playground-game-rules-dialog.component';
 
 export class PlaygroundModel {
 

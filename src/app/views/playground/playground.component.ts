@@ -11,7 +11,7 @@ import { DeckComponent } from '../deck/deck.component';
 import { MidZoneComponent } from '../mid-zone/mid-zone.component';
 import {
   PlaygroundGameRulesDialogComponent,
-} from '../modal-dialogs/playground-game-rules-dialog/playground-game-rules.component-dialog';
+} from '../modal-dialogs/playground-game-rules-dialog/playground-game-rules-dialog.component';
 import { OpponentComponent } from '../opponent/opponent.component';
 import { PlayerComponent } from '../player/player.component';
 import { VoidZoneComponent } from '../void-zone/void-zone.component';
