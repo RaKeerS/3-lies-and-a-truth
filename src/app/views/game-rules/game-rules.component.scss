@@ -1,0 +1,21 @@
+article {
+  h3 {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.rules-title {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+
+ol.rules-ol {
+  li {
+    ul {
+      padding: 1rem;
+      line-height: 1.5;
+    }
+  }
+}

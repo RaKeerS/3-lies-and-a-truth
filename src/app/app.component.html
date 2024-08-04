@@ -430,22 +430,26 @@
                 </div>
               </ng-template>
 
-  <ng-template pTemplate="end">
-      <div class="flex align-items-center gap-2">
-          <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
-          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
-          @if(showPlaygroundDialog) {
-            <app-game-connector-dialog [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector-dialog>
-          }
+                  <ng-template pTemplate="end">
+                      <div class="flex align-items-center gap-2">
+                          <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
+                          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
+                          @if(showPlaygroundDialog) {
+                            <app-game-connector-dialog [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector-dialog>
+                          }
 
-                    @if (!isConnected) {
-                      <div class="card flex justify-content-center">
-                        <p-button (click)="toggleDialogState()" label="Hit the Playground!" pTooltip="Let's gooo!! 🎮" tooltipPosition="left" [showDelay]="1000" [hideDelay]="300" ></p-button>
+                          @if (!isConnected) {
+                            <div class="card flex justify-content-center">
+                              <p-button (click)="toggleDialogState()" label="Hit the Playground!"></p-button>
+                            </div>
+                          }
                       </div>
-                    }
-                </div>
-              </ng-template>
-            </p-menubar>
+                  </ng-template>
+                </p-menubar>
+
+                <br/>
+
+                <app-game-rules></app-game-rules>
 
             @if (router.url !== '/home') {
               <router-outlet />
