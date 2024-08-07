@@ -1,3 +1,17 @@
+:host {
+  &::ng-deep {
+    .game-rules-header {
+      .p-panel-header {
+        .p-panel-title {
+          display: flex;
+          justify-content: center;
+          inline-size: 100%;
+        }
+      }
+    }
+  }
+}
+
 article {
   h3 {
     text-decoration: underline;
