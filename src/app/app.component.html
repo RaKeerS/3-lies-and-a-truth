@@ -449,7 +449,10 @@
 
                 <br/>
 
-                <app-game-rules></app-game-rules>
+                @if (showPlaygroundDialog || !isConnected) {
+                  <app-game-rules></app-game-rules>
+                }
+
 
             @if (router.url !== '/home') {
               <router-outlet />
