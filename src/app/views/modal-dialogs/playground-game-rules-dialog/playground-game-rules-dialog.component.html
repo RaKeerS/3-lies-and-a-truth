@@ -34,33 +34,38 @@
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
               <article>
-                <h3 class="flex justify-content-center underline"> Playground Layout </h3>
-                <ol class="rules-ol">
-                  <li>
-                    The top section belongs to the <b>Opponent</b> player while the bottom section belongs to the <b>Player</b>.
-                  </li>
-                  <li>
-                    The bottom left portion indicates the <b>Pick or Choose</b> section.
-                    <br />
-                    During the <b>Pick</b> game phase the <b>Player</b> woold either <b>Pick</b> options i.e. 3 Lies and 1 Truth. (always both)
-                    <br />
-                    During the <b>Choose</b> game phase the <b>Player</b> woold either <b>Choose</b> either 3 Lies or 1 Truth. (never both)
-                    <br />
-                    It contains a toggle switch to flip/re-flip the Cards. It also contains a button to toggle between <b>Truth or Lies</b> option list.
-                  </li>
-                  <li>
-                    The mid bottom section shows the <b>Player Cards</b> which will flip on hover. There is also toggle switch on the <b>Pick or Choose</b> section to flip all cards at once.
-                  </li>
-                  <li>
-                    The bottom right section includes an information on the <b>Bounty</b> amount as well as the opponent's <b>Bounty</b> amount.
-                  </li>
-                </ol>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Player Section </h3>
+                <section>
+                  <img src="./assets/gifs/player-section.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      The top section belongs to the <b>Opponent</b> player while the bottom section belongs to the <b>Player</b>.
+                    </li>
+                    <li>
+                      The bottom left portion indicates the <b>Pick or Choose</b> section.
+                      <br />
+                      During the <b>Pick</b> game phase the <b>Player</b> woold either <b>Pick</b> options i.e. 3 Lies and 1 Truth. (always both)
+                      <br />
+                      During the <b>Choose</b> game phase the <b>Player</b> woold either <b>Choose</b> either 3 Lies or 1 Truth. (never both)
+                      <br />
+                      It contains a toggle switch to flip/re-flip the Cards. It also contains a button to toggle between <b>Truth or Lies</b> option list.
+                    </li>
+                    <li>
+                      The mid bottom section shows the <b>Player Cards</b> which will flip on hover. There is also toggle switch on the <b>Pick or Choose</b> section to flip all cards at once.
+                    </li>
+                    <li>
+                      The bottom right section includes an information on the <b>Bounty</b> amount as well as the opponent's <b>Bounty</b> amount.
+                    </li>
+                  </ol>
+                </section>
               </article>
             </div>
           </div>
         </div>
 
-        <div class="flex pt-4 justify-content-end">
+        <div class="flex justify-content-end">
           <!-- Call createOrJoinPlayground() -->
           <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
         </div>
@@ -90,7 +95,34 @@
 
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
-
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Player Section </h3>
+                <section>
+                  <img src="./assets/gifs/player-section.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      The top section belongs to the <b>Opponent</b> player while the bottom section belongs to the <b>Player</b>.
+                    </li>
+                    <li>
+                      The bottom left portion indicates the <b>Pick or Choose</b> section.
+                      <br />
+                      During the <b>Pick</b> game phase the <b>Player</b> woold either <b>Pick</b> options i.e. 3 Lies and 1 Truth. (always both)
+                      <br />
+                      During the <b>Choose</b> game phase the <b>Player</b> woold either <b>Choose</b> either 3 Lies or 1 Truth. (never both)
+                      <br />
+                      It contains a toggle switch to flip/re-flip the Cards. It also contains a button to toggle between <b>Truth or Lies</b> option list.
+                    </li>
+                    <li>
+                      The mid bottom section shows the <b>Player Cards</b> which will flip on hover. There is also toggle switch on the <b>Pick or Choose</b> section to flip all cards at once.
+                    </li>
+                    <li>
+                      The bottom right section includes an information on the <b>Bounty</b> amount as well as the opponent's <b>Bounty</b> amount.
+                    </li>
+                  </ol>
+                </section>
+              </article>
             </div>
           </div>
         </div>
