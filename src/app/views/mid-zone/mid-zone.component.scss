@@ -11,6 +11,22 @@
         }
       }
     }
+
+    .header-Mid-Zone {
+      .p-card {
+        .p-card-body {
+          padding: 1.25rem 0.25rem;
+
+          .p-card-title {
+            margin-bottom: 1.5rem;
+          }
+
+          .p-card-content {
+            padding-top: 0;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -41,4 +57,8 @@
 
 .border-radius-10px {
   border-radius: 10px;
+}
+
+.inline-size-65rem {
+  inline-size: 65rem;
 }

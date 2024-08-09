@@ -212,9 +212,9 @@
   }
 }
 
-<p-card header="Title" class="outer root-card flex">
+<p-card header="Welcome to the Playground!" class="outer root-card flex">
   <div class="flex root-div w-full">
-    <div class="flex void-zone mb-5 pr-4" [style.z-index]="playgroundModel.increaseZIndexVoidedCards ? 1001 : 'auto'">
+    <div class="flex void-zone mb-5 pr-3 ml-1.5" [style.z-index]="playgroundModel.increaseZIndexVoidedCards ? 1001 : 'auto'">
       <!-- <p-card header="Void Zone">
         <p class="m-0">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque
@@ -224,7 +224,7 @@
 
       <app-void-zone [playgroundModel]="playgroundModel"></app-void-zone>
     </div>
-    <div class="flex flex-auto flex-column mx-3">
+    <div class="flex flex-auto flex-column mx-2">
       <!-- <div class="flex min-h-200p mb-5">
         <p-card header="P1" class="header-P1 inner">
           <div class="flex flex-column">
@@ -313,12 +313,12 @@
         </p-card>
       </div> -->
 
-      <app-opponent></app-opponent>
+      <app-opponent [playgroundModel]="playgroundModel"></app-opponent>
       <app-mid-zone [playgroundModel]="playgroundModel"></app-mid-zone>
       <!-- <app-player [increaseZIndexCards]="playgroundModel.increaseZIndexCards" [increaseZIndexPicker]="playgroundModel.increaseZIndexPicker" [playerName]="playgroundModel.playerName" [playerCardsList]="playgroundModel.playerCardsList" [flipCards]="playgroundModel.flipCards" [midSegwayMessages]="playgroundModel.midSegwayMessages" ></app-player> -->
       <app-player [playgroundModel]="playgroundModel"></app-player>
     </div>
-    <div class="flex deck mb-5" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
+    <div class="flex deck mb-5 pl-3 mr-1.5" [style.z-index]="playgroundModel.increaseZIndexCards ? 1001 : 'auto'">
       <!-- <p-card header="Deck">
         <p class="m-0">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque

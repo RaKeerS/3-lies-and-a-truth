@@ -1,5 +1,40 @@
+::ng-deep {
+  :root {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .p-dynamic-dialog, .p-dialog {
+    .p-dialog-header {
+      justify-content: center;
+      padding: 2rem 1.5rem;
+
+      .p-dialog-title {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  .p-tooltip {
+    // display: flex !important;
+
+    .p-tooltip-text {
+      text-align: center;
+      // white-space: nowrap;
+      // inline-size: max-content;
+    }
+  }
+
+  .avatar-tooltip-styling {
+    .p-tooltip-text {
+      inline-size: max-content;
+    }
+  }
+}
+
 :host {
   &::ng-deep {
+    block-size: 100%;
     p-menubar {
       .p-menubar-start {
         display: flex;
@@ -17,6 +52,12 @@
         // flex: 0 0 auto;
         padding: 0.5rem;
         width: 16.6667%;
+      }
+    }
+
+    .p-dynamic-dialog {
+      .p-dialog-header {
+        justify-content: center;
       }
     }
   }
@@ -73,6 +114,10 @@ p {
   }
 }
 
+.ml-12 {
+  margin-left: 12rem;
+}
+
 .card {
   display: flex;
   width: 100%;
@@ -99,7 +144,7 @@ p {
 .layout-main-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100%;
   justify-content: space-between;
   padding: 2rem;
   // padding-left: 4rem;
@@ -107,7 +152,7 @@ p {
 }
 
 .layout-wrapper {
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 

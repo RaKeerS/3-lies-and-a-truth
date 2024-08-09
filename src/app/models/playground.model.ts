@@ -65,6 +65,7 @@ export class PlaygroundModel {
   private _globalPlaygroundTimerSubscription?: Subscription;
   private _globalPlaygroundMidSegueMessagesSubscription?: Subscription;
 
+  private _isGameStageToss: boolean = false;
   private _showBackdrop: boolean = false;
   private _isBettingCompleted: boolean = false;
   private _isShuffleDeckInitiated: boolean = false;
@@ -127,6 +128,14 @@ export class PlaygroundModel {
 
   get whoIsOpponent(): PlaygroundPlayersEnum {
     return this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? PlaygroundPlayersEnum.PLAYER_2 : PlaygroundPlayersEnum.PLAYER_1;
+  }
+
+  get isConnected(): boolean {
+    return this._playgroundService.isConnected;
+  }
+
+  get isGameStageTossOrTimer(): string {
+    return this._isGameStageToss ? 'Game Toss' : 'Timer';
   }
 
   get playerCardsList(): Map<CardDeckEnum, string> {
@@ -511,9 +520,10 @@ export class PlaygroundModel {
   private showPlaygroundGameInitiationDialog(): void { // TODO: Redefine this method for perform Toss for the match, add new component
     // this.gameStages.set(PlaygroundGameStage.TOSS, true);
     this._gameStage.next(PlaygroundGameStageEnum.TOSS);
+    this._isGameStageToss = true;
 
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
-      header: 'Game Toss',
+      header: 'Welcome to the Playground!',
       width: '50vw',
       contentStyle: { overflow: 'auto' },
       breakpoints: {
@@ -1057,7 +1067,7 @@ export class PlaygroundModel {
               this.isOptionsPickerInitiated = false;
               this.showMidSegueMessages = true;
               this.midSegueMessages = 'You can have a look at the cards assigned.';
-              window.scrollTo(0, (document.body.scrollHeight - 1380));
+              window.scrollTo(0, (document.body.scrollHeight - 1230));
               // this.isDeckShufflerPlayer ? window.scrollTo(0, (document.body.scrollHeight - 950)) : window.scrollTo(0, (document.body.scrollHeight - 1080))
             }),
             delay(500),
@@ -1311,14 +1321,14 @@ export class PlaygroundModel {
         }
         if (metaData?.message.playerGameStageWinner === this.whoAmI) {
           // NOTE: Check this betAmount Logic once!
-          this.playgroundCreatorBetAmount += this.playgroundJoinerBetAmount;
-          this.playgroundJoinerBetAmount -= this.playgroundCreatorBetAmount;
+          this.playgroundCreatorBetAmount += Math.abs(this.playgroundJoinerBetAmount);
+          this.playgroundJoinerBetAmount -= Math.abs(this.playgroundCreatorBetAmount);
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'You win this round!😊' });
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Achievement: Bounty Winner!🤴🏻', detail: 'Your will receive your opponent\'s bounty amount!🤑' });
           this._playgroundService.messageService.add({ severity: 'success', summary: 'Achievement: Card Destroyer!😈', detail: 'Your opponent\'s cards will be destroyed following your round victory!😎' });
         } else {
-          this.playgroundJoinerBetAmount += this.playgroundCreatorBetAmount;
-          this.playgroundCreatorBetAmount -= this.playgroundJoinerBetAmount;
+          this.playgroundJoinerBetAmount += Math.abs(this.playgroundCreatorBetAmount);
+          this.playgroundCreatorBetAmount -= Math.abs(this.playgroundJoinerBetAmount);
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'You lost this round!😟' });
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Achievement: Bounty Loser!😭', detail: 'Your opponent will receive your bounty amount!🙄' });
           this._playgroundService.messageService.add({ severity: 'error', summary: 'Achievement: Self Destructor!🤡', detail: 'Your cards will be destroyed following your round loss!😑' });
@@ -1371,6 +1381,7 @@ export class PlaygroundModel {
   // ===========================================================================
 
   public initializeBetting(): void {
+    this._isGameStageToss = false;
     this._gameStage.next(PlaygroundGameStageEnum.BET);
     this._playgroundService.switch.next({ gameStage: PlaygroundGameStageEnum.BET, message: PlaygroundGameStagePhaseEnum.INITIAL, messageFrom: 'subject' } as GameMidSegueMetadata);
   }
@@ -1450,7 +1461,7 @@ export class PlaygroundModel {
           }
         }
         this.deckCardsList.delete(randomNumber);
-        this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+        // this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
       }
 
       if (firstPlayerCardsList.size === 4) {
@@ -1469,7 +1480,7 @@ export class PlaygroundModel {
           }
         }
         this.deckCardsList.delete(randomNumber);
-        this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
+        // this.voidDeckCardsList.set(randomNumber, CardDeckEnum[randomNumber]);
       }
 
 
@@ -1833,9 +1844,11 @@ export class PlaygroundModel {
 
   public terminateConnection(hasWon: boolean): void {
     this.showWaitingHeader = true;
+    this.midSegueMessages = 'You will be redirected to home screen on connection termination!';
     if (hasWon) {
       this._playgroundService.messageService.add({ severity: 'success', summary: 'Victory', detail: 'You won the game!😎' });
       // this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+      this.globalPlaygroundTimer = 0;
 
       interval(1000).pipe(
         take(1),
@@ -1846,30 +1859,50 @@ export class PlaygroundModel {
         tap(() => this.waitingZoneHeader = `Collect from your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerOneBetAmount : this.playerTwoBetAmount} bucks!` ),
         delay(2000),
         tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
-        delay(2000)
-      ).subscribe(() => {
-        this.unsubscribeAllAndResetCounter();
-        this.unsubscribeAll()
-        this._playgroundService.terminateConnectionFromPlayground()
-      });
-    } else {
-      this._playgroundService.messageService.add({ severity: 'error', summary: 'Loss', detail: 'You lost the game!😭' });
-      this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
-
-      interval(1000).pipe(
-        take(1),
-        tap(() => this.waitingZoneHeader = 'You lost the game!'),
-        delay(2000),
-        tap(() => this.waitingZoneHeader = 'Better luck next time!'),
-        delay(2000),
-        tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
-        delay(2000),
+        delay(4000),
+        tap(() => this.waitingZoneHeader = `Collect from your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerOneBetAmount : this.playerTwoBetAmount} bucks!` ),
+        delay(4000),
         tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
         delay(2000)
       ).subscribe(() => {
         this.unsubscribeAllAndResetCounter();
         this.unsubscribeAll();
-        this._playgroundService.terminateConnectionFromPlayground()
+        this._playgroundService.terminateConnectionFromPlayground();
+        this.waitingZoneHeader = 'Connection with your partner terminated!';
+      });
+    } else {
+      this._playgroundService.confirmationService.confirm({
+        header: 'Are you sure?',
+        message: 'Do you really wish to end the game!? Doing so will result in your loss!',
+        accept: () => {
+          this._playgroundService.messageService.add({ severity: 'error', summary: 'Loss', detail: 'You lost the game!😭' });
+          this._playgroundService.sendMessageForPlayground(JSON.stringify({ gameStage: PlaygroundGameStageEnum.OTHER, message: this.whoIsOpponent, gameStagePhase: PlaygroundGameStagePhaseEnum.GAMEWINNER, messageFrom: 'peer' } as GameMidSegueMetadata));
+          this.globalPlaygroundTimer = 0;
+
+          interval(1000).pipe(
+            take(1),
+            tap(() => this.waitingZoneHeader = 'You lost the game!'),
+            delay(2000),
+            tap(() => this.waitingZoneHeader = 'Better luck next time!'),
+            delay(2000),
+            tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
+            delay(2000),
+            tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
+            delay(4000),
+            tap(() => this.waitingZoneHeader = `Pay your opponent the bounty amount - ${this.whoAmI === PlaygroundPlayersEnum.PLAYER_1 ? this.playerTwoBetAmount : this.playerOneBetAmount} bucks!` ),
+            delay(4000),
+            tap(() => this.waitingZoneHeader = 'Connection with your partner will terminate soon!'),
+            delay(2000)
+          ).subscribe(() => {
+            this.unsubscribeAllAndResetCounter();
+            this.unsubscribeAll();
+            this._playgroundService.terminateConnectionFromPlayground();
+            this.waitingZoneHeader = 'Connection with your partner terminated!';
+          });
+        },
+        reject: () => {
+          return false;
+        }
       });
     }
   }

@@ -16,6 +16,11 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  margin-right: 0;
+  margin-left: 0;
+}
+
 .app-container-flex {
   block-size: 100%;
   inline-size: 100%;

@@ -1,301 +1,197 @@
 import { NgZone } from '@angular/core';
 import { compress, decompress } from '@zalari/string-compression-utils';
+import { error } from 'console';
+import Peer, { DataConnection, PeerError } from 'peerjs';
 import SimplePeer from 'simple-peer';
 
 import { PlaygroundGameStageEnum, PlaygroundGameStagePhaseEnum } from '../../enums/playground.enum';
 import { PlaygroundService } from '../../services/playground.service';
 import { GameMidSegueMetadata } from '../../types/app-types';
 
-// export class WebRtcModel {
-// import * as wrtc from './../../../../node_modules/electron-webrtc/browser';
-// const wrtc = require('./../../../../node_modules/electron-webrtc/index')
-
-
-//   // // Set up an asynchronous communication channel that will be
-//   // // used during the peer connection setup
-//   // private _signalingChannel: any;
-//   // private readonly _configuration = { 'iceServers' : [{ 'urls': 'stun:stun.l.google.com:19302' }] };
-
-//   // // PC1
-//   // async makeCall()  {
-//   //   const peerConnection = new RTCPeerConnection(this._configuration);
-//   //   this._signalingChannel.addEventListener('message', async message => {
-//   //       if (message.answer) {
-//   //           const remoteDesc = new RTCSessionDescription(message.answer);
-//   //           await peerConnection.setRemoteDescription(remoteDesc);
-//   //       }
-//   //   });
-//   //   const offer = await peerConnection.createOffer();
-//   //   await peerConnection.setLocalDescription(offer);
-//   //   this._signalingChannel.send({'offer': offer});
-//   // }
-
-//   private _createPlayground?: boolean;
-
-//   private _signaling: BroadcastChannel;
-//   // private _receiver: BroadcastChannel;
-//   // private peerConnection: any;
-//   private _isReady: boolean = false;
-
-//   private _localConnection?: RTCPeerConnection;
-//   private _remoteConnection?: RTCPeerConnection;
-//   private _chatChannel: any;
-//   private _sendChannel: any = null;
-//   private _receiveChannel: any;
-
-//   playerName: string = '';
-
-//   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
-//   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
-
-//   constructor() {
-//     // NOTE - This is where it begins!
-//     this._signaling = new BroadcastChannel('webrtc');
-//     // this._receiver = new BroadcastChannel('webrtc');
-//     this.handleSignalingEvents();
-//   }
-
-//   get createPlayground(): boolean {
-//     return !!this._createPlayground;
-//   }
-//   set createPlayground(value: boolean) {
-//     this._createPlayground = value;
-//   }
-
-//   get peerConnection() {
-//     return this.createPlayground ? this._localConnection : this._remoteConnection;
-//   }
-//   set peerConnection(value: any) {
-//     // this.peerConnection = value;
-//     this.createPlayground ? this._localConnection = value : this._remoteConnection = value;
-//   }
-
-//   get isReady(): boolean {
-//     return this._isReady;
-//   }
-//   set isReady(value: boolean) {
-//     this._isReady = value;
-//   }
-
-//   // private peerConnection(peer: any) {
-//   //   return (peer === this._localConnection) ? this._localConnection : this._remoteConnection;
-//   // }
-
-//   private handleSignalingEvents(): void {
-//     this._signaling.onmessage = e => {
-//     // this._receiver.onmessage = e => {
-//       if (!this._isReady) {
-//         console.log('yeah not ready yet');
-//         return;
-//       }
-//       switch (e.data.type) {
-//         case 'offer':
-//           this.handleOffer(e.data);
-//           break;
-//         case 'answer':
-//           this.handleAnswer(e.data);
-//           break;
-//         case 'candidate':
-//           this.handleCandidate(e.data);
-//           break;
-//         case 'ready':
-//           // A second tab joined. This tab will initiate a call unless in a call already.
-//           if (this.peerConnection) {
-//             console.log('already in call, ignoring');
-//             return;
-//           }
-//           this.makeCall();
-//           break;
-//         case 'bye':
-//           if (this.peerConnection) {
-//             this.hangup();
-//           }
-//           break;
-//         // case 'message':
-//         //   break;
-//         default:
-//           console.log('unhandled', e);
-//           break;
-//       }
-//     };
-
-//     this._signaling.onmessageerror = err => {
-//       console.log('err: ', err);
-//     }
-//   }
-
-//   async hangup() {
-//     if (this.peerConnection) {
-//       this.peerConnection.close();
-//       this.peerConnection = null;
-//     }
-
-//     this._isReady = false;
-
-//     // this._localStream.getTracks().forEach((track: any) => track.stop());
-//     // this._localStream = null;
-//     // startButton.disabled = false;
-//     // hangupButton.disabled = true;
-//   };
-
-//   createPeerConnection() {
-//     this._localConnection = new RTCPeerConnection(this.cfg);
-//     this._remoteConnection = new RTCPeerConnection(this.cfg);
-
-//     this.peerConnection.oniceconnectionstatechange = (e: any) => console.log(this.peerConnection.iceConnectionState);
-
-//     // if (this.createPlayground) {
-//     //   this._sendChannel = this.peerConnection.createDataChannel('sendDataChannel');
-//     // }
-
-//     this.peerConnection.onicecandidate = (e: any) => {
-//       const message: any = {
-//         type: 'candidate',
-//         candidate: null,
-//       };
-//       if (e.candidate) {
-//         message.candidate = e.candidate.candidate;
-//         message.sdpMid = e.candidate.sdpMid;
-//         message.sdpMLineIndex = e.candidate.sdpMLineIndex;
-//       }
-//       this._signaling.postMessage(message);
-//     };
-//     // pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
-//     // localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-//   }
-
-//   async createDataChannel() {
-//     // if (!!this._createPlayground) {
-//       this._chatChannel = this.peerConnection.createDataChannel('chatChannel');
-//       this.handleMessagesOnChatChannel(this._chatChannel);
-//     // }
-//   }
-
-//   async handleDataChannel() {
-//     // if (!this._createPlayground) {
-//     this.peerConnection.ondatachannel = (e: any) => {
-//       if (e.channel.label === 'chatChannel') {
-//         console.log('chatChannel Received: ', e);
-//         this._chatChannel = e.channel;
-//         this.handleMessagesOnChatChannel(this._chatChannel);
-//         this.sendMessageOnChatChannel(e.channel);
-//       }
-//     }
-//     // }
-//   }
-
-//   async makeCall() {
-//     await this.createPeerConnection();
-//     await this.createDataChannel();
-
-//     await this.handleDataChannel();
-
-//     const offer = await this.peerConnection.createOffer();
-//     this._signaling.postMessage({type: 'offer', sdp: offer.sdp});
-//     await this.peerConnection.setLocalDescription(offer);
-//   }
-
-//   async handleOffer(offer: any) {
-//     if (this.peerConnection) {
-//       console.error('existing peer connection');
-//       return;
-//     }
-//     await this.createPeerConnection();
-//     await this.handleDataChannel();
-//     await this.peerConnection.setRemoteDescription(offer);
-
-//     const answer = await this.peerConnection.createAnswer();
-//     this._signaling.postMessage({type: 'answer', sdp: answer.sdp});
-//     await this.peerConnection.setLocalDescription(answer);
-//   }
-
-//   async handleAnswer(answer: any) {
-//     if (!this.peerConnection) {
-//       console.error('no peer connection');
-//       return;
-//     }
-//     await this.peerConnection.setRemoteDescription(answer);
-//   }
-
-//   async handleCandidate(candidate: any) {
-//     if (!this.peerConnection) {
-//       console.error('no peer connection');
-//       return;
-//     }
-//     if (!candidate.candidate) {
-//       // await this.peerConnection.addIceCandidate(null);
-//     } else {
-//       await this.peerConnection.addIceCandidate(candidate);
-//     }
-//   }
-
-//   async handleMessagesOnChatChannel(event: any) {
-//     // this._chatChannel.onopen = this.onSendChannelStateChange;
-//     this._chatChannel.onopen = (e: any) => {
-//       const readyState = this._chatChannel.readyState;
-//       console.log(`Receive channel state is: ${readyState}`);
-//       console.log('Chat channel is now open!', e);
-//     }
-//     this._chatChannel.onmessage = (e: any) => {
-//         // chat.innerHTML = chat.innerHTML + "<pre>" + e.data + "</pre>"
-//         console.log(`${this.playerName} says: `, e.data)
-//     }
-//     this._chatChannel.onclose = () => {
-//         console.log('Chat channel closed...!');
-//     }
-//   }
-
-//   onSendChannelStateChange() {
-//     const readyState = this._chatChannel.readyState;
-//     console.log('Send channel state is: ' + readyState);
-//     // if (readyState === 'open') {
-//     //   dataChannelSend.disabled = false;
-//     //   dataChannelSend.focus();
-//     //   sendButton.disabled = false;
-//     //   closeButton.disabled = false;
-//     // } else {
-//     //   dataChannelSend.disabled = true;
-//     //   sendButton.disabled = true;
-//     //   closeButton.disabled = true;
-//     // }
-//   }
-
-//   public initiateWebRtc(playerName: string): void {
-//     this._isReady = true;
-//     this._createPlayground = playerName === 'Player 1';
-//     this.playerName = playerName;
-
-//     this._signaling.postMessage({type: 'ready'});
-//   }
-
-//   public terminateWebRtc(): void {
-//     this._signaling.postMessage({type: 'bye'});
-//   }
-
-//   public sendMessageOnChatChannel(message: string): void {
-//     this._chatChannel.send(message);
-//   }
-
-// }
-
-// var SimplePeer = require('simple-peer')
-
-// const SimplePeer = require('../../../../node_modules/simple-peer/simplepeer.min.js');
-// const wrtc = require('../../../../node_modules/electron-webrtc/index.js')({ headless: true });
-
-// let Quassel = window['require']('electron-webrtc');
-
 export class WebRtcModel {
 
+  private _lastPeerId?: string;
+  private _connection?: DataConnection;
+  private _disconnect?: boolean = false;
 
   cfg = {'iceServers': [{urls: 'stun:23.21.150.121'}]};
   con = { 'optional': [{'DtlsSrtpKeyAgreement': true}] };
+
+  custCfg = {
+    iceServers: [
+      // {
+      //   urls: 'stun:stun.l.google.com:19302'
+      // },
+      // {
+      //   urls: 'turn:192.158.29.39:3478?transport=udp',
+      //   credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+      //   username: '28224511:1379330808'
+      // },
+      // {
+      //   urls: 'turn:192.158.29.39:3478?transport=tcp',
+      //   credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+      //   username: '28224511:1379330808'
+      // }
+      // { urls: 'turn:freestun.net:5350', username: 'free', credential: 'free' },
+
+
+      // {
+      //   urls: "stun:openrelay.metered.ca:80",
+      // },
+      // {
+      //   urls: "turn:openrelay.metered.ca:80",
+      //   username: "openrelayproject",
+      //   credential: "openrelayproject",
+      // },
+      // {
+      //   urls: "turn:openrelay.metered.ca:443",
+      //   username: "openrelayproject",
+      //   credential: "openrelayproject",
+      // },
+      // {
+      //   urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      //   username: "openrelayproject",
+      //   credential: "openrelayproject",
+      // },
+    ] as RTCIceServer[]
+  }
+
+  // NOTE: Working List of IceServers!
+  // const peer = new SimplePeer({
+  //   initiator: true,
+  //   objectMode: true,
+  //   config: {
+  //     iceServers: [
+  //       {
+  //         url: 'turn:numb.viagenie.ca',
+  //         credential: 'muazkh',
+  //         username: 'webrtc@live.com'
+  //       },
+  //       {
+  //         url: 'turn:192.158.29.39:3478?transport=udp',
+  //         credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //         username: '28224511:1379330808'
+  //       },
+  //       {
+  //         url: 'turn:192.158.29.39:3478?transport=tcp',
+  //         credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //         username: '28224511:1379330808'
+  //       },
+  //       {
+  //         url: 'turn:turn.bistri.com:80',
+  //         credential: 'homeo',
+  //         username: 'homeo'
+  //       },
+  //       {
+  //         url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+  //         credential: 'webrtc',
+  //         username: 'webrtc'
+  //       }
+  //     ]
+  //   }
+  // })
+
+  // private _iceServers = [
+  //   {
+  //     urls: "stun:openrelay.metered.ca:80",
+  //   },
+  //   {
+  //     urls: "turn:openrelay.metered.ca:80",
+  //     username: "openrelayproject",
+  //     credential: "openrelayproject",
+  //   },
+  //   {
+  //     urls: "turn:openrelay.metered.ca:443",
+  //     username: "openrelayproject",
+  //     credential: "openrelayproject",
+  //   },
+  //   {
+  //     urls: "turn:openrelay.metered.ca:443?transport=tcp",
+  //     username: "openrelayproject",
+  //     credential: "openrelayproject",
+  //   },
+  // ]
+
+  // NOTE: Not working List of IceServers!
+  private _iceServers = [
+    {
+      urls: "turn:global.relay.metered.ca:80",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:80?transport=tcp",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:443",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+    {
+      urls: "turns:global.relay.metered.ca:443?transport=tcp",
+      username: "c483cc3551a5809d406b7f30",
+      credential: "1PmhzrBoIJXH/N4i",
+    },
+  ];
+
+  // private _iceServers = [
+  //   {
+  //     urls: 'turn:numb.viagenie.ca',
+  //     credential: 'muazkh',
+  //     username: 'webrtc@live.com'
+  //   },
+  //   {
+  //     urls: 'turn:192.158.29.39:3478?transport=udp',
+  //     credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //     username: '28224511:1379330808'
+  //   },
+  //   {
+  //     urls: 'turn:192.158.29.39:3478?transport=tcp',
+  //     credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+  //     username: '28224511:1379330808'
+  //   },
+  //   {
+  //     urls: 'turn:turn.bistri.com:80',
+  //     credential: 'homeo',
+  //     username: 'homeo'
+  //   },
+  //   {
+  //     urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
+  //     credential: 'webrtc',
+  //     username: 'webrtc'
+  //   }
+  // ];
 
   constructor(private _playgroundService: PlaygroundService, private _ngZone: NgZone) {
     // NOTE - This is where it begins!
     // this._signaling = new BroadcastChannel('webrtc');playerName: string = '';
     // this._receiver = new BroadcastChannel('webrtc');
     // this.handleSignalingEvents();
+
+    // this._iceServers = this.fetchTurnServerCredentials();
+    // this.fetchTurnServerCredentials();
+  }
+
+  get isWebRtcSupported(): boolean {
+    return SimplePeer.WEBRTC_SUPPORT;
+  }
+
+  private async fetchTurnServerCredentials(): Promise<void> {
+    // Calling the REST API TO fetch the TURN Server Credentials
+    const response = await fetch("https://webrtc-development-app.metered.live/api/v1/turn/credentials?apiKey=882b79b4ec7814a772c3189d5f335c691024");
+
+    // Saving the response in the iceServers array
+    const iceServers = await response.json();
+    // return await response.json();
+
+    // Using the iceServers array in the RTCPeerConnection method
+    // var myPeerConnection = new RTCPeerConnection({
+    //   iceServers: iceServers
+    // });
+
+    this._iceServers = iceServers;
   }
 
 
@@ -373,6 +269,94 @@ export class WebRtcModel {
       this._playgroundService.ngZone.run(() => {
         this.handleMessages(message);
       })
+    });
+  }
+
+  private handlePeerEvents(peer: Peer): void {
+    peer.on('open', (id: string) => {
+      if (!peer.id) {
+        console.log('Received null id from peer open', 'id: ', id);
+      } else {
+        if (this._playgroundService.createPlayground) {
+          this._lastPeerId = this._playgroundService.signalInvitationToken = peer.id;
+          this._playgroundService.signalInvitationTokenCreated = true;
+        }
+      }
+
+      console.log('peer.id: ', id);
+    });
+
+    peer.on('connection', (connection: DataConnection) => {
+      if (this._playgroundService.createPlayground) {
+        // Allow only a single connection
+        if (this._connection && this._connection.open) {
+          connection.on('open', () => {
+            connection.send('Already connected to another Client!');
+            connection.close();
+          });
+          return;
+        }
+
+        this._connection = connection;
+        // console.log('Connected to: ', connection.peer);
+
+        this.handleConnectionEvents();
+      } else {
+        connection.on('open', () => {
+          connection.send('Joiner does not accept incoming connections!');
+          connection.close();
+        });
+      }
+    });
+
+    peer.on('disconnected', () => {
+      console.log('Connection lost. Please reconnect!');
+
+      // Workaround for peer.reconnect deleting previous id
+      // peer.id = this._lastPeerId;
+      // peer.ser = this._lastPeerId;
+      if (!this._disconnect) {
+        console.log('Retrying connection!');
+        this._playgroundService.messageService.add({ severity: 'info', summary: 'Information', detail: 'Reconnecting... Please wait!' });
+        peer.reconnect();
+      }
+    });
+
+    peer.on('close', () => {
+      this._connection = undefined;
+      console.log('Connection destroyed, Connection closed!');
+    });
+
+    peer.on('error', (error: PeerError<"disconnected" | "browser-incompatible" | "invalid-id" | "invalid-key" | "network" | "peer-unavailable" | "ssl-unavailable" | "server-error" | "socket-error" | "socket-closed" | "unavailable-id" | "webrtc">) => {
+      this._playgroundService.isConnecting = false;
+      this._playgroundService.isConnected = false;
+      this._playgroundService.messageService.add({ severity: 'error', summary: 'Error', detail: 'Connection Unsuccessful' });
+      console.log('Error: ', error);
+      alert('' + error);
+    });
+  }
+
+  private handleConnectionEvents(): void {
+    this._connection?.on('open', () => {
+      this._playgroundService.isConnecting = false;
+      this._playgroundService.isConnected = true;
+      this._playgroundService.messageService.add({ severity: 'success', summary: 'Success', detail: 'Connected Successfully!!' });
+
+      console.log("Connected to: " + this._connection?.peer);
+    });
+
+    this._connection?.on('data', (data) => {
+      console.log('Data received: ', data);
+      console.log('Peer: ', this._connection?.peer);
+
+      if (data) {
+        this.handleMessages(data.toString());
+      }
+    });
+
+    this._connection?.on('close', () => {
+      console.log('Data Connection closed for :', this._connection?.peer);
+      this._connection = undefined;
     });
   }
 
@@ -465,8 +449,14 @@ export class WebRtcModel {
       // In order to fix the UI issue where the next screen is stepper was not working in case of 'Join' workflow,
       // i.e. the UI was stuck on the message - 'Connecting to the a Playground... Please Wait!' because the code flow wasn't coming out of the 'peerConnection's on signal event handler' apparently.
       // Do not know why, but apparently, sending signal once out of that event handler was not enough, but by setting trickle = true in case of 'Join Playground' workflow, multiple signals are thrown,
-      // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
-      trickle: !this._playgroundService.createPlayground
+      // which somehow is triggering the UI's change detection cycle. I know it's a hack (jugaad) but I do not have the time or luxury to analyze this any further, so if it works, it works! 😉
+      trickle: false,
+      iceCompleteTimeout: 100,
+      config: {
+        // iceServers: this.custCfg.iceServers
+        iceServers: this._iceServers,
+        iceTransportPolicy: 'relay'
+      }
     });
     console.log('Simple Peer: ', this._playgroundService.peerConnection);
 
@@ -496,5 +486,38 @@ export class WebRtcModel {
 
   public sendMessageWebRtc(message: string): void {
     this._playgroundService.peerConnection.send(message);
+  }
+
+  public initiatePeerConnection(): void {
+    this._playgroundService.peerConnection = new Peer('', { debug: 0 });
+
+    this.handlePeerEvents(this._playgroundService.peerConnection);
+  }
+
+  public terminatePeerConnection(): void {
+    this._disconnect = true;
+    this.terminateDataConnection();
+    this._playgroundService.peerConnection.disconnect();
+    this._playgroundService.peerConnection.destroy();
+  }
+
+  private terminateDataConnection(): void {
+    this._connection?.close();
+  }
+
+  public sendMessageViaDataConnection(message: string): void {
+    this._connection?.send(message);
+  }
+
+  public joinAnInitiator(): void {
+    if (this._connection) {
+      this._connection.close();
+    }
+
+    // Create connection to destination peer specified in the input field
+    this._connection = this._playgroundService.peerConnection.connect(this._playgroundService.signalInvitationToken, { reliable: true })
+
+    // console.log('Connected to Peer: ', this._connection?.peer);
+    this.handleConnectionEvents();
   }
 }
