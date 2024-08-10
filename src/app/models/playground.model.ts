@@ -526,9 +526,9 @@ export class PlaygroundModel {
     this._gameStage.next(PlaygroundGameStageEnum.TOSS);
     this._isGameStageToss = true;
 
+    // this._dialogRef = this._dialogService.open(PlaygroundGameInitiationDialogComponent, {
+    //   header: 'Game Toss',
     this._dialogRef = this._dialogService.open(PlaygroundGameInitiationDialogComponent, {
-      header: 'Game Toss',
-    this._dialogRef = this._dialogService.open(PlaygroundGameInitiationComponent, {
       header: 'Welcome to the Playground!',
       width: '50vw',
       contentStyle: { overflow: 'auto' },

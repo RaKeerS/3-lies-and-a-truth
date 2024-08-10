@@ -114,8 +114,8 @@ p {
   }
 }
 
-.ml-12 {
-  margin-left: 12rem;
+.ml-9 {
+  margin-left: 9rem;
 }
 
 .card {
@@ -160,5 +160,13 @@ p {
   .layout-wrapper .layout-main-container {
     margin-left: 0;
     padding-left: 2rem;
+  }
+}
+
+@media screen and (width < 1400px) {
+  ::ng-deep {
+    :root {
+      width: auto;
+    }
   }
 }
