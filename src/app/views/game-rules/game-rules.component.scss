@@ -1,3 +1,9 @@
+::ng-deep {
+  &:root {
+    inline-size: 100%;
+  }
+}
+
 :host {
   &::ng-deep {
     .game-rules-header {
@@ -12,7 +18,21 @@
   }
 }
 
+// .game-rules-header {
+//   display: flex;
+//   flex-direction: column;
+//   word-wrap: break-word;
+//   width: 85%;
+//   overflow: auto;
+// }
+
 article {
+  // display: flex;
+  // flex-direction: column;
+  // word-wrap: break-word;
+  // width: 85%;
+  // overflow: auto;
+
   h3 {
     text-decoration: underline;
     text-underline-offset: 3px;

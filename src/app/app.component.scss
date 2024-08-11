@@ -1,6 +1,6 @@
 ::ng-deep {
   :root {
-    width: max-content;
+    width: fit-content;
     min-width: 100%;
   }
 
@@ -81,6 +81,13 @@ main {
   width: 100%;
   max-width: 700px;
   margin-bottom: 3rem;
+}
+
+.app-container {
+  inline-size: 100%;
+  inline-size: fill-available;
+  inline-size: -webkit-fill-available;
+  inline-size: -moz-fill-available;
 }
 
 .content h1 {
