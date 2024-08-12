@@ -1,8 +1,8 @@
-::ng-deep {
-  &:root {
-    inline-size: 100%;
-  }
-}
+// ::ng-deep {
+//   app-game-rules {
+//     inline-size: 100%;
+//   }
+// }
 
 :host {
   &::ng-deep {
