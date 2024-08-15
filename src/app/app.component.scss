@@ -166,6 +166,12 @@ p {
   min-height: 100%;
 }
 
+.title-menubar {
+  position: sticky;
+  top: 8px;
+  z-index: 1005;
+}
+
 
 @media (max-width: 991px) {
   .layout-wrapper .layout-main-container {

@@ -64,7 +64,7 @@
 
       @if (isShuffleDeckInitiated && !playgroundModel.isShufflePending) {
         @if ((playgroundModel.gameStage$ | async) === PlaygroundGameStage.SHUFFLE) {
-          <div class="card-deck-shuffle top-0 fixed">
+          <div class="card-deck-shuffle fixed">
             <p-card [header]="playgroundModel.shuffleDeckHeader" class="flex flex-column p-3 mt-3">
               <div class="card-wrapper">
                 <ul class="card-list" #cardDeckShuffleList>
