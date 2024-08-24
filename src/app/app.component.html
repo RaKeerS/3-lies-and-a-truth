@@ -337,6 +337,34 @@
 
 
 <div class="layout-wrapper layout-theme-light layout-static p-ripple-disabled">
+  <p-menubar class="w-full title-menubar">
+    <ng-template pTemplate="start">
+      <a href="https://github.com/RaKeerS" pTooltip="Go to my GitHub Profile 😎👨🏻‍💻" tooltipPosition="bottom" tooltipStyleClass="avatar-tooltip-styling">
+        <p-avatar image="https://avatars.githubusercontent.com/u/22376097?v=4" size="large" shape="circle">
+        </p-avatar>
+      </a>
+      <div class="flex text-2xl w-full justify-content-center font-medium align-items-center ml-9">
+        3 Lies and a Truth
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="end">
+        <div class="flex align-items-center gap-2">
+            <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
+            <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
+            @if(showPlaygroundDialog) {
+              <app-game-connector-dialog [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector-dialog>
+            }
+
+            @if (!isConnected) {
+              <div class="card flex justify-content-center">
+                <p-button (click)="toggleDialogState()" label="Hit the Playground!"></p-button>
+              </div>
+            }
+        </div>
+    </ng-template>
+  </p-menubar>
+
   <div class="layout-main-container">
     <div class="layout-main">
       <p-toast></p-toast>
@@ -419,39 +447,11 @@
                   </div>
               </p-dialog> -->
 
-            <p-menubar class="w-full title-menubar">
-              <ng-template pTemplate="start">
-                <a href="https://github.com/RaKeerS" pTooltip="Go to my GitHub Profile 😎👨🏻‍💻" tooltipPosition="bottom" tooltipStyleClass="avatar-tooltip-styling">
-                  <p-avatar image="https://avatars.githubusercontent.com/u/22376097?v=4" size="large" shape="circle">
-                  </p-avatar>
-                </a>
-                <div class="flex text-2xl w-full justify-content-center font-medium align-items-center ml-9">
-                  3 Lies and a Truth
-                </div>
-              </ng-template>
+            <br/>
 
-                  <ng-template pTemplate="end">
-                      <div class="flex align-items-center gap-2">
-                          <!-- <input type="text" pInputText placeholder="Search" class="w-8rem sm:w-auto" />
-                          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" /> -->
-                          @if(showPlaygroundDialog) {
-                            <app-game-connector-dialog [(showPlaygroundDialog)]="showPlaygroundDialog"></app-game-connector-dialog>
-                          }
-
-                          @if (!isConnected) {
-                            <div class="card flex justify-content-center">
-                              <p-button (click)="toggleDialogState()" label="Hit the Playground!"></p-button>
-                            </div>
-                          }
-                      </div>
-                  </ng-template>
-                </p-menubar>
-
-                <br/>
-
-                @if (router.url !== '/playground') {
-                  <app-game-rules></app-game-rules>
-                }
+            @if (router.url !== '/playground') {
+              <app-game-rules></app-game-rules>
+            }
 
 
             @if (router.url !== '/home') {
@@ -465,6 +465,30 @@
       </main> -->
     </div>
   </div>
+
+  <p-menubar class="w-full flex footer-menubar">
+    <ng-template pTemplate="start">
+      <a href="https://www.linkedin.com/in/sree-naidu-413716101/" pTooltip="Go to my LinkedIn Profile 😎👨🏻‍💻" tooltipPosition="right" tooltipStyleClass="footer-avatar-tooltip-linkedin">
+        <p-avatar image="./assets/svg/LinkedIn_Logo.svg" class="linkedin-avatar" size="large" shape="square">
+        </p-avatar>
+      </a>
+      <div class="flex text-2xl w-full justify-content-center font-medium align-items-center ml-9" pTooltip="Coz Programming is my Hobby! 🤷🏻‍♂️" tooltipPosition="top" tooltipStyleClass="footer-avatar-tooltip-styling">
+        Made with <i class="pi pi-heart-fill px-2 text-2xl" style="color: #e25555; font-size: x-large;"></i> in India!
+      </div>
+      <!-- <div class="flex text-2xl w-full justify-content-center font-medium align-items-center ml-9">
+        Coz Programming is my Hobby! 😎😁
+      </div> -->
+    </ng-template>
+    <ng-template pTemplate="end">
+      <a href="https://github.com/RaKeerS" pTooltip="Go to my GitHub Profile 😎👨🏻‍💻" tooltipPosition="left" tooltipStyleClass="footer-avatar-tooltip-github">
+        <p-avatar image="./assets/svg/GitHub_Logo.svg" class="github-avatar" size="large" shape="square">
+        </p-avatar>
+      </a>
+      <!-- <div class="flex justify-content-end align-items-end">
+        <img src="./assets/gifs/footer-1.gif">
+      </div> -->
+    </ng-template>
+  </p-menubar>
 </div>
 <!--
 <ng-template #createOrJoinDialog>

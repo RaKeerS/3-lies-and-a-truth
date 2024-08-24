@@ -34,6 +34,22 @@
       inline-size: max-content;
     }
   }
+
+  p-avatar.github-avatar, p-avatar.linkedin-avatar {
+    .p-avatar {
+      width: 7rem;
+      height: 2rem;
+    }
+  }
+
+  // .footer-avatar-tooltip-github {
+  //   @extend .avatar-tooltip-styling;
+
+  //   inline-size: 100%;
+  //   justify-content: end;
+  //   display: flex;
+  //   border: 1px solid black;
+  // }
 }
 
 :host {
@@ -56,6 +72,7 @@
         // flex: 0 0 auto;
         padding: 0.5rem;
         width: 16.6667%;
+        padding-right: 1.3rem;
       }
     }
 
@@ -64,6 +81,15 @@
         justify-content: center;
       }
     }
+
+    .footer-menubar {
+      .p-menubar {
+        inline-size: 100%;
+        border-radius: 0px;
+      }
+    }
+
+
   }
 }
 
@@ -160,6 +186,7 @@ p {
   padding: 2rem;
   // padding-left: 4rem;
   transition: margin-left .2s;
+  margin-bottom: 7rem;
 }
 
 .layout-wrapper {
@@ -172,6 +199,12 @@ p {
   z-index: 1005;
 }
 
+.footer-menubar {
+  position: fixed;
+  bottom: 0px;
+  z-index: 1005;
+  block-size: 5rem;
+}
 
 @media (max-width: 991px) {
   .layout-wrapper .layout-main-container {
