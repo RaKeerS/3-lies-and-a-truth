@@ -98,7 +98,7 @@
       </ng-template>
       <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
         <div class="flex flex-column gap-2" style="min-height: 16rem;">
-          <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div>
+          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
 
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
@@ -115,9 +115,9 @@
                     <li>
                       The bottom left portion indicates the <b>Pick or Choose</b> section.
                       <br />
-                      During the <b>Pick</b> game phase the <b>Player</b> woold either <b>Pick</b> options i.e. 3 Lies and 1 Truth. (always both)
+                      During the <b>Pick</b> game phase the <b>Player</b> would either <b>Pick</b> options i.e. 3 Lies and 1 Truth. (always both)
                       <br />
-                      During the <b>Choose</b> game phase the <b>Player</b> woold either <b>Choose</b> either 3 Lies or 1 Truth. (never both)
+                      During the <b>Choose</b> game phase the <b>Player</b> would either <b>Choose</b> either 3 Lies or 1 Truth. (never both)
                       <br />
                       It contains a toggle switch to flip/re-flip the Cards. It also contains a button to toggle between <b>Truth or Lies</b> option list.
                     </li>
@@ -134,7 +134,7 @@
           </div>
         </div>
 
-        <div class="flex pt-4 justify-content-between">
+        <div class="flex justify-content-between">
           <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
           <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
         </div>
@@ -159,17 +159,42 @@
         </button>
       </ng-template>
       <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
-        <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 30rem;">
-          <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div>
+        <div class="flex flex-column gap-2" style="min-height: 16rem;">
+          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
 
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
-
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Player Section </h3>
+                <section>
+                  <img src="./assets/gifs/player-section.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      This <b>Void-Zone</b> is present on the left section of the playground.
+                    </li>
+                    <li>
+                      The <b>Void Zone</b> contains the collection of discarded cards.
+                    </li>
+                    <li>
+                      When you hover over the same and if there are any discarded cards then you can view these cards in the mid section of the playground.
+                      <br />
+                      When you click the button shown on hover over the <b>'Void'</b> deck, then a list of all the discarded cards are displayed in the mid section.
+                      <br />
+                      This allows the player to study the cards discarded so far to increase the percentage of picking the correct choice!
+                    </li>
+                    <li>
+                      Do note that only <i>'4 lifelines'</i> are provided allowing to analyze the discarded cards!
+                    </li>
+                  </ol>
+                </section>
+              </article>
             </div>
           </div>
         </div>
 
-        <div class="flex pt-4 justify-content-between">
+        <div class="flex justify-content-between">
           <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
           <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
         </div>
@@ -194,17 +219,38 @@
         </button>
       </ng-template>
       <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
-        <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 30rem;">
-          <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div>
+        <div class="flex flex-column gap-2" style="min-height: 16rem;">
+          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
 
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
-
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Player Section </h3>
+                <section>
+                  <img src="./assets/gifs/player-section.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      This <b>Deck-Zone</b> is present on the right section of the playground.
+                    </li>
+                    <li>
+                      The <b>Deck Zone</b> contains the collection of playable cards.
+                    </li>
+                    <li>
+                      One can forfeit the game anytime by click on the button that appears when hovering over the <i>'Deck'</i>.
+                    </li>
+                    <li>
+                      Once forfeited the player forfeiting would lose the game and will be redirected to the home page!
+                    </li>
+                  </ol>
+                </section>
+              </article>
             </div>
           </div>
         </div>
 
-        <div class="flex pt-4 justify-content-between">
+        <div class="flex justify-content-between">
           <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
           <p-button (onClick)="nextCallback.emit(); moveToGameRounds();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
         </div>
