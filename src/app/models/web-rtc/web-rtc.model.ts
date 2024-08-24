@@ -324,6 +324,8 @@ export class WebRtcModel {
 
     peer.on('close', () => {
       this._connection = undefined;
+      this._playgroundService.isConnecting = false;
+      this._playgroundService.isConnected = false;
       console.log('Connection destroyed, Connection closed!');
     });
 
