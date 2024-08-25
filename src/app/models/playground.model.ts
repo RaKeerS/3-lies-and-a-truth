@@ -107,6 +107,7 @@ export class PlaygroundModel {
   private _toggleBetweenLiesOrTruth: boolean = false;
 
   public PlaygroundTossOutcome = PlaygroundGameTossOutcomeEnum;
+  public PlaygroundPlayersEnum = PlaygroundPlayersEnum;
 
 
   constructor(injector: Injector) {
@@ -369,11 +370,11 @@ export class PlaygroundModel {
   }
 
   get playerName(): string {
-    return this._playgroundService.createPlayground ? this._playgroundService.playerName : this._playgroundService.opponentName;
+    return this._playgroundService.playerName;
   }
 
   get opponentName(): string {
-    return this._playgroundService.createPlayground ? this._playgroundService.opponentName : this._playgroundService.playerName;
+    return this._playgroundService.opponentName;
   }
 
   get p1CardsList(): Map<CardDeckEnum, string> {
@@ -876,7 +877,9 @@ export class PlaygroundModel {
           this._playgroundService.ngZone.run(() => {
             if (metaData.gameStage === PlaygroundGameStageEnum.TOSS) {
               this.playerTossWinner = metaData.message; // NOTE: Contains either 'PlaygroundTossOutcome.PLAYER_1' or 'PlaygroundTossOutcome.PLAYER_2' in 'message'.
-              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1 ? `${this.playerName} Wins the Toss! Begins first!!` : `${this.opponentName} Wins the Toss! Begins first!!`;
+              this._gameTossWinnerDetails = this.playerTossWinner === PlaygroundGameTossOutcomeEnum.PLAYER_1
+                ? this._playgroundService.createPlayground ? `${this.playerName} Wins the Toss! Begins first!!` : `${this.opponentName} Wins the Toss! Begins first!!`
+                : this._playgroundService.createPlayground ? `${this.opponentName} Wins the Toss! Begins first!!` : `${this.playerName} Wins the Toss! Begins first!!`
             }
 
             if (this._playgroundService.createPlayground) {
