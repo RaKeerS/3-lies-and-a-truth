@@ -23,3 +23,9 @@
 .border-radius-6px {
   border-radius: 6px;
 }
+
+.opponent-cards {
+  width: -webkit-fill-available;
+  justify-content: center;
+  display: flex;
+}

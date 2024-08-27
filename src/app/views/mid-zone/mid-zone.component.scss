@@ -15,7 +15,7 @@
     .header-Mid-Zone {
       .p-card {
         .p-card-body {
-          padding: 1.25rem 0.25rem;
+          // padding: 1.25rem 0.25rem;
 
           .p-card-title {
             margin-bottom: 1.5rem;
@@ -23,6 +23,8 @@
 
           .p-card-content {
             padding-top: 0;
+            display: flex;
+            justify-content: center;
           }
         }
       }

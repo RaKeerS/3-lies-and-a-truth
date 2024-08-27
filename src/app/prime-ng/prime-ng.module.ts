@@ -17,6 +17,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { MenubarModule } from 'primeng/menubar';
+import { PanelModule } from 'primeng/panel';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { StepperModule } from 'primeng/stepper';
@@ -39,6 +40,7 @@ import { TooltipModule } from 'primeng/tooltip';
     InputNumberModule,
     InputTextModule,
     InputTextareaModule,
+    PanelModule,
     SelectButtonModule,
     StepperModule,
     ToastModule,

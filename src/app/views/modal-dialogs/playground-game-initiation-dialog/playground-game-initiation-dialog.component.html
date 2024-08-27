@@ -1,0 +1,62 @@
+@if((playgroundModel.gameStage$ | async) === PlaygroundGameStage.TOSS) {
+  <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 40rem;">
+    <div class="field p-fluid">
+      <div class="p-field p-col-12 p-3">
+        <div class="flex font-bold text-2xl mb-4 justify-content-center"> {{ playgroundModel.isGameStageTossOrTimer }} </div>
+        <div class="toss-players">
+          <p-button class="toss-buttons" [label]="playgroundModel.whoAmI === playgroundModel.PlaygroundPlayersEnum.PLAYER_1 ? playgroundModel.playerName : playgroundModel.opponentName" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !!(playgroundModel.switch$ | async)?.tossMessage ? (playgroundModel.switch$ | async)?.tossMessage === playgroundModel.PlaygroundTossOutcome.PLAYER_1 : this.playgroundModel.playerTossWinner === playgroundModel.PlaygroundTossOutcome.PLAYER_1 }"></p-button>
+          <p-button class="toss-buttons" [label]="playgroundModel.whoAmI === playgroundModel.PlaygroundPlayersEnum.PLAYER_2 ? playgroundModel.playerName : playgroundModel.opponentName" [rounded]="true" [disabled]="true" severity="warning" [class]="{ 'button-highlight': !!(playgroundModel.switch$ | async)?.tossMessage ? (playgroundModel.switch$ | async)?.tossMessage === playgroundModel.PlaygroundTossOutcome.PLAYER_2 : this.playgroundModel.playerTossWinner === playgroundModel.PlaygroundTossOutcome.PLAYER_2  }"></p-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-3 mb-3 text-xl font-semibold"> {{ playgroundModel.gameTossWinnerDetails }} </div>
+
+    @if ((playgroundModel.tossCompleted$ | async)?.message === PlaygroundGameTossStage.COMPLETED) {
+      <div class="flex w-full justify-content-end mt-3">
+        <p-button type="button" label="Place Bets" icon="pi pi-arrow-right" iconPos="right" (click)="playgroundModel.initializeBetting()"></p-button>
+      </div>
+    }
+  </div>
+}
+
+@if((playgroundModel.gameStage$ | async) === PlaygroundGameStage.BET) {
+  <div class="flex flex-column gap-2 mx-auto" style="min-height: 16rem; max-width: 40rem;">
+    <div class="field p-fluid">
+      <div class="p-field p-col-12 p-3">
+        <div class="flex flex-column align-items-center">
+          <div class="font-bold text-2xl mb-4"> {{ playgroundModel.isGameStageTossOrTimer }} </div>
+          <p-inputOtp [(ngModel)]="playgroundModel.playgroundTimer" [length]="4" style="gap: 0; justify-content: center;">
+            <ng-template pTemplate="input" let-token let-events="events" let-index="index">
+              <input pInputText type="text" [maxLength]="1" [disabled]="true" (input)="events.input($event)" (keydown)="events.keydown($event)" [attr.value]="token" class="custom-timer" />
+              <div *ngIf="index === 2" class="px-3">
+                <span style='font-size: 1rem'>&#58;</span>
+              </div>
+            </ng-template>
+          </p-inputOtp>
+      </div>
+      </div>
+    </div>
+
+    <div class="field p-fluid">
+      <div class="p-field p-col-12">
+        <div class="flex flex-column align-items-center">
+          <p-divider align="center" type="solid" class="w-full">
+            <p class="text-color-secondary block"> Please place the bet amount for the round </p>
+          </p-divider>
+          <p></p>
+        </div>
+
+        <span class="p-float-label">
+          <p-inputNumber inputId="betAmount" [min]="10" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [(ngModel)]="playgroundModel.playgroundCreatorBetAmount"></p-inputNumber>
+          <label for="playerName"> Enter Bet Amount (Minimum amount will be 10) </label>
+        </span>
+
+        <div class="flex w-full justify-content-end mt-6">
+          <p-button type="button" severity="warning" label="Make Choices" icon="pi pi-arrow-right" iconPos="right" [disabled]="!playgroundModel.playgroundCreatorBetAmount || playgroundModel.playgroundCreatorBetAmount < 10" (click)="playgroundModel.beginDeckShuffling()"></p-button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
