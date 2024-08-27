@@ -1,10 +1,7 @@
-<!-- <p-dialog class="dialog-playground-game-roles" header="Header" [(visible)]="showPlaygroundGameRolesDialog" [closable]="false" [modal]="true" [breakpoints]="{ '2000px': '50vw', '1199px': '75vw', '575px': '90vw' }"> -->
 <div id="playground-game-roles-dialog">
   <ng-template pTemplate="header">
     <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
       <span class="font-bold white-space-nowrap justify-content-center"> Welcome to the Playground! </span>
-      <!-- <span class="font-bold white-space-nowrap"> Welcome to the Playground! </span> -->
-      <!-- <span class="font-bold white-space-nowrap justify-content-center"> Rules of the Playground for the Game </span> -->
     </div>
   </ng-template>
 
@@ -29,8 +26,6 @@
       </ng-template>
       <ng-template pTemplate="content" let-nextCallback="nextCallback">
         <div class="flex flex-column gap-2" style="min-height: 16rem;">
-          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
-
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
               <article>
@@ -73,7 +68,6 @@
         </div>
 
         <div class="flex justify-content-end">
-          <!-- Call createOrJoinPlayground() -->
           <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
         </div>
       </ng-template>
@@ -98,8 +92,6 @@
       </ng-template>
       <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
         <div class="flex flex-column gap-2" style="min-height: 16rem;">
-          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
-
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
               <article>
@@ -160,8 +152,6 @@
       </ng-template>
       <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
         <div class="flex flex-column gap-2" style="min-height: 16rem;">
-          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
-
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
               <article>
@@ -220,8 +210,6 @@
       </ng-template>
       <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
         <div class="flex flex-column gap-2" style="min-height: 16rem;">
-          <!-- <div class="text-center mt-3 mb-3 text-xl font-semibold"> Roles of the Playground for the Game </div> -->
-
           <div class="field p-fluid">
             <div class="p-field p-col-12 p-3">
               <article>
@@ -258,4 +246,3 @@
     </p-stepperPanel>
   </p-stepper>
 </div>
-<!-- </p-dialog> -->
