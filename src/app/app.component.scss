@@ -1,6 +1,6 @@
 ::ng-deep {
   :root {
-    width: max-content;
+    width: fit-content;
     min-width: 100%;
   }
 
@@ -15,19 +15,26 @@
     }
   }
 
-  .p-tooltip {
-    // display: flex !important;
+  .p-dialog {
+    inline-size: 50rem !important;
+  }
 
+  .p-tooltip {
     .p-tooltip-text {
       text-align: center;
-      // white-space: nowrap;
-      // inline-size: max-content;
     }
   }
 
   .avatar-tooltip-styling {
     .p-tooltip-text {
       inline-size: max-content;
+    }
+  }
+
+  p-avatar.github-avatar, p-avatar.linkedin-avatar {
+    .p-avatar {
+      width: 7rem;
+      height: 2rem;
     }
   }
 }
@@ -42,16 +49,15 @@
         flex: 0 0 auto;
         padding: 0.5rem;
         width: 85%;
-        // width: 83.3333%;
       }
 
       .p-menubar-end {
         margin-left: 0;
         justify-content: end;
         display: flex;
-        // flex: 0 0 auto;
         padding: 0.5rem;
         width: 16.6667%;
+        padding-right: 1.3rem;
       }
     }
 
@@ -60,6 +66,15 @@
         justify-content: center;
       }
     }
+
+    .footer-menubar {
+      .p-menubar {
+        inline-size: 100%;
+        border-radius: 0px;
+      }
+    }
+
+
   }
 }
 
@@ -69,18 +84,24 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  // padding: 1rem;
   box-sizing: inherit;
   position: relative;
 }
 
 .content {
   display: flex;
-  // justify-content: space-around;
+
   justify-content: center;
   width: 100%;
   max-width: 700px;
   margin-bottom: 3rem;
+}
+
+.app-container {
+  inline-size: 100%;
+  inline-size: fill-available;
+  inline-size: -webkit-fill-available;
+  inline-size: -moz-fill-available;
 }
 
 .content h1 {
@@ -114,8 +135,8 @@ p {
   }
 }
 
-.ml-12 {
-  margin-left: 12rem;
+.ml-9 {
+  margin-left: 9rem;
 }
 
 .card {
@@ -135,30 +156,44 @@ p {
   flex: 1 1 auto;
 }
 
-// display: flex;
-//     width: 100%;
-//     flex-direction: column;
-//     justify-content: center;
-//     align-items: center;
-
 .layout-main-container {
   display: flex;
   flex-direction: column;
   min-height: 100%;
   justify-content: space-between;
   padding: 2rem;
-  // padding-left: 4rem;
   transition: margin-left .2s;
+  margin-bottom: 7rem;
 }
 
 .layout-wrapper {
   min-height: 100%;
 }
 
+.title-menubar {
+  position: sticky;
+  top: 8px;
+  z-index: 1005;
+}
+
+.footer-menubar {
+  position: fixed;
+  bottom: 0px;
+  z-index: 1005;
+  block-size: 5rem;
+}
 
 @media (max-width: 991px) {
   .layout-wrapper .layout-main-container {
     margin-left: 0;
     padding-left: 2rem;
+  }
+}
+
+@media screen and (width < 1400px) {
+  ::ng-deep {
+    :root {
+      width: fit-content;
+    }
   }
 }

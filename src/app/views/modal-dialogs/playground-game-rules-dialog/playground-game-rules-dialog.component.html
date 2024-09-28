@@ -1,0 +1,248 @@
+<div id="playground-game-roles-dialog">
+  <ng-template pTemplate="header">
+    <div class="inline-flex align-items-center justify-content-center gap-2 w-full">
+      <span class="font-bold white-space-nowrap justify-content-center"> Welcome to the Playground! </span>
+    </div>
+  </ng-template>
+
+  <p-stepper [(activeStep)]="active">
+    <p-stepperPanel>
+      <ng-template pTemplate="header" let-onClick="onClick" let-index="index" let-model="model">
+        <button class="bg-transparent border-none inline-flex flex-column gap-2" (onClick)="onClick.emit()">
+          <span
+            class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+            [ngClass]="{
+                'bg-primary border-primary': index <= active,
+                'surface-border': index > active
+            }">
+            @if (active <= index) {
+              <i class="pi pi-star"></i>
+            }
+            @else {
+              <i class="pi pi-star-fill"></i>
+            }
+          </span>
+        </button>
+      </ng-template>
+      <ng-template pTemplate="content" let-nextCallback="nextCallback">
+        <div class="flex flex-column gap-2" style="min-height: 16rem;">
+          <div class="field p-fluid">
+            <div class="p-field p-col-12 p-3">
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout </h3>
+                <section>
+                  <img src="./assets/images/playground-layout.png" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      This is the entire playground's layout.
+                    </li>
+                    <li>
+                      The <b>topmost</b> section displays the <i>'timer'</i> representing the remaining time left to perform the action each round.
+                    </li>
+                    <li>
+                      The <b>top</b> section just below the <i>'timer'</i> is the <b>opponent section</b>.
+                      <br />
+                      While the <b>bottom</b> section represents the <b>player section.</b>
+                    </li>
+                    <li>
+                      The <b>left</b> section represents the <i>'void-zone'</i> which can be used to take a look at the discarded cards.
+                    </li>
+                    <li>
+                      The <b>right</b> section represents the <i>'deck-zone'</i> which represents the count of remaining cards in the deck.
+                      <br />
+                      It also contains an option to quit the game.
+                    </li>
+                    <li>
+                      The mid bottom section shows the <b>Player Cards</b> which will flip on hover. There is also toggle switch on the <b>Pick or Choose</b> section to flip all cards at once.
+                    </li>
+                    <li>
+                      The bottom right section includes an information on the <b>Bounty</b> amount as well as the opponent's <b>Bounty</b> amount.
+                    </li>
+                  </ol>
+                </section>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-content-end">
+          <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel>
+      <ng-template pTemplate="header" let-onClick="onClick" let-index="index" let-model="model">
+        <button class="bg-transparent border-none inline-flex flex-column gap-2" (onClick)="onClick.emit()">
+          <span
+            class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+            [ngClass]="{
+                'bg-primary border-primary': index <= active,
+                'surface-border': index > active
+            }">
+            @if (active <= index) {
+              <i class="pi pi-star"></i>
+            }
+            @else {
+              <i class="pi pi-star-fill"></i>
+            }
+          </span>
+        </button>
+      </ng-template>
+      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+        <div class="flex flex-column gap-2" style="min-height: 16rem;">
+          <div class="field p-fluid">
+            <div class="p-field p-col-12 p-3">
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Player Section </h3>
+                <section>
+                  <img src="./assets/gifs/player-section.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      The top section belongs to the <b>Opponent</b> player while the bottom section belongs to the <b>Player</b>.
+                    </li>
+                    <li>
+                      The bottom left portion indicates the <b>Pick or Choose</b> section.
+                      <br />
+                      During the <b>Pick</b> game phase the <b>Player</b> would either <b>Pick</b> options i.e. 3 Lies and 1 Truth. (always both)
+                      <br />
+                      During the <b>Choose</b> game phase the <b>Player</b> would either <b>Choose</b> either 3 Lies or 1 Truth. (never both)
+                      <br />
+                      It contains a toggle switch to flip/re-flip the Cards. It also contains a button to toggle between <b>Truth or Lies</b> option list.
+                    </li>
+                    <li>
+                      The mid bottom section shows the <b>Player Cards</b> which will flip on hover. There is also toggle switch on the <b>Pick or Choose</b> section to flip all cards at once.
+                    </li>
+                    <li>
+                      The bottom right section includes an information on the <b>Bounty</b> amount as well as the opponent's <b>Bounty</b> amount.
+                    </li>
+                  </ol>
+                </section>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-content-between">
+          <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
+          <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel>
+      <ng-template pTemplate="header" let-onClick="onClick" let-index="index" let-model="model">
+        <button class="bg-transparent border-none inline-flex flex-column gap-2" (onClick)="onClick.emit()">
+          <span
+            class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+            [ngClass]="{
+                'bg-primary border-primary': index <= active,
+                'surface-border': index > active
+            }">
+            @if (active <= index) {
+              <i class="pi pi-star"></i>
+            }
+            @else {
+              <i class="pi pi-star-fill"></i>
+            }
+          </span>
+        </button>
+      </ng-template>
+      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+        <div class="flex flex-column gap-2" style="min-height: 16rem;">
+          <div class="field p-fluid">
+            <div class="p-field p-col-12 p-3">
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Void Zone </h3>
+                <section>
+                  <img src="./assets/gifs/void-zone.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      This <b>Void-Zone</b> is present on the left section of the playground.
+                    </li>
+                    <li>
+                      The <b>Void Zone</b> contains the collection of discarded cards.
+                    </li>
+                    <li>
+                      When you hover over the same and if there are any discarded cards then you can view these cards in the mid section of the playground.
+                      <br />
+                      When you click the button shown on hover over the <b>'Void'</b> deck, then a list of all the discarded cards are displayed in the mid section.
+                      <br />
+                      This allows the player to study the cards discarded so far to increase the percentage of picking the correct choice!
+                    </li>
+                    <li>
+                      Do note that only <i>'4 lifelines'</i> are provided allowing to analyze the discarded cards!
+                    </li>
+                  </ol>
+                </section>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-content-between">
+          <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
+          <p-button (onClick)="nextCallback.emit();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel>
+      <ng-template pTemplate="header" let-onClick="onClick" let-index="index" let-model="model">
+        <button class="bg-transparent border-none inline-flex flex-column gap-2" (onClick)="onClick.emit()">
+          <span
+            class="border-round border-2 w-3rem h-3rem inline-flex align-items-center justify-content-center"
+            [ngClass]="{
+                'bg-primary border-primary': index <= active,
+                'surface-border': index > active
+            }">
+            @if (active <= index) {
+              <i class="pi pi-star"></i>
+            }
+            @else {
+              <i class="pi pi-star-fill"></i>
+            }
+          </span>
+        </button>
+      </ng-template>
+      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+        <div class="flex flex-column gap-2" style="min-height: 16rem;">
+          <div class="field p-fluid">
+            <div class="p-field p-col-12 p-3">
+              <article>
+                <h3 class="flex justify-content-center underline"> Playground Layout - Card Deck </h3>
+                <section>
+                  <img src="./assets/gifs/deck-quit-game.gif" class="w-full" />
+                </section>
+                <section>
+                  <ol class="rules-ol">
+                    <li>
+                      This <b>Deck-Zone</b> is present on the right section of the playground.
+                    </li>
+                    <li>
+                      The <b>Deck Zone</b> contains the collection of playable cards.
+                    </li>
+                    <li>
+                      One can forfeit the game anytime by click on the button that appears when hovering over the <i>'Deck'</i>.
+                    </li>
+                    <li>
+                      Once forfeited the player forfeiting would lose the game and will be redirected to the home page!
+                    </li>
+                  </ol>
+                </section>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-content-between">
+          <p-button (onClick)="prevCallback.emit();" label="Back" severity="secondary" icon="pi pi-arrow-left" />
+          <p-button (onClick)="nextCallback.emit(); moveToGameRounds();" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+        </div>
+      </ng-template>
+    </p-stepperPanel>
+  </p-stepper>
+</div>
