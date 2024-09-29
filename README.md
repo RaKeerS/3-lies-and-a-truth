@@ -1,4 +1,4 @@
-# 3LiesAndATruth 🃏
+# 3 Lies And A Truth (A Card Game) 🃏
 
 This is my implementation of a card game which is based on the principle of determining which amongst the provided options are lies or truth.
 
